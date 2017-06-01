@@ -12,6 +12,7 @@ import java.sql.Statement;
 public class AbstractModel {
 
     protected Connection DAO;
+    protected CookiePair cookiePair;
 
     public AbstractModel()
             throws Exception {
@@ -38,12 +39,10 @@ public class AbstractModel {
      * @return CookiePair
      */
 
-    protected CookiePair validateCookiePermission(String cookie, String user_permission_id)
+    protected void validateCookiePermission(String cookie, String user_permission_id)
         throws Exception {
-        CookiePair cookiePiar = new CookiePair();
-        cookiePiar.userID = 1;
-        cookiePiar.userPermissionID = 7;
-        return cookiePiar;
+        this.cookiePair.userID = 1;
+        this.cookiePair.userPermissionID = 7;
     }
 
     /**

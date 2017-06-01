@@ -18,8 +18,21 @@ public class UserEventsHandler {
         return "VALUE:" + something;
     }
 
+    /**
+     * Create a new meetup entry assuming user has "organize_meetup" permisison.
+     * Returns the ID of the new meetup entry if successful.
+     *
+     * @param cookie
+     * @param start_time
+     * @param weekday
+     * @param name
+     * @param description
+     * @param categories
+     * @return meetup_id
+     * @throws Exception
+     */
     @WebMethod
-    public String createMeetup(
+    public int createMeetup(
             @WebParam(name="cookie") String cookie,
             @WebParam(name="start_time") String start_time,
             @WebParam(name="weekday") String weekday,
@@ -29,9 +42,15 @@ public class UserEventsHandler {
     ) throws Exception {
         MeetupsController meetupsController = new MeetupsController();
         int meetupID = meetupsController.createMeetup(
-                cookie, start_time, weekday, name, description, categories
+                cookie,
+                start_time,
+                weekday,
+                name,
+                description,
+                categories
         );
-        return "Something";
+        meetupsController = null;
+        return meetupID;
     }
 
     @WebMethod

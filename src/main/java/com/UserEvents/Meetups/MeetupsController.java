@@ -15,23 +15,23 @@ public class MeetupsController extends AbstractController {
             String[] categories
     ) throws Exception {
         // Validate input parameters.
-        this.validateString(cookie);
-        this.validateTimestamp(start_time);
+        this.validateString(cookie, "cookie");
+        this.validateTimestamp(start_time, "start_time");
         this.validateWeekday(weekday);
-        this.validateString(name);
-        this.validateText(description);
-        for (String category: categories) {
-            this.validateString(category);
+        this.validateString(name, "meetup_name");
+        this.validateText(description, "description");
+        for (String category : categories) {
+            this.validateMeetupCategory(category);
         }
         // Initialize model and create the data.
-        try {
-            MeetupModel meetupModel = new MeetupModel();
-            meetupModel.createMeetup(
-                    cookie, start_time, weekday, name, description, categories
-            );
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-        return 1;
+        MeetupModel meetupModel = new MeetupModel();
+        return meetupModel.createMeetup(
+                cookie,
+                start_time,
+                weekday,
+                name,
+                description,
+                categories
+        );
     }
 }
