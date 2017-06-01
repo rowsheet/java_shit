@@ -96,7 +96,7 @@ public class Main {
     UserNotificationsHandler userNotificationsHandler = new UserNotificationsHandler();
     Endpoint.publish(
             base_url + "UserNotifications",
-            userEventsHandler);
+            userNotificationsHandler);
     /**
      * User Messaging
      */
