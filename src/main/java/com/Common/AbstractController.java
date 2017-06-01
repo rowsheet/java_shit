@@ -93,4 +93,23 @@ public class AbstractController {
             throw new InvalidParameterException("Invalid Meetup Category");
         }
     }
+
+    protected void validateEventCategory(String input)
+        throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid Event Category");
+        } else if (
+                "grand_opening" != input.intern() &&
+                "new_beer" != input.intern() &&
+                "holiday" != input.intern() &&
+                "birthday" != input.intern() &&
+                "festival" != input.intern() &&
+                "show" != input.intern() &&
+                "ladies_night" != input.intern() &&
+                "something_dogs " != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid Event Category");
+        }
+    }
+
 }

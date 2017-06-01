@@ -20,6 +20,8 @@ public class MeetupRsvpModel extends AbstractModel {
                     "?, ?, ?)" +
                     "RETURNING id";
 
+    public MeetupRsvpModel() throws Exception {}
+
     public int createMeetupRsvp(
             String cookie,
             int meetup_id

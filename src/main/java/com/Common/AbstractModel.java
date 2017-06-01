@@ -13,6 +13,7 @@ public class AbstractModel {
 
     protected Connection DAO;
     protected CookiePair cookiePair;
+    protected VendorCookiePair vendorCookiePair;
 
     public AbstractModel()
             throws Exception {
@@ -21,6 +22,9 @@ public class AbstractModel {
         this.DAO = DriverManager
                 .getConnection("jdbc:postgresql://localhost:5432/skiphopp",
                         "alexanderkleinhans", "");
+        // @TODO only initialize on of these and put the account type in the constructor.
+        this.cookiePair = new CookiePair();
+        this.vendorCookiePair = new VendorCookiePair();
     }
 
     protected void cleanupDatabase() {
@@ -42,7 +46,7 @@ public class AbstractModel {
     protected void validateCookiePermission(String cookie, String user_permission_id)
         throws Exception {
         this.cookiePair.userID = 1;
-        this.cookiePair.userPermissionID = 7;
+        this.cookiePair.userPermissionID = 8;
     }
 
     /**
@@ -57,4 +61,21 @@ public class AbstractModel {
         throws Exception {
         return 1;
     }
+
+    /**
+     * Takes a cookie as a JSON string, a certain featureID and
+     * returns the vendorID and featureID if the cookie has that
+     * feature set. If not, insufficient permissions exception will
+     * be raised.
+     * @param cookie
+     * @param feature_id
+     * @throws Exception
+     */
+
+    protected void validateCookieVendorFeature(String cookie, String feature_id)
+        throws Exception {
+        this.vendorCookiePair.vendorID = 1;
+        this.vendorCookiePair.featureID = 6;
+    }
+
 }

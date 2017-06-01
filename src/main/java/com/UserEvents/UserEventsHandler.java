@@ -1,6 +1,7 @@
 package com.UserEvents;
 
 import com.UserEvents.Meetups.MeetupsController;
+import com.UserEvents.MeetupRsvp.MeetupRsvpController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -31,6 +32,7 @@ public class UserEventsHandler {
      * @return meetup_id
      * @throws Exception
      */
+
     @WebMethod
     public int createMeetup(
             @WebParam(name="cookie") String cookie,
@@ -41,7 +43,7 @@ public class UserEventsHandler {
             @WebParam(name="categories") String[] categories
     ) throws Exception {
         MeetupsController meetupsController = new MeetupsController();
-        int meetupID = meetupsController.createMeetup(
+        return meetupsController.createMeetup(
                 cookie,
                 start_time,
                 weekday,
@@ -49,8 +51,28 @@ public class UserEventsHandler {
                 description,
                 categories
         );
-        meetupsController = null;
-        return meetupID;
+    }
+
+    /**
+     * Create a new meetup rsvp entry, assuming user has "meetup_rsvp" permission.
+     * Returns the ID of the new meetup rsvp entry if successful.
+     *
+     * @param cookie
+     * @param meetup_id
+     * @return meetup_rsvp_id
+     * @throws Exception
+     */
+
+    @WebMethod
+    public int createMeetupRsvp(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="meetup_id") int meetup_id
+    ) throws Exception {
+        MeetupRsvpController meetupRsvpController = new MeetupRsvpController();
+        return meetupRsvpController.createMeetupRsvp(
+                cookie,
+                meetup_id
+        );
     }
 
     @WebMethod

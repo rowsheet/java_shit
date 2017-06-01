@@ -14,6 +14,7 @@ import com.VendorAccounts.VendorAccountsHandler;
 import com.VendorBlogging.VendorBloggingHandler;
 import com.VendorMemberships.VendorMembershipHandler;
 import com.VendorMenu.VendorMenuHandler;
+import com.VendorEvents.VendorEventsHandler;
 import com.UserVendorCommunication.UserVendorCommunicationHandler;
 import com.VendorThirdPartyCommunication.VendorThirdPartyCommunicationHandler;
 
@@ -131,6 +132,13 @@ public class Main {
     Endpoint.publish(
             base_url + "VendorMenu",
             vendorMenuHandler);
+    /**
+     * Vendor Events
+     */
+    VendorEventsHandler vendorEventsHandler = new VendorEventsHandler();
+    Endpoint.publish(
+            base_url + "VendorEvents",
+            vendorEventsHandler);
     /**
      * Third Party Accounts
      */

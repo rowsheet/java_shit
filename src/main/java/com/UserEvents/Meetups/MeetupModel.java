@@ -1,7 +1,6 @@
 package com.UserEvents.Meetups;
 
 import com.Common.AbstractModel;
-import com.Common.CookiePair;
 
 import java.sql.*;
 
@@ -24,8 +23,7 @@ public class MeetupModel extends AbstractModel {
                     "?,?,?,?::weekday,?,?,?::meetup_category[])" +
                     "RETURNING id";
 
-    public MeetupModel() throws Exception {
-    }
+    public MeetupModel() throws Exception {}
 
     public int createMeetup(
             String cookie,
