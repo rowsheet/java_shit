@@ -1,9 +1,6 @@
 package com.VendorEvents.Events;
 
 import com.Common.AbstractModel;
-import com.sun.org.apache.regexp.internal.RE;
-import jnr.posix.Times;
-import org.omg.CORBA.TIMEOUT;
 
 import java.sql.*;
 
@@ -51,8 +48,6 @@ public class EventModel extends AbstractModel {
         preparedStatement.setInt(2, this.vendorCookiePair.featureID);
         preparedStatement.setString(3, name);
         preparedStatement.setTimestamp(4, Timestamp.valueOf(start_date));
-        System.out.println(start_date);
-        System.out.println(end_date);
         preparedStatement.setTimestamp(5, Timestamp.valueOf(end_date));
         preparedStatement.setBoolean(6, rsvp_required);
         preparedStatement.setString(7, description);

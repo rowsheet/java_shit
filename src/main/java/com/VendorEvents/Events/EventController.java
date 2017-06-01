@@ -6,8 +6,6 @@ import com.Common.AbstractController;
  * Created by alexanderkleinhans on 6/1/17.
  */
 public class EventController extends AbstractController {
-    public EventController() throws Exception {
-    }
 
     public int createEvent(
             String cookie,
