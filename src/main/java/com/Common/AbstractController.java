@@ -209,4 +209,18 @@ public class AbstractController {
         }
     }
 
+    protected void validateFoodSize(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid food size.");
+        } else if (
+                "bite" != input.intern() &&
+                "snack" != input.intern() &&
+                "lunchable" != input.intern() &&
+                "shareable" != input.intern() &&
+                "drunk" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid food size.");
+        }
+    }
 }

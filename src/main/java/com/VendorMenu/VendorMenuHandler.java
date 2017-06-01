@@ -56,6 +56,12 @@ public class VendorMenuHandler {
             @WebParam(name="food_sizes") String[] food_sizes
     ) throws Exception {
         FoodController foodController = new FoodController();
-        return 1;
+        return foodController.createFood(
+                cookie,
+                name,
+                description,
+                price,
+                food_sizes
+        );
     }
 }
