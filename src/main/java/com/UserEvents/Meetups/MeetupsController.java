@@ -24,10 +24,14 @@ public class MeetupsController extends AbstractController {
             this.validateString(category);
         }
         // Initialize model and create the data.
-        MeetupModel meetupModel = new MeetupModel();
-        meetupModel.createMeetup(
-                cookie, start_time, weekday, name, description, categories
-        );
+        try {
+            MeetupModel meetupModel = new MeetupModel();
+            meetupModel.createMeetup(
+                    cookie, start_time, weekday, name, description, categories
+            );
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
         return 1;
     }
 }

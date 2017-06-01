@@ -1,15 +1,38 @@
 package com.UserEvents.Meetups;
 
+import com.Common.AbstractModel;
+import com.Common.CookiePair;
+import jnr.posix.Times;
+
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.sql.Array;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
  */
-public class MeetupModel {
+public class MeetupModel extends AbstractModel {
+    private String createMeetupsSQL =
+            "INSERT INTO " +
+                    "   meetups" +
+                    "(" +
+                    "   account_id," +
+                    "   user_permission_id," +
+                    "   start_time," +
+                    "   weekday," +
+                    "   name," +
+                    "   description," +
+                    "   meetup_categories" +
+                    ") VALUES (" +
+                    "?,?,?,?::weekday,?,?,?::meetup_category[])";
+
+    public MeetupModel() throws Exception {
+    }
+
     public int createMeetup(
             String cookie,
             String start_time,
@@ -18,21 +41,17 @@ public class MeetupModel {
             String description,
             String[] categories
     ) throws Exception {
-        Connection c = null;
-        Statement stmt = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/skiphopp",
-                            "alexanderkleinhans", "");
-            System.out.println("Opened database successfully");
-
-        } catch ( Exception e ) {
-            System.out.println("ERROR:");
-            System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-            System.exit(0);
-        }
-        System.out.println("Table created successfully");
+        CookiePair cookiePair = this.validateCookiePermission(cookie, "organize_meetups");
+        PreparedStatement preparedStatement =  this.DAO.prepareStatement(this.createMeetupsSQL);
+        preparedStatement.setInt(1, cookiePair.userID);
+        preparedStatement.setInt(2, cookiePair.userPermissionID);
+        preparedStatement.setTimestamp(3, Timestamp.valueOf(start_time));
+        preparedStatement.setString(4, weekday);
+        preparedStatement.setString(5, name);
+        preparedStatement.setString(6, description);
+        preparedStatement.setArray(7, this.DAO.createArrayOf("meetup_category", categories));
+        System.out.println(preparedStatement);
+        preparedStatement.executeUpdate();
         return 0;
     }
 }
