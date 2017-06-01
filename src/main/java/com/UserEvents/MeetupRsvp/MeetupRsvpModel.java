@@ -1,7 +1,6 @@
 package com.UserEvents.MeetupRsvp;
 
 import com.Common.AbstractModel;
-import com.Common.CookiePair;
 
 import java.sql.*;
 

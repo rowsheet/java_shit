@@ -1,5 +1,7 @@
 package com.UserEvents;
 
+import com.UserEvents.EventRsvp.EventRsvpController;
+import com.UserEvents.EventRsvp.EventRsvpModel;
 import com.UserEvents.Meetups.MeetupsController;
 import com.UserEvents.MeetupRsvp.MeetupRsvpController;
 
@@ -72,6 +74,27 @@ public class UserEventsHandler {
         return meetupRsvpController.createMeetupRsvp(
                 cookie,
                 meetup_id
+        );
+    }
+
+    /**
+     * Create a new event rsvp entry, assuming user has "event_rsvp" permission.
+     * Returns the ID of the new event rsvp entry if successful.
+      * @param cookie
+     * @param event_id
+     * @return event_rsvp_id
+     * @throws Exception
+     */
+
+    @WebMethod
+    public int createEventRsvp(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="event_id") int event_id
+    ) throws Exception {
+        EventRsvpController eventRsvpController = new EventRsvpController();
+        return eventRsvpController.createEventRsvp(
+                cookie,
+                event_id
         );
     }
 
