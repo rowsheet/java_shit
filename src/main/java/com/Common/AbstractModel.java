@@ -46,7 +46,7 @@ public class AbstractModel {
     protected void validateCookiePermission(String cookie, String user_permission_id)
         throws Exception {
         this.cookiePair.userID = 1;
-        this.cookiePair.userPermissionID = 2;
+        this.cookiePair.userPermissionID = 6;
     }
 
     /**

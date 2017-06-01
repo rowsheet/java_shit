@@ -7,7 +7,7 @@ import com.UserAccounts.UserAccountsHandler;
 import com.Sessions.SessionsHandler;
 import com.ThirdPartyAccounts.ThirdPartyAccountsHandler;
 import com.UserEvents.UserEventsHandler;
-import com.UserMessaging.UserMessagingHandler;
+import com.UserSocial.UserSocialHandler;
 import com.UserNotifications.UserNotificationsHandler;
 import com.UserThirdPartyCommunication.UserThirdPartyCommunicationHandler;
 import com.VendorAccounts.VendorAccountsHandler;
@@ -100,10 +100,10 @@ public class Main {
     /**
      * User Messaging
      */
-    UserMessagingHandler userMessagingHandler = new UserMessagingHandler();
+    UserSocialHandler userSocialHandler = new UserSocialHandler();
     Endpoint.publish(
             base_url + "UserMessaging",
-            userMessagingHandler);
+            userSocialHandler);
     /**
      * Vendor Accounts
      */

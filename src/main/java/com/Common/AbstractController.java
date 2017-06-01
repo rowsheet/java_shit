@@ -77,6 +77,15 @@ public class AbstractController {
         }
     }
 
+    protected void validateUserMessage(String input)
+        throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid user message.");
+        } else if (input.length() > 1000) {
+            throw new InvalidParameterException("Invalid user message.");
+        }
+    }
+
     /**
      * VALIDATE Postgres ENUMS
      * note: checking with == was not working and was giving false negatives, so check valid
@@ -250,4 +259,18 @@ public class AbstractController {
             throw new InvalidParameterException("Invalid promotion category.");
         }
     }
+
+    protected void validateUserAssociationStatus(String input)
+        throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid user association status.");
+        } else if (
+                "friends" != input.intern() &&
+                "blocked" != input.intern() &&
+                "favorites" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid user association status.");
+        }
+    }
+
 }
