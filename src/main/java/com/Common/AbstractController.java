@@ -223,4 +223,31 @@ public class AbstractController {
             throw new InvalidParameterException("Invalid food size.");
         }
     }
+
+    protected void validateMembershipCategory(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid membership category.");
+        } else if (
+                "gold" != input.intern() &&
+                "silver" != input.intern() &&
+                "bronze" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid membership category.");
+        }
+    }
+
+    protected void validatePromotionCategory(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid promotion category.");
+        } else if (
+                "free_beer" != input.intern() &&
+                "free_food" != input.intern() &&
+                "free_stuff" != input.intern() &&
+                "tree_tickets" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid promotion category.");
+        }
+    }
 }
