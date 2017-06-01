@@ -17,8 +17,8 @@ public class PostController extends AbstractController {
         this.validateString(title, "title");
         this.validateText(content, "content");
         // Initialize model and create the data.
-        PostModel eventModel = new PostModel();
-        return eventModel.createPost(
+        PostModel postModel = new PostModel();
+        return postModel.createPost(
             cookie,
             title,
             content
