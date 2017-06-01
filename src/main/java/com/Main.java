@@ -117,7 +117,7 @@ public class Main {
     VendorBloggingHandler vendorBloggingHandler = new VendorBloggingHandler();
     Endpoint.publish(
             base_url + "VendorBlogging",
-            vendorAccountsHandler);
+            vendorBloggingHandler);
     /**
      * Vendor Memberships
      */

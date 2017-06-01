@@ -75,7 +75,8 @@ public class AbstractModel {
     protected void validateCookieVendorFeature(String cookie, String feature_id)
         throws Exception {
         this.vendorCookiePair.vendorID = 1;
-        this.vendorCookiePair.featureID = 3;
+        this.vendorCookiePair.featureID = 1;
+        this.vendorCookiePair.accountID = 2;
     }
 
 }
