@@ -1,10 +1,8 @@
 package com.Common;
 
 import java.sql.*;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
@@ -77,6 +75,52 @@ public class AbstractModel {
         this.vendorCookiePair.vendorID = 1;
         this.vendorCookiePair.featureID = 1;
         this.vendorCookiePair.accountID = 2;
+    }
+
+    protected String getHash(String password, String salt) throws Exception {
+        // Salt must be a 128 bit UUID
+        if (salt.length() < 50) {
+            System.out.println(salt);
+            System.out.println(salt.length());
+            throw new Exception("Salt is too short.");
+        }
+        String salt_pass = salt + password;
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(
+                digest.digest(
+                        digest.digest(
+                                digest.digest(
+                                        digest.digest(
+                                                digest.digest(
+                                                        digest.digest(
+                                                                digest.digest(
+                                                                        digest.digest(
+                                                                                digest.digest(
+                                                                                        digest.digest(
+                                                                                                digest.digest(
+                                                                                                        digest.digest(
+                                                                                                                digest.digest(
+                                                                                                                        digest.digest(
+                                                                                                                                digest.digest(
+                                                                                                                                        digest.digest(salt_pass.getBytes())
+                                                                                                                                )
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        byte[] encodedBytes = Base64.getEncoder().encode(hash);
+        return new String(encodedBytes);
     }
 
 }
