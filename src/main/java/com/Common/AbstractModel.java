@@ -72,31 +72,6 @@ public class AbstractModel {
 
     protected void validateCookieVendorFeature(String cookie, String feature_id)
         throws Exception {
-        /*
-        When a vendor sends a request, it needs to be validated. The request will come in with a cookie. That cookie
-        will be used to look up a session variable. That session variable will be parsed to check for weather or
-        not it has a certain feature_id.
-
-        Once this is done, three pieces of information need to be parsed and added to the vendorCookie.
-        1) the vendor_id
-        2) the feature_id
-        3) the account_id of the request.
-
-        If a cookie is not found and cannot look up a session, an VendorAuthenticationException will be thrown.
-        If a feature is not found in the session, a VendorAuthenticationException will be thrown.
-
-        This procedure will haven in N steps:
-
-        1) An attempt to look up session, vendor_id, and account_id via the cookie will occur.
-        2) An attempt to parse the feature_id from the session will occur.
-        3) vendorCookie will have attributes assigned and it will be returned.
-         */
-
-        // 1) Attempt to look up session, vendor_id, and account_id via cookie.
-        PreparedStatement preparedStatement = null;
-        String lookup_sql =
-                "SELECT " +
-                        "   "
         this.vendorCookie.vendorID = 1;
         this.vendorCookie.featureID = 1;
         this.vendorCookie.accountID = 2;
