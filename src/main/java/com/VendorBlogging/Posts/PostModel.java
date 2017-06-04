@@ -33,10 +33,10 @@ public class PostModel extends AbstractModel {
         this.validateCookieVendorFeature(cookie, "blog");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createPostSQL);
-        preparedStatement.setInt(1, this.vendorCookiePair.vendorID);
-        preparedStatement.setInt(2, this.vendorCookiePair.featureID);
+        preparedStatement.setInt(1, this.vendorCookie.vendorID);
+        preparedStatement.setInt(2, this.vendorCookie.featureID);
         preparedStatement.setString(3, title);
-        preparedStatement.setInt(4, this.vendorCookiePair.accountID);
+        preparedStatement.setInt(4, this.vendorCookie.accountID);
         preparedStatement.setString(5, content);
         ResultSet resultSet = preparedStatement.executeQuery();
         // Get the id of the new entry.

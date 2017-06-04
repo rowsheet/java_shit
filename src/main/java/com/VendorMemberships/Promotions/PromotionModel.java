@@ -42,8 +42,8 @@ public class PromotionModel extends AbstractModel {
         this.validateCookieVendorFeature(cookie, "promotions");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createPromotionSQL);
-        preparedStatement.setInt(1, this.vendorCookiePair.vendorID);
-        preparedStatement.setInt(2, this.vendorCookiePair.featureID);
+        preparedStatement.setInt(1, this.vendorCookie.vendorID);
+        preparedStatement.setInt(2, this.vendorCookie.featureID);
         preparedStatement.setInt(3, membership_id);
         preparedStatement.setString(4, title);
         preparedStatement.setString(5, description);

@@ -38,8 +38,8 @@ public class MeetupModel extends AbstractModel {
         this.validateCookiePermission(cookie, "organize_meetups");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement =  this.DAO.prepareStatement(this.createMeetupsSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setTimestamp(3, Timestamp.valueOf(start_time));
         preparedStatement.setString(4, weekday);
         preparedStatement.setString(5, name);

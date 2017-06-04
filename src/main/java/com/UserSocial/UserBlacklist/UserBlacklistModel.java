@@ -29,7 +29,7 @@ public class UserBlacklistModel extends AbstractModel {
         this.validateCookiePermission(cookie, "user_blacklists");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createUserBlacklistSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
+        preparedStatement.setInt(1, this.userCookie.userID);
         preparedStatement.setInt(2, secondary_account_id);
         ResultSet resultSet = preparedStatement.executeQuery();
         // Get the id of the new entry.

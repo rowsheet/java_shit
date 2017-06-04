@@ -35,8 +35,8 @@ public class ReviewModel extends AbstractModel {
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "vendor_review");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBeerReviewSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, vendor_id);
         // You are making the assumption that the vendor will have a feature_id of 14 enabled and attempting to
         // insert the record. If it fails, it fails due to a constraint failure on the ACL.

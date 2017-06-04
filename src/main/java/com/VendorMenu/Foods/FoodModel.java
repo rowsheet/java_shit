@@ -38,8 +38,8 @@ public class FoodModel extends AbstractModel {
         this.validateCookieVendorFeature(cookie, "food_menu");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createFoodSQL);
-        preparedStatement.setInt(1, this.vendorCookiePair.vendorID);
-        preparedStatement.setInt(2, this.vendorCookiePair.featureID);
+        preparedStatement.setInt(1, this.vendorCookie.vendorID);
+        preparedStatement.setInt(2, this.vendorCookie.featureID);
         preparedStatement.setString(3, name);
         preparedStatement.setString(4, description);
         preparedStatement.setFloat(5, price);

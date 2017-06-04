@@ -44,8 +44,8 @@ public class EventModel extends AbstractModel {
         this.validateCookieVendorFeature(cookie, "events");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createEventSQL);
-        preparedStatement.setInt(1, this.vendorCookiePair.vendorID);
-        preparedStatement.setInt(2, this.vendorCookiePair.featureID);
+        preparedStatement.setInt(1, this.vendorCookie.vendorID);
+        preparedStatement.setInt(2, this.vendorCookie.featureID);
         preparedStatement.setString(3, name);
         preparedStatement.setTimestamp(4, Timestamp.valueOf(start_date));
         preparedStatement.setTimestamp(5, Timestamp.valueOf(end_date));

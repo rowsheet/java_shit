@@ -43,8 +43,8 @@ public class BlogModel extends AbstractModel {
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "vendor_blog_comment");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBlogPostCommentSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, vendor_post_id);
         preparedStatement.setString(4, content);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -70,8 +70,8 @@ public class BlogModel extends AbstractModel {
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "vendor_blog_comment");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBlogPostCommentReplySQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, vendor_post_comment_id);
         preparedStatement.setString(4, content);
         System.out.println(preparedStatement);

@@ -46,8 +46,8 @@ public class BeerNotificationModel extends AbstractModel {
         this.validateCookiePermission(cookie, "beer_notifications");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBeerNotificationSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setString(3, name);
         preparedStatement.setInt(4,min_color);
         preparedStatement.setInt(5,max_color);

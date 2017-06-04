@@ -1,7 +1,6 @@
 package com.UserEvents.EventRsvp;
 
 import com.Common.AbstractModel;
-import com.sun.org.apache.regexp.internal.RE;
 
 import java.sql.*;
 
@@ -31,8 +30,8 @@ public class EventRsvpModel extends AbstractModel {
         this.validateCookiePermission(cookie, "event_rsvp");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createEventRsvpSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, event_id);
         ResultSet resultSet = preparedStatement.executeQuery();
         // Get the id of the new entry.

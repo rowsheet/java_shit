@@ -46,8 +46,8 @@ public class MenuModel extends AbstractModel {
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "beer_reviews");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBeerReviewSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, beer_id);
         preparedStatement.setInt(4, stars);
         preparedStatement.setString(5, content);
@@ -76,8 +76,8 @@ public class MenuModel extends AbstractModel {
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "beer_reviews");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createFoodReviewSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, vendor_food_id);
         preparedStatement.setInt(4, stars);
         preparedStatement.setString(5, content);

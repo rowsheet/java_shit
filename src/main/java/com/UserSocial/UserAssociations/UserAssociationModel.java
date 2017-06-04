@@ -33,8 +33,8 @@ public class UserAssociationModel extends AbstractModel {
         this.validateCookiePermission(cookie, "user_associations");
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createUserAssociationSQL);
-        preparedStatement.setInt(1, this.cookiePair.userID);
-        preparedStatement.setInt(2, this.cookiePair.userPermissionID);
+        preparedStatement.setInt(1, this.userCookie.userID);
+        preparedStatement.setInt(2, this.userCookie.userPermissionID);
         preparedStatement.setInt(3, secondary_account_id);
         // Under the assumption that the requested friend is allowed to have friends, we assume their
         // user permission ID is valid, otherwise this will fail on the foreign key constraint which
