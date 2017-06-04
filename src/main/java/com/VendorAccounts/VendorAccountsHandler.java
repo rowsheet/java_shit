@@ -112,13 +112,6 @@ public class VendorAccountsHandler {
     }
 
     @WebMethod
-    public int readVendorSession(
-            @WebParam(name = "cookie") String cookie
-    ) throws Exception {
-        return 1;
-    }
-
-    @WebMethod
     public int updateVendorSession(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "session_string") String session_string
