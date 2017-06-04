@@ -82,16 +82,43 @@ public class BreweryRegistrationModel extends AbstractModel {
     /*
      Set the account status to "email_verified" where account_id
      corresponds with vendor with confirmation code in stage 1.
+
+     Return the vendor_id that is owned by that account.
       */
     private String confirmBreweryAccountSQL_stage2 =
             "UPDATE" +
-                    "   accounts " +
+                    "   accounts AS acc " +
                     "SET" +
                     "   status = ?::account_status " +
+                    "FROM" +
+                    "   vendors AS ven " +
                     "WHERE" +
-                    "   id = ?";
+                    "   acc.id = ven.account_id " +
+                    "AND" +
+                    "   acc.id = ? " +
+                    "RETURNING ven.id AS vendor_id";
 
-    public BreweryRegistrationModel() throws Exception {}
+    /*
+    Insert all of the vendor features for this vendor with status "preview".
+     */
+    private String confirmBreweryAccountSQL_stage3 =
+            "INSERT INTO" +
+                    "   vendor_feature_associations " +
+                    "(" +
+                    "   vendor_id," +
+                    "   feature_id," +
+                    "   feature_status" +
+                    ") VALUES " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status)";
+
+    public BreweryRegistrationModel() throws Exception {
+    }
 
     /**
      * Register a new brewery vendor account (or a request for one).
@@ -177,6 +204,9 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage1 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage3);
+            /*
+            Stage 1)
+             */
             // Prepare and execute the first statement to get the account_id.
             stage1.setString(1, primary_email);
             stage1.setString(2, pash_hash);
@@ -188,6 +218,9 @@ public class BreweryRegistrationModel extends AbstractModel {
             while (stage1Result.next()) {
                 account_id = stage1Result.getInt("id");
             }
+            /*
+            Stage 2)
+             */
             // Prepare and execute the second statement using that account_id to get a vendor_id.
             stage2.setString(1, official_business_name);
             stage2.setString(2, "pending");
@@ -204,11 +237,17 @@ public class BreweryRegistrationModel extends AbstractModel {
             while (stage2Result.next()) {
                 vendor_id = stage2Result.getInt("id");
             }
+            /*
+            Stage 3)
+             */
             // Create an association with both known ids, then commit the transaction.
             stage3.setInt(1, account_id);
             stage3.setString(2, "vendor");
             stage3.setInt(3, vendor_id);
             stage3.execute();
+            /*
+            Commmit and return)
+             */
             this.DAO.commit();
             //@TODO Send a confimration email.
             // Return the new vendor_id.
@@ -217,14 +256,21 @@ public class BreweryRegistrationModel extends AbstractModel {
             // Roll back the transaction if anything has cone wrong.
             // Clean up.
             if (this.DAO != null) {
+                System.out.println(ex);
                 System.out.println("ROLLING BACK");
                 this.DAO.rollback();
             }
             throw new Exception("Unable to register vendor.");
         } finally {
-            if (stage1 != null) { stage1 = null; }
-            if (stage2 != null) { stage2 = null; }
-            if (stage3 != null) { stage3 = null; }
+            if (stage1 != null) {
+                stage1 = null;
+            }
+            if (stage2 != null) {
+                stage2 = null;
+            }
+            if (stage3 != null) {
+                stage3 = null;
+            }
             this.DAO.setAutoCommit(true);
         }
     }
@@ -237,6 +283,8 @@ public class BreweryRegistrationModel extends AbstractModel {
      *
      * 2) Set the status of the account ot "email_verified" where account_id is returned above.
      *
+     * 3) Insert all vendor_features into vendor_feature_associations with status "preview" for this vendor.
+     *
      * @param confirmation_code
      * @return account_id
      * @throws Exception
@@ -247,17 +295,23 @@ public class BreweryRegistrationModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement stage1 = null;
         PreparedStatement stage2 = null;
+        PreparedStatement stage3 = null;
         try {
             /*
-            Two things need to happen, otherwise transaction is rolled back:
+            Three things need to happen, otherwise transaction is rolled back:
             1) Vendor with confirmation_code needs to have status set to "preview".
             2) Account owning that vendor needs to have status set to "email_verified".
+            3) All features need to be set into vendor_feature_associations with status "preview".
              */
             // Disable auto-commit.
             this.DAO.setAutoCommit(false);
             // Create the statements.
             stage1 = this.DAO.prepareStatement(this.confirmBreweryAccountSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.confirmBreweryAccountSQL_stage2);
+            stage3 = this.DAO.prepareStatement(this.confirmBreweryAccountSQL_stage3);
+            /*
+            Stage 1)
+             */
             // Set status for vendor = "preview" returning account_id.
             stage1.setString(1, "preview");
             stage1.setString(2, confirmation_code);
@@ -266,12 +320,58 @@ public class BreweryRegistrationModel extends AbstractModel {
             while (stage1Result.next()) {
                 account_id = stage1Result.getInt("account_id");
             }
+            /*
+            Stage 2)
+             */
             // Set status for account = "email_verified".
             stage2.setString(1, "email_verified");
             stage2.setInt(2, account_id);
-            stage2.execute();
-            // Return the account_id.
-            return account_id;
+            ResultSet stage2Result = stage2.executeQuery();
+            int vendor_id = 0;
+            while (stage2Result.next()) {
+                vendor_id = stage2Result.getInt("vendor_id");
+            }
+            /*
+            Stage 3)
+             */
+            // Set all features in vendor_feature_associations with status "preview".
+            // @TODO Make this a map somewhere, probably in abstract model.
+            // blog
+            stage3.setInt(1, vendor_id);
+            stage3.setInt(2, 1);
+            stage3.setString(3, "preview");
+            // memberships
+            stage3.setInt(4, vendor_id);
+            stage3.setInt(5, 2);
+            stage3.setString(6, "preview");
+            // promotions
+            stage3.setInt(7, vendor_id);
+            stage3.setInt(8, 3);
+            stage3.setString(9, "preview");
+            // food_menu
+            stage3.setInt(10, vendor_id);
+            stage3.setInt(11, 4);
+            stage3.setString(12, "preview");
+            // beer_menu
+            stage3.setInt(13, vendor_id);
+            stage3.setInt(14, 5);
+            stage3.setString(15, "enabled");
+            // events
+            stage3.setInt(16, vendor_id);
+            stage3.setInt(17, 6);
+            stage3.setString(18, "preview");
+            // @TODO Finish up 7 and 8 for third_party later.
+            // vendor_reviews.
+            stage3.setInt(19, vendor_id);
+            stage3.setInt(20, 9);
+            stage3.setString(21, "enabled");
+            stage3.execute();
+            /*
+            Commit and return)
+             */
+            this.DAO.commit();
+            // Return the vendor_id.
+            return vendor_id;
         } catch (Exception ex) {
             // Roll back the transaction if anything has gone wrong.
             // Clean up.
@@ -281,9 +381,14 @@ public class BreweryRegistrationModel extends AbstractModel {
             }
             throw new Exception("Unable to confirm brewery account.");
         } finally {
-            if (stage1 != null) { stage1 = null; }
-            if (stage2 != null) { stage2 = null; }
+            if (stage1 != null) {
+                stage1 = null;
+            }
+            if (stage2 != null) {
+                stage2 = null;
+            }
             this.DAO.setAutoCommit(true);
         }
     }
 }
+
