@@ -44,4 +44,17 @@ public class BreweryRegistrationController extends AbstractController {
                 zip
         );
     }
+
+    public int confirmBreweryAccount(
+            String confirmation_code
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateUUID(confirmation_code);
+        // Initialize model and process.
+        BreweryRegistrationModel breweryRegistrationModel = new BreweryRegistrationModel();
+        return breweryRegistrationModel.confirmBreweryAccount(
+                confirmation_code
+        );
+    }
+
 }

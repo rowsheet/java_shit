@@ -1,6 +1,8 @@
 package com.VendorAccounts.BreweryRegistration;
 
 import com.Common.AbstractModel;
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.util.Base64;
 
 import java.sql.*;
@@ -62,6 +64,32 @@ public class BreweryRegistrationModel extends AbstractModel {
                     "   vendor_id" +
                     ") VALUES (" +
                     "?,?::account_type,?)";
+
+
+    /*
+     Set the vendor status to "preview" returning the account_id
+     associated with that vendor.
+      */
+    private String confirmBreweryAccountSQL_stage1 =
+            "UPDATE" +
+                    "   vendors " +
+                    "SET" +
+                    "   status = ?::vendor_status " +
+                    "WHERE" +
+                    "   confirmation_code = ? " +
+                    "RETURNING account_id;";
+
+    /*
+     Set the account status to "email_verified" where account_id
+     corresponds with vendor with confirmation code in stage 1.
+      */
+    private String confirmBreweryAccountSQL_stage2 =
+            "UPDATE" +
+                    "   accounts " +
+                    "SET" +
+                    "   status = ?::account_status " +
+                    "WHERE" +
+                    "   id = ?";
 
     public BreweryRegistrationModel() throws Exception {}
 
@@ -185,7 +213,7 @@ public class BreweryRegistrationModel extends AbstractModel {
             //@TODO Send a confimration email.
             // Return the new vendor_id.
             return vendor_id;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             // Roll back the transaction if anything has cone wrong.
             // Clean up.
             if (this.DAO != null) {
@@ -197,6 +225,64 @@ public class BreweryRegistrationModel extends AbstractModel {
             if (stage1 != null) { stage1 = null; }
             if (stage2 != null) { stage2 = null; }
             if (stage3 != null) { stage3 = null; }
+            this.DAO.setAutoCommit(true);
+        }
+    }
+
+    /**
+     * Confirm the brewer account with the confirmation code and set the status of the
+     * vendor to "preview" and the account associated to it to "email_verified".
+     *
+     * 1) Set the status of the vendor to "preview" returning the account_id that owns it.
+     *
+     * 2) Set the status of the account ot "email_verified" where account_id is returned above.
+     *
+     * @param confirmation_code
+     * @return account_id
+     * @throws Exception
+     */
+
+    public int confirmBreweryAccount(
+            String confirmation_code
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        PreparedStatement stage2 = null;
+        try {
+            /*
+            Two things need to happen, otherwise transaction is rolled back:
+            1) Vendor with confirmation_code needs to have status set to "preview".
+            2) Account owning that vendor needs to have status set to "email_verified".
+             */
+            // Disable auto-commit.
+            this.DAO.setAutoCommit(false);
+            // Create the statements.
+            stage1 = this.DAO.prepareStatement(this.confirmBreweryAccountSQL_stage1);
+            stage2 = this.DAO.prepareStatement(this.confirmBreweryAccountSQL_stage2);
+            // Set status for vendor = "preview" returning account_id.
+            stage1.setString(1, "preview");
+            stage1.setString(2, confirmation_code);
+            ResultSet stage1Result = stage1.executeQuery();
+            int account_id = 0;
+            while (stage1Result.next()) {
+                account_id = stage1Result.getInt("account_id");
+            }
+            // Set status for account = "email_verified".
+            stage2.setString(1, "email_verified");
+            stage2.setInt(2, account_id);
+            stage2.execute();
+            // Return the account_id.
+            return account_id;
+        } catch (Exception ex) {
+            // Roll back the transaction if anything has gone wrong.
+            // Clean up.
+            if (this.DAO != null) {
+                System.out.println(ex);
+                this.DAO.rollback();
+            }
+            throw new Exception("Unable to confirm brewery account.");
+        } finally {
+            if (stage1 != null) { stage1 = null; }
+            if (stage2 != null) { stage2 = null; }
             this.DAO.setAutoCommit(true);
         }
     }

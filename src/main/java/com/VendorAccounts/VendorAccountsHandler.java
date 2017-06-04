@@ -62,11 +62,23 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Confirms the vendor account with the confirmation code, setting it's status to "preview" and
+     * the account that owns the vendor to "email_verified".
+     *
+     * @param confimation_code
+     * @return account_id
+     * @throws Exception
+     */
+
     @WebMethod
     public int confirmBreweryAccount(
             @WebParam(name = "confirmation_code") String confimation_code
     ) throws Exception {
-        return 1;
+        BreweryRegistrationController breweryRegistrationController = new BreweryRegistrationController();
+        return breweryRegistrationController.confirmBreweryAccount(
+                confimation_code
+        );
     }
 
     @WebMethod
