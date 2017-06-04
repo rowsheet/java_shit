@@ -77,8 +77,22 @@ public class AbstractModel {
         this.vendorCookiePair.accountID = 2;
     }
 
+    /**
+     * Takes a password and salt and returns the hash.
+     *
+     * Uses nested SHA-256 numerous times to try to slow the process down a bit.
+     * Salt is generated from the registration process but stored in the DB and is generated
+     * from java.security.SecureRandom then Base64 encoded. It must be of sufficient length.
+     *
+     * Returning hash is a Base64 encoded bytes array.
+     *
+     * @param password
+     * @param salt
+     * @return password_hash
+     * @throws Exception
+     */
+
     protected String getHash(String password, String salt) throws Exception {
-        // Salt must be a 128 bit UUID
         if (salt.length() < 50) {
             System.out.println(salt);
             System.out.println(salt.length());

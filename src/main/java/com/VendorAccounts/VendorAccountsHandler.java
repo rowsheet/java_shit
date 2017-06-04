@@ -1,7 +1,8 @@
 package com.VendorAccounts;
 
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
-import com.VendorAccounts.BreweryRegistration.BreweryRegistrationModel;
+import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
+import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -20,8 +21,14 @@ public class VendorAccountsHandler {
     }
 
     /**
-     * Creates a "Request" for a new brewery by creating a vendor entity with the status "pending".
-     * Will also create a random string for email confirmation.
+     * Creates a "Request" for a vendor account.
+     *
+     * 1) Creates a vendor account with status "pending".
+     * 2) Creates and account owning that vendor with status "email_verification_pending".
+     * 3) Creates a UUID for confirmation.
+     *
+     * The UUID will be emailed to the email address and used in the confimration function.
+     *
      * @param official_business_name
      * @param primary_contact_first_name
      * @param primary_contact_last_name
@@ -63,8 +70,10 @@ public class VendorAccountsHandler {
     }
 
     /**
-     * Confirms the vendor account with the confirmation code, setting it's status to "preview" and
-     * the account that owns the vendor to "email_verified".
+     * Confirms the vendor account with the confirmation code (UUID).
+     *
+     * 1) Sets vendor to status "preview".
+     * 2) Sets account owning that vendor to status "email_verified".
      *
      * @param confimation_code
      * @return account_id
@@ -81,12 +90,25 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Logs vendor in where email_address and password are valid, returning cookie of new session.
+     *
+     * @param email_address
+     * @param password
+     * @return cookie
+     * @throws Exception
+     */
+
     @WebMethod
-    public int vendorLogin(
+    public String vendorLogin(
             @WebParam(name = "email_address") String email_address,
             @WebParam(name = "password") String password
     ) throws Exception {
-        return 1;
+        VendorAuthenticationController vendorAuthenticationController = new VendorAuthenticationController();
+        return vendorAuthenticationController.vendorLogin(
+                email_address,
+                password
+        );
     }
 
     @WebMethod
