@@ -22,4 +22,15 @@ public class VendorAuthenticationController extends AbstractController {
                 );
         }
 
+        public String vendorLogout(
+                String cookie
+        ) throws Exception {
+                // Validate input parameters.
+                this.validateString(cookie, "cookie");
+                // Initialize model and create the data.
+                VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
+                return vendorAuthenticationModel.vendorLogout(
+                        cookie
+                );
+        }
 }

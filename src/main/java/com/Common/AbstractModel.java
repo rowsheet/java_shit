@@ -3,6 +3,9 @@ package com.Common;
 import java.sql.*;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.Map;
+
+import com.google.gson.*;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
@@ -75,6 +78,20 @@ public class AbstractModel {
         this.vendorCookie.vendorID = 1;
         this.vendorCookie.featureID = 1;
         this.vendorCookie.accountID = 2;
+    }
+
+    /**
+     * Just parses a vendor JSON cookie and returns the session key.
+     *
+     * @param cookie
+     * @return session_key
+     * @throws Exception
+     */
+
+    protected String parseSessionKey(String cookie)
+        throws Exception {
+        VendorCookie vendorCookie = new Gson().fromJson(cookie, VendorCookie.class);
+        return vendorCookie.sessionKey;
     }
 
     /**

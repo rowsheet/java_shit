@@ -111,19 +111,22 @@ public class VendorAccountsHandler {
         );
     }
 
-    @WebMethod
-    public int updateVendorSession(
-            @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "session_string") String session_string
-    ) throws Exception {
-        return 1;
-    }
+    /**
+     * Logs a vendor out assuming the seesion_key is correct.
+     *
+     * @param cookie
+     * @return
+     * @throws Exception
+     */
 
     @WebMethod
-    public int vendorLogout(
+    public String vendorLogout(
             @WebParam(name = "cookie") String cookie
     ) throws Exception {
-        return 1;
+        VendorAuthenticationController vendorAuthenticationController = new VendorAuthenticationController();
+        return vendorAuthenticationController.vendorLogout(
+                cookie
+        );
     }
 
     @WebMethod

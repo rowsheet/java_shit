@@ -35,7 +35,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             "INSERT INTO" +
                     "   sessions " +
                     "(" +
-                    "   session_id," +
+                    "   session_key," +
                     "   account_id" +
                     ") VALUES (" +
                     "?,?)";
@@ -60,7 +60,36 @@ public class VendorAuthenticationModel extends AbstractModel {
                     "   vaa.account_id = ?";
 
 
+    private String vendorLogoutSQL_stage1 =
+            "DELETE FROM" +
+                    "   sessions " +
+                    "WHERE" +
+                    "   session_key = ?";
+
     public VendorAuthenticationModel () throws Exception {}
+
+    /**
+     * Try to delete rows from the session table and return a status "success" of any rows affected.
+     * Throw and exception if now rows are affected.
+     *
+     * 1) Parse the cookie.
+     * 2) Delete the record where session_key matches.
+     *
+     * @param cookie
+     * @return logout_status
+     * @throws Exception
+     */
+    public String vendorLogout(
+        String cookie
+    ) throws Exception {
+        String session_key = this.parseSessionKey(cookie);
+        PreparedStatement preparedStatement = this.DAO.prepareStatement(this.vendorLogoutSQL_stage1);
+        preparedStatement.setString(1, session_key);
+        if (preparedStatement.executeUpdate() < 1) {
+            throw new Exception("Unable to log out, unknown session key.");
+        }
+        return "success";
+    }
 
     /**
      * Log the vendor account in and return the cookie for that new session.
