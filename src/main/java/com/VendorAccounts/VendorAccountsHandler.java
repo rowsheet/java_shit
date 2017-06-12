@@ -112,6 +112,26 @@ public class VendorAccountsHandler {
     }
 
     /**
+     * Checks if a vendor session is legit from a cookie. Returns timestamp of
+     * when it was created if it's legit, otherwise throws exception.
+     *
+     * All state should be held in the cookie because this is a REST API.
+     *
+     * @param session_key
+     * @return session_valid (true if valid, false if invalid)
+     * @throws Exception
+     */
+    @WebMethod
+    public String checkVendorSession(
+            @WebParam(name = "session_key") String session_key
+    ) throws Exception {
+        VendorAuthenticationController vendorAuthenticationController = new VendorAuthenticationController();
+        return vendorAuthenticationController.checkVendorSession(
+            session_key
+        );
+    }
+
+    /**
      * Logs a vendor out assuming the seesion_key is correct.
      *
      * @param cookie

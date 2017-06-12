@@ -17,6 +17,7 @@ import com.VendorMenu.VendorMenuHandler;
 import com.VendorEvents.VendorEventsHandler;
 import com.UserVendorCommunication.UserVendorCommunicationHandler;
 import com.VendorThirdPartyCommunication.VendorThirdPartyCommunicationHandler;
+import com.PublicBrewery.PublicBreweryHandler;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
@@ -54,6 +55,9 @@ import javax.xml.ws.Endpoint;
  *   12)  Vendor Third Party Communications
  *   13)  User Third Party Communications
  *
+ *   Public Systems
+ *
+ *   14) Public Brewery
  */
 @WebService()
 public class Main {
@@ -174,5 +178,12 @@ public class Main {
     Endpoint.publish(
             base_url + "VendorThirdPartyCommunication",
               vendorThirdPartyCommunicationHandler);
+    /**
+     * Public Brewery
+     */
+    PublicBreweryHandler publicBreweryHandler = new PublicBreweryHandler();
+    Endpoint.publish(
+            base_url + "PublicBrewery",
+            publicBreweryHandler);
   }
 }

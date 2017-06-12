@@ -1,19 +1,37 @@
 package com.Common;
 
-import jnr.ffi.annotations.In;
-
-import javax.crypto.spec.IvParameterSpec;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 import java.util.regex.Pattern;
 import java.util.UUID;
+
+import com.google.gson.*;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
  */
 public class AbstractController {
+
+    private Gson gson;
+
+    public AbstractController() {
+        this.gson = new Gson();
+    }
+
+    /**
+     * Just return the Object (I think it's a POJO) or data structure that should be in com.Common and convert
+     * it to JSON.
+     *
+     * note: All Objects here converted should be in com.Common and have no methods. These are used by models which
+     * actually do have database handles and such.
+     *
+     * @param object
+     * @return JSON
+     */
+    protected String returnJSON(Object object) {
+        return this.gson.toJson(object);
+    }
 
     public enum Weekday {
 
@@ -22,6 +40,8 @@ public class AbstractController {
     protected void validateString(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid " + input_name + ".");
+        } else if (input.length() == 0) {
             throw new InvalidParameterException("Invalid " + input_name + ".");
         }
     }
@@ -91,6 +111,8 @@ public class AbstractController {
             throws InvalidParameterException {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid email address.");
+        } else if (input.length() == 0){
+            throw new InvalidParameterException("Invalid email address.");
         }
         // @TODO Check email address againts this regex: (?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])
     }
@@ -132,6 +154,8 @@ public class AbstractController {
     protected void validateZipCode(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid zip code.");
+        } else if (input.length() == 0){
             throw new InvalidParameterException("Invalid zip code.");
         }
     }
@@ -495,7 +519,7 @@ public class AbstractController {
     protected void validateState(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {
-            throw new InvalidParameterException("Invalid user association status.");
+            throw new InvalidParameterException("Invalid state.");
         } else if (
             "AL" != input.intern() &&
             "AK" != input.intern() &&
@@ -548,7 +572,7 @@ public class AbstractController {
             "WI" != input.intern() &&
             "WY" != input.intern()
                 ) {
-            throw new InvalidParameterException("Invalid user association status.");
+            throw new InvalidParameterException("Invalid state.");
         }
     }
 

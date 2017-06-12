@@ -20,13 +20,13 @@ public class BreweryRegistrationController extends AbstractController {
             String zip
     ) throws Exception {
         // Validate input parameters.
-        this.validateString(official_business_name, "official_business_name");
-        this.validateString(primary_contact_first_name, "primary_contact_first_name");
-        this.validateString(primary_contact_last_name, "primary_contact_last_name");
+        this.validateString(official_business_name, "Official Business Name");
+        this.validateString(primary_contact_first_name, "Primary Contact First Name");
+        this.validateString(primary_contact_last_name, "Primary Contact Last Name");
         this.validateEmailAddress(primary_email);
         this.validatePasswordPair(password, confirm_password);
-        this.validateString(street_address, "street_address");
-        this.validateString(city, "city");
+        this.validateString(street_address, "Street Address");
+        this.validateString(city, "City");
         this.validateState(state);
         this.validateZipCode(zip);
         // Initialize model and create the data.

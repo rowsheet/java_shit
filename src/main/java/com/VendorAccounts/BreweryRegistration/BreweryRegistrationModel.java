@@ -260,7 +260,13 @@ public class BreweryRegistrationModel extends AbstractModel {
                 System.out.println("ROLLING BACK");
                 this.DAO.rollback();
             }
-            throw new Exception("Unable to register vendor.");
+            // Try to parse error.
+            if (ex.getMessage().contains("accounts_email_address_key") &&
+                    ex.getMessage().contains("already exists.")) {
+                throw new Exception("An account with that email already exists.");
+            } else {
+                throw new Exception("Unable to register brewery at this time.");
+            }
         } finally {
             if (stage1 != null) {
                 stage1 = null;
@@ -378,6 +384,11 @@ public class BreweryRegistrationModel extends AbstractModel {
             if (this.DAO != null) {
                 System.out.println(ex);
                 this.DAO.rollback();
+            }
+            // Try to parse exception.
+            if (ex.getMessage().contains("vendor_feature_associations_venodr_id_feature_id_idx") &&
+                ex.getMessage().contains("already exists.")) {
+                throw new Exception("Account with this confirmation code has already been confirmed. Please log in.");
             }
             throw new Exception("Unable to confirm brewery account.");
         } finally {

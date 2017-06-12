@@ -22,6 +22,18 @@ public class VendorAuthenticationController extends AbstractController {
                 );
         }
 
+        public String checkVendorSession(
+                String session_key
+        ) throws Exception {
+                // Validate input parameters.
+                this.validateString(session_key, "session_key");
+                // Initialize model and create the data.
+                VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
+                return vendorAuthenticationModel.checkVendorSession(
+                        session_key
+                );
+        }
+
         public String vendorLogout(
                 String cookie
         ) throws Exception {
