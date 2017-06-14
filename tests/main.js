@@ -28,7 +28,7 @@ soap.createClient(publicbrewery_url, function(err, client) {
 			if (err) {
 				console.log(err);
 			} else {
-				console.log(result);
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
 			}
 		});
 	}
@@ -52,6 +52,7 @@ soap.createClient(publicbrewery_url, function(err, client) {
 	}
 });
 */
+/*
 args = {
 	brewery_id: 21
 }
@@ -60,6 +61,25 @@ soap.createClient(publicbrewery_url, function(err, client) {
 		console.log(err);
 	} else {
 		client.loadFoodMenu(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+args = {
+	brewery_id: 21,
+	limit: 3,
+	offset: 6	
+}
+soap.createClient(publicbrewery_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.loadEvents(args, function(err, result) {
 			if (err) {
 				console.log(err);
 			} else {

@@ -1,8 +1,5 @@
 package com.Common;
 
-import jnr.ffi.annotations.In;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -54,6 +51,7 @@ public class Brewery {
      * Owned Info
      */
     public HashMap<Integer, Beer> beerMenu;
+    public HashMap<Integer, VendorFood> foodMenu;
 
     public Brewery() {
         this.vendor_id = 0;

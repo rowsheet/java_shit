@@ -3,6 +3,7 @@ package com.PublicBrewery;
 import com.PublicBrewery.Brewery.BreweryController;
 import com.PublicBrewery.Beer.BeerController;
 import com.PublicBrewery.Food.FoodController;
+import com.PublicBrewery.Events.EventController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -55,12 +56,12 @@ public class PublicBreweryHandler {
      * @param beer_id
      * @return JSON
      */
-    @WebMethod
-    public String loadBeerDetails(
-            @WebParam(name="beer_id") int beer_id
-    ) throws Exception {
-        return "something";
-    }
+    // @WebMethod
+    // public String loadBeerDetails(
+    //         @WebParam(name="beer_id") int beer_id
+    // ) throws Exception {
+    //     return "something";
+    // }
 
     /**
      * Loads all the foods and food categoreis for a particular brewery.
@@ -84,12 +85,12 @@ public class PublicBreweryHandler {
      * @param food_id
      * @return JSON
      */
-    @WebMethod
-    public String loadFoodDetail(
-            @WebParam(name="food_id") int food_id
-    ) throws Exception {
-        return "something";
-    }
+    // @WebMethod
+    // public String loadFoodDetail(
+    //         @WebParam(name="food_id") int food_id
+    // ) throws Exception {
+    //     return "something";
+    // }
 
     /**
      * Loads events for a brewery in chronological order.
@@ -99,14 +100,18 @@ public class PublicBreweryHandler {
      * @param count
      * @return JSON
      */
-
     @WebMethod
     public String loadEvents(
             @WebParam(name="brewery_id") int brewery_id,
-            @WebParam(name="pagination") int pagination,
-            @WebParam(name="count") int count
+            @WebParam(name="limit") int limit,
+            @WebParam(name="offset") int offset
     ) throws Exception {
-        return "something";
+        EventController eventController = new EventController();
+        return eventController.loadEvents(
+                brewery_id,
+                limit,
+                offset
+        );
     }
 
     /**
@@ -115,99 +120,12 @@ public class PublicBreweryHandler {
      * @param event_id
      * @return JSON
      */
-    @WebMethod
-    public String loadEventDetail(
-            @WebParam(name="event_id") int event_id
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads all promotions for a brewery.
-     *
-     * @param brewery_id
-     * @return JSON
-     */
-    @WebMethod
-    public String loadPromotions(
-            @WebParam(name="brewery_id") int brewery_id
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads all information for a promotion based on the ID.
-     *
-     * @param promotion_id
-     * @return JSON
-     */
-    @WebMethod
-    public String loadPromotionDetails(
-            @WebParam(name="promotions_id") int promotion_id
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads top three posts and blog categories for brewery in chronological order.
-     *
-     * @param brewery_id
-     * @return JSON
-     * @throws Exception
-     */
-    @WebMethod
-    public String loadBlogPage (
-            @WebParam(name="brewery_id") int brewery_id
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads category specific paginated posts for brewery
-     *
-     * @param brewery_id
-     * @param category
-     * @param pagination
-     * @param count
-     * @return JSON
-     * @throws Exception
-     */
-    @WebMethod
-    public String loadPosts (
-            @WebParam(name="brewery_id") int brewery_id,
-            @WebParam(name="category") int category,
-            @WebParam(name="pagination") int pagination,
-            @WebParam(name="count") int count
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads bio page for brewery (all people and their basic info)
-     * @param brewery_id
-     * @return JSON
-     * @throws Exception
-     */
-    @WebMethod
-    public String loadBios(
-            @WebParam(name="brewery_id") int brewery_id
-    ) throws Exception {
-        return "something";
-    }
-
-    /**
-     * Loads bio account details for account_id assuming it's a vendor type.
-     *
-     * @param account_id
-     * @return JSON
-     * @throws Exception
-     */
-    @WebMethod
-    public String loadBioDetail(
-            @WebParam(name="account_id") int account_id
-    ) throws Exception {
-        return "something";
-    }
+    // @WebMethod
+    // public String loadEventDetail(
+    //         @WebParam(name="event_id") int event_id
+    // ) throws Exception {
+    //     return "something";
+    // }
 
     /**
      * Loads chronological brewery reviews for a brewery based on a pagination and count.
@@ -225,22 +143,4 @@ public class PublicBreweryHandler {
     ) throws Exception {
         return "something";
     }
-
-    /**
-     * Loads chronological food reviews for a brewery based on a pagination and count.
-     * @param brewery_id
-     * @param pagination
-     * @param count
-     * @return JSON
-     * @throws Exception
-     */
-    @WebMethod
-    public String loadFoodReviews(
-            @WebParam(name="brewery_id") int brewery_id,
-            @WebParam(name="pagination") int pagination,
-            @WebParam(name="count") int count
-    ) throws Exception {
-        return "something";
-    }
 }
-
