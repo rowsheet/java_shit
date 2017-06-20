@@ -5,6 +5,9 @@ import com.Common.AbstractModel;
 import com.Common.Brewery;
 import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
+import com.PublicBrewery.Events.EventModel;
+import com.PublicBrewery.Reviews.ReviewController;
+import com.PublicBrewery.Reviews.ReviewModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,6 +70,8 @@ public class BreweryModel extends AbstractModel {
      *      2) Load all images.
      *      3) Load all beers and beer reviews for this vendor (using Beer Model).
      *      4) Load all vendor foods and food reviews for this vendor (using Food Model).
+     *      5) Load all events.
+     *      6) Load all breweries.
      *
      * @param brewry_id
      * @return Brewery
@@ -137,6 +142,16 @@ public class BreweryModel extends AbstractModel {
              */
             FoodModel foodModel = new FoodModel();
             brewery.foodMenu = foodModel.loadFoodMenu(brewry_id);
+            /*
+            Stage 5
+             */
+            EventModel eventModel = new EventModel();
+            brewery.events = eventModel.loadEvents(brewry_id, 5, 0);
+            /*
+            Stage 6
+             */
+            ReviewModel reviewModel = new ReviewModel();
+            brewery.reviews = reviewModel.loadBreweryReviews(brewry_id, 5, 0);
             return brewery;
         } catch (Exception ex) {
             System.out.println(ex);

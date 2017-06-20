@@ -1,5 +1,7 @@
 package com.Common;
 
+import jnr.ffi.annotations.In;
+
 import java.util.HashMap;
 
 /**
@@ -52,6 +54,8 @@ public class Brewery {
      */
     public HashMap<Integer, Beer> beerMenu;
     public HashMap<Integer, VendorFood> foodMenu;
+    public HashMap<Integer, Event> events;
+    public HashMap<Integer, VendorReview> reviews;
 
     public Brewery() {
         this.vendor_id = 0;
@@ -80,5 +84,8 @@ public class Brewery {
         this.public_email = null;
         this.official_business_name = null;
         this.beerMenu = new HashMap<Integer, Beer>();
+        this.foodMenu = new HashMap<Integer, VendorFood>();
+        this.events = new HashMap<Integer, Event>();
+        this.reviews = new HashMap<Integer, VendorReview>();
     }
 }

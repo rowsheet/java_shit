@@ -4,6 +4,7 @@ import com.PublicBrewery.Brewery.BreweryController;
 import com.PublicBrewery.Beer.BeerController;
 import com.PublicBrewery.Food.FoodController;
 import com.PublicBrewery.Events.EventController;
+import com.PublicBrewery.Reviews.ReviewController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -96,8 +97,8 @@ public class PublicBreweryHandler {
      * Loads events for a brewery in chronological order.
      *
      * @param brewery_id
-     * @param pagination
-     * @param count
+     * @param limit
+     * @param offset
      * @return JSON
      */
     @WebMethod
@@ -130,17 +131,22 @@ public class PublicBreweryHandler {
     /**
      * Loads chronological brewery reviews for a brewery based on a pagination and count.
      * @param brewery_id
-     * @param pagination
-     * @param count
+     * @param limit
+     * @param offset
      * @return JSON
      * @throws Exception
      */
     @WebMethod
     public String loadBreweryReviews(
             @WebParam(name="brewery_id") int brewery_id,
-            @WebParam(name="pagination") int pagination,
-            @WebParam(name="count") int count
+            @WebParam(name="limit") int limit,
+            @WebParam(name="offset") int offset
     ) throws Exception {
-        return "something";
+        ReviewController reviewController = new ReviewController();
+        return reviewController.loadBreweryReviews(
+                brewery_id,
+                limit,
+                offset
+        );
     }
 }

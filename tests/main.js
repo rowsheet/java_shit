@@ -16,24 +16,24 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
-/*
 args = {
 	brewery_id: 21
 }
-soap.createClient(publicbrewery_url, function(err, client) {
-	if (err) {
-		console.log(err);
-	} else {
-		client.loadBreweryInfo(args, function(err, result) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
-			}
-		});
-	}
-});
-*/
+for (i = 0; i < 50; i++) {
+	soap.createClient(publicbrewery_url, function(err, client) {
+		if (err) {
+			console.log(err);
+		} else {
+			client.loadBreweryInfo(args, function(err, result) {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+				}
+			});
+		}
+	});
+}
 /*
 args = {
 	brewery_id: 21
@@ -70,10 +70,11 @@ soap.createClient(publicbrewery_url, function(err, client) {
 	}
 });
 */
+/*
 args = {
 	brewery_id: 21,
-	limit: 3,
-	offset: 6	
+	limit: 5,
+	offset: 0	
 }
 soap.createClient(publicbrewery_url, function(err, client) {
 	if (err) {
@@ -88,3 +89,24 @@ soap.createClient(publicbrewery_url, function(err, client) {
 		});
 	}
 });
+*/
+/*
+args = {
+	brewery_id: 21,
+	limit: 5,
+	offset: 0	
+}
+soap.createClient(publicbrewery_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.loadBreweryReviews(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
