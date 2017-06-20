@@ -52,16 +52,17 @@ public class ReviewModel extends AbstractModel {
             int offset
     ) throws Exception {
         HashMap<Integer, VendorReview> vendorReviewHashMap = new HashMap<Integer, VendorReview>();
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
         try {
             /*
             Stage 1
              */
-            PreparedStatement stage1 = null;
             stage1 = this.DAO.prepareStatement(this.loadBreweryReviewsSQL_stage1);
             stage1.setInt(1, brewery_id);
             stage1.setInt(2, limit);
             stage1.setInt(3, offset);
-            ResultSet stage1Result = stage1.executeQuery();
+            stage1Result = stage1.executeQuery();
             while (stage1Result.next()) {
                 VendorReview vendorReview = new VendorReview();
                 vendorReview.review_id = stage1Result.getInt("review_id");
@@ -78,7 +79,12 @@ public class ReviewModel extends AbstractModel {
             System.out.println(ex);
             throw new Exception("Unable to fetch vendor reviews.");
         } finally {
-            if (this.DAO != null) {this.DAO = null;}
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
         }
         return vendorReviewHashMap;
     }

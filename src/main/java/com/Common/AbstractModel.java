@@ -153,5 +153,4 @@ public class AbstractModel {
         byte[] encodedBytes = Base64.getEncoder().encode(hash);
         return new String(encodedBytes);
     }
-
 }

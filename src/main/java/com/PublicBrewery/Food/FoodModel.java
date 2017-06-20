@@ -3,6 +3,7 @@ package com.PublicBrewery.Food;
 import com.Common.AbstractModel;
 import com.Common.VendorFood;
 import com.Common.VendorFoodReview;
+import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,72 +134,102 @@ public class FoodModel extends AbstractModel {
             int brewery_id
     ) throws Exception {
         PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
         PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
-        // Prepare the statements.
-        stage1 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage1);
-        stage2 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage2);
-        stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
-        /*
-        Stage 1
-         */
-        stage1.setInt(1, brewery_id);
-        ResultSet stage1Result = stage1.executeQuery();
-        HashMap<Integer, VendorFood> vendorFoodHashMap = new HashMap<Integer, VendorFood>();
-        while (stage1Result.next()) {
-            VendorFood vendorFood = new VendorFood();
-            vendorFood.vendor_id = stage1Result.getInt("vendor_id");
-            vendorFood.vendor_food_id = stage1Result.getInt("vendor_food_id");
-            vendorFood.name = stage1Result.getString("name");
-            vendorFood.description = stage1Result.getString("description");
-            vendorFood.price = stage1Result.getFloat("price");
-            Array food_sizes_array = stage1Result.getArray("food_sizes");
-            String[] str_food_sizes = (String[]) food_sizes_array.getArray();
-            vendorFood.food_sizes = str_food_sizes;
-            vendorFoodHashMap.put(vendorFood.vendor_food_id, vendorFood);
-        }
-        /*
-        Stage 2
-         */
-        stage2.setInt(1, brewery_id);
-        ResultSet stage2Result = stage2.executeQuery();
-        while (stage2Result.next()) {
-            VendorFoodReview vendorFoodReview = new VendorFoodReview();
-            vendorFoodReview.review_id = stage2Result.getInt("review_id");
-            vendorFoodReview.account_id = stage2Result.getInt("account_id");
-            vendorFoodReview.vendor_food_id = stage2Result.getInt("food_id");
-            vendorFoodReview.stars = stage2Result.getInt("stars");
-            vendorFoodReview.content = stage2Result.getString("content");
-            vendorFoodReview.days_ago = stage2Result.getInt("days_ago");
-            vendorFoodReview.username = stage2Result.getString("username");
-            // Add the beer review to the appropriate beer.
-            vendorFoodHashMap.get(vendorFoodReview.vendor_food_id).reviews.add(vendorFoodReview);
-        }
-        /*
-        Stage 3
-         */
-        stage3.setInt(1, brewery_id);
-        ResultSet stage3Result = stage3.executeQuery();
-        while (stage3Result.next()) {
-            int vendor_food_id = stage3Result.getInt("vendor_food_id");
-            int display_order = stage3Result.getInt("display_order");
-            String filename = stage3Result.getString("filename");
-            vendorFoodHashMap.get(vendor_food_id).images.put(display_order, filename);
-        }
-        /*
-        Stage 4
-         */
-        // Go through each food and calcualte the review star averages.
-        for (VendorFood vendorFood : vendorFoodHashMap.values()) {
-            if (vendorFood.reviews.size() > 0) {
-                float total = 0;
-                for (VendorFoodReview vendorFoodReview : vendorFood.reviews) {
-                    total += (float) vendorFoodReview.stars;
+        ResultSet stage3Result = null;
+        try {
+            // Prepare the statements.
+            stage1 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage1);
+            stage2 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage2);
+            stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
+            /*
+            Stage 1
+             */
+            stage1.setInt(1, brewery_id);
+            stage1Result = stage1.executeQuery();
+            HashMap<Integer, VendorFood> vendorFoodHashMap = new HashMap<Integer, VendorFood>();
+            while (stage1Result.next()) {
+                VendorFood vendorFood = new VendorFood();
+                vendorFood.vendor_id = stage1Result.getInt("vendor_id");
+                vendorFood.vendor_food_id = stage1Result.getInt("vendor_food_id");
+                vendorFood.name = stage1Result.getString("name");
+                vendorFood.description = stage1Result.getString("description");
+                vendorFood.price = stage1Result.getFloat("price");
+                Array food_sizes_array = stage1Result.getArray("food_sizes");
+                String[] str_food_sizes = (String[]) food_sizes_array.getArray();
+                vendorFood.food_sizes = str_food_sizes;
+                vendorFoodHashMap.put(vendorFood.vendor_food_id, vendorFood);
+            }
+            /*
+            Stage 2
+             */
+            stage2.setInt(1, brewery_id);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                VendorFoodReview vendorFoodReview = new VendorFoodReview();
+                vendorFoodReview.review_id = stage2Result.getInt("review_id");
+                vendorFoodReview.account_id = stage2Result.getInt("account_id");
+                vendorFoodReview.vendor_food_id = stage2Result.getInt("food_id");
+                vendorFoodReview.stars = stage2Result.getInt("stars");
+                vendorFoodReview.content = stage2Result.getString("content");
+                vendorFoodReview.days_ago = stage2Result.getInt("days_ago");
+                vendorFoodReview.username = stage2Result.getString("username");
+                // Add the beer review to the appropriate beer.
+                vendorFoodHashMap.get(vendorFoodReview.vendor_food_id).reviews.add(vendorFoodReview);
+            }
+            /*
+            Stage 3
+             */
+            stage3.setInt(1, brewery_id);
+            stage3Result = stage3.executeQuery();
+            while (stage3Result.next()) {
+                int vendor_food_id = stage3Result.getInt("vendor_food_id");
+                int display_order = stage3Result.getInt("display_order");
+                String filename = stage3Result.getString("filename");
+                vendorFoodHashMap.get(vendor_food_id).images.put(display_order, filename);
+            }
+            /*
+            Stage 4
+             */
+            // Go through each food and calcualte the review star averages.
+            for (VendorFood vendorFood : vendorFoodHashMap.values()) {
+                if (vendorFood.reviews.size() > 0) {
+                    float total = 0;
+                    for (VendorFoodReview vendorFoodReview : vendorFood.reviews) {
+                        total += (float) vendorFoodReview.stars;
+                    }
+                    vendorFood.review_average = total / (float) vendorFood.reviews.size();
+                    vendorFood.review_count = vendorFood.reviews.size();
                 }
-                vendorFood.review_average = total / (float) vendorFood.reviews.size();
-                vendorFood.review_count = vendorFood.reviews.size();
+            }
+            return vendorFoodHashMap;
+        } catch (Exception ex) {
+            System.out.println(ex);
+            throw new Exception("Unable to load food");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
             }
         }
-        return vendorFoodHashMap;
     }
 }

@@ -82,7 +82,9 @@ public class BreweryModel extends AbstractModel {
     ) throws Exception {
         // Create statments.
         PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
         PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         try {
             // Prepare statments.
             stage1 = this.DAO.prepareStatement(this.loadBreweryInfo_stage1);
@@ -91,7 +93,7 @@ public class BreweryModel extends AbstractModel {
             Stage 1
              */
             stage1.setInt(1, brewry_id);
-            ResultSet stage1Result = stage1.executeQuery();
+            stage1Result = stage1.executeQuery();
             Brewery brewery = new Brewery();
             if (!stage1Result.isBeforeFirst()) {
                 throw new Exception("Unknwon vendor_id.");
@@ -126,7 +128,7 @@ public class BreweryModel extends AbstractModel {
             Stage 2
              */
             stage2.setInt(1, brewry_id);
-            ResultSet stage2Result = stage2.executeQuery();
+            stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
                 int display_order = stage2Result.getInt("display_order");
                 String filename = stage2Result.getString("filename");
@@ -157,9 +159,21 @@ public class BreweryModel extends AbstractModel {
             System.out.println(ex);
             throw new Exception("Unable to load brewery info");
         } finally {
-            if (stage1 != null) { stage1 = null; }
-            if (stage2 != null) { stage2 = null; }
-            this.DAO = null;
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
         }
     }
 }

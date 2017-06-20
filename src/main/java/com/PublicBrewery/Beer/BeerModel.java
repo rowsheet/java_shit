@@ -140,85 +140,115 @@ public class BeerModel extends AbstractModel {
             int brewery_id
     ) throws Exception {
         PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
         PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
-        // Prepare the statements.
-        stage1 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage1);
-        stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
-        stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
-        /*
-        Stage 1
-         */
-        stage1.setInt(1, brewery_id);
-        ResultSet stage1Result = stage1.executeQuery();
-        // Hash map because when we fetch reviews, they need to be added to each respective beer
-        // the moment they are pulled from the result set.
-        HashMap<Integer, Beer> beerHashMap = new HashMap<Integer, Beer>();
-        while (stage1Result.next()) {
-            Beer beer = new Beer();
-            beer.beer_id = stage1Result.getInt("beer_id");
-            beer.vendor_id = stage1Result.getInt("vendor_id");
-            beer.name = stage1Result.getString("name");
-            beer.color = stage1Result.getInt("color");
-            beer.bitterness = stage1Result.getInt("bitterness");
-            beer.abv = stage1Result.getInt("abv");
-            beer.beer_style = stage1Result.getString("beer_style");
-            // Beer tastes are an array of enums in postgres.
-            Array beer_tastes = stage1Result.getArray("beer_tastes");
-            String[] str_beer_tastes = (String[]) beer_tastes.getArray();
-            beer.beer_tastes = str_beer_tastes;
-            beer.description = stage1Result.getString("description");
-            beer.price = stage1Result.getFloat("price");
-            // Beer sizes are an array of enums in postgres.
-            Array beer_sizes = stage1Result.getArray("beer_sizes");
-            String[] str_beer_sizes = (String[]) beer_sizes.getArray();
-            beer.beer_sizes = str_beer_sizes;
-            beer.hop_score = stage1Result.getString("hop_score");
-            beerHashMap.put(beer.beer_id, beer);
-        }
-        /*
-        Stage 2
-         */
-        stage2.setInt(1, brewery_id);
-        ResultSet stage2Result = stage2.executeQuery();
-        while (stage2Result.next()) {
-            BeerReview beerReview = new BeerReview();
-            beerReview.review_id = stage2Result.getInt("review_id");
-            beerReview.account_id = stage2Result.getInt("account_id");
-            beerReview.beer_id = stage2Result.getInt("beer_id");
-            beerReview.stars = stage2Result.getInt("stars");
-            beerReview.content = stage2Result.getString("content");
-            beerReview.days_ago = stage2Result.getInt("days_ago");
-            beerReview.username = stage2Result.getString("username");
-            // Add the beer review to the appropriate beer.
-            beerHashMap.get(beerReview.beer_id).reviews.add(beerReview);
-        }
-        /*
-        Stage 3
-         */
-        stage3.setInt(1, brewery_id);
-        ResultSet stage3Result = stage3.executeQuery();
-        while (stage3Result.next()) {
-            int beer_id = stage3Result.getInt("beer_id");
-            int display_order = stage3Result.getInt("display_order");
-            String filename = stage3Result.getString("filename");
-            beerHashMap.get(beer_id).images.put(display_order, filename);
-        }
-        /*
-        Stage 4
-         */
-        // Go through each beer and calculate the review star averages.
-        for (Beer beer : beerHashMap.values()) {
-            if (beer.reviews.size() > 0) {
-                float total = 0;
-                for (BeerReview beerReview : beer.reviews) {
-                    total += (float) beerReview.stars;
+        ResultSet stage3Result = null;
+        try {
+            // Prepare the statements.
+            stage1 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage1);
+            stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
+            stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
+            /*
+            Stage 1
+             */
+            stage1.setInt(1, brewery_id);
+            stage1Result = stage1.executeQuery();
+            // Hash map because when we fetch reviews, they need to be added to each respective beer
+            // the moment they are pulled from the result set.
+            HashMap<Integer, Beer> beerHashMap = new HashMap<Integer, Beer>();
+            while (stage1Result.next()) {
+                Beer beer = new Beer();
+                beer.beer_id = stage1Result.getInt("beer_id");
+                beer.vendor_id = stage1Result.getInt("vendor_id");
+                beer.name = stage1Result.getString("name");
+                beer.color = stage1Result.getInt("color");
+                beer.bitterness = stage1Result.getInt("bitterness");
+                beer.abv = stage1Result.getInt("abv");
+                beer.beer_style = stage1Result.getString("beer_style");
+                // Beer tastes are an array of enums in postgres.
+                Array beer_tastes = stage1Result.getArray("beer_tastes");
+                String[] str_beer_tastes = (String[]) beer_tastes.getArray();
+                beer.beer_tastes = str_beer_tastes;
+                beer.description = stage1Result.getString("description");
+                beer.price = stage1Result.getFloat("price");
+                // Beer sizes are an array of enums in postgres.
+                Array beer_sizes = stage1Result.getArray("beer_sizes");
+                String[] str_beer_sizes = (String[]) beer_sizes.getArray();
+                beer.beer_sizes = str_beer_sizes;
+                beer.hop_score = stage1Result.getString("hop_score");
+                beerHashMap.put(beer.beer_id, beer);
+            }
+            /*
+            Stage 2
+             */
+            stage2.setInt(1, brewery_id);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                BeerReview beerReview = new BeerReview();
+                beerReview.review_id = stage2Result.getInt("review_id");
+                beerReview.account_id = stage2Result.getInt("account_id");
+                beerReview.beer_id = stage2Result.getInt("beer_id");
+                beerReview.stars = stage2Result.getInt("stars");
+                beerReview.content = stage2Result.getString("content");
+                beerReview.days_ago = stage2Result.getInt("days_ago");
+                beerReview.username = stage2Result.getString("username");
+                // Add the beer review to the appropriate beer.
+                beerHashMap.get(beerReview.beer_id).reviews.add(beerReview);
+            }
+            /*
+            Stage 3
+             */
+            stage3.setInt(1, brewery_id);
+            stage3Result = stage3.executeQuery();
+            while (stage3Result.next()) {
+                int beer_id = stage3Result.getInt("beer_id");
+                int display_order = stage3Result.getInt("display_order");
+                String filename = stage3Result.getString("filename");
+                beerHashMap.get(beer_id).images.put(display_order, filename);
+            }
+            /*
+            Stage 4
+             */
+            // Go through each beer and calculate the review star averages.
+            for (Beer beer : beerHashMap.values()) {
+                if (beer.reviews.size() > 0) {
+                    float total = 0;
+                    for (BeerReview beerReview : beer.reviews) {
+                        total += (float) beerReview.stars;
+                    }
+                    beer.review_average = total / (float) beer.reviews.size();
+                    beer.review_count = beer.reviews.size();
                 }
-                beer.review_average = total / (float) beer.reviews.size();
-                beer.review_count = beer.reviews.size();
+            }
+            return beerHashMap;
+        } catch (Exception ex) {
+            System.out.print(ex);
+            throw new Exception("Unable to load beer menu.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
             }
         }
-        return beerHashMap;
     }
 }
 
