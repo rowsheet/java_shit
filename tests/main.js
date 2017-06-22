@@ -16,6 +16,7 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
+/*
 args = {
 	brewery_id: 21
 }
@@ -34,6 +35,7 @@ for (i = 0; i < 50; i++) {
 		}
 	});
 }
+*/
 /*
 args = {
 	brewery_id: 21
@@ -110,3 +112,81 @@ soap.createClient(publicbrewery_url, function(err, client) {
 	}
 });
 */
+/*
+args = {
+	email_address: "Something@gmail.com",
+	ip_address: "127.0.0.2"
+}
+soap.createClient(useraccounts_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.googleSignIn(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	email_address: "new_account@gmail.com",
+	password: "fuckyou123123",
+	confirm_password: "fuckyou123123",
+	first_name: "First",
+	last_name: "Last",
+	over_21: true
+}
+soap.createClient(useraccounts_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.registerUserAccount(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	confirmation_code: "1bf87581-5fd3-483d-88e2-5dc5dc425dc4"
+}
+soap.createClient(useraccounts_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.confirmUserAccount(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+args = {
+	email_address: "new_account@gmail.com",
+	password: "fuckyou123123",
+	ip_address: "127.0.0.1"
+}
+soap.createClient(useraccounts_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.userLogin(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});

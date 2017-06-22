@@ -19,6 +19,10 @@ import java.util.HashMap;
  */
 public class VendorAuthenticationModel extends AbstractModel {
 
+    /*
+    Stage 1
+    Fetch pass and hash where email address match
+     */
     private String vendorLoginSQL_stage1 =
             "SELECT " +
                     "   pass_hash," +
@@ -33,6 +37,10 @@ public class VendorAuthenticationModel extends AbstractModel {
                     "   account_type = ?::account_type " +
                     "LIMIT 1";
 
+    /*
+    Stage 2
+    Create session for vendor.
+     */
     private String vendorLoginSQL_stage2 =
             "INSERT INTO" +
                     "   sessions " +
@@ -45,6 +53,10 @@ public class VendorAuthenticationModel extends AbstractModel {
                     "DO UPDATE " +
                     "SET session_key = ?";
 
+    /*
+    Stage 3
+    Fetch all features for vendor.
+     */
     private String vendorLoginSQL_stage3 =
             "SELECT " +
                     "   vaa.vendor_id, " +

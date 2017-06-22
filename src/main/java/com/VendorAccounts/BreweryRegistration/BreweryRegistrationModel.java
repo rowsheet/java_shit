@@ -1,13 +1,11 @@
 package com.VendorAccounts.BreweryRegistration;
 
 import com.Common.AbstractModel;
-import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.Base64;
 
 import java.sql.*;
 import java.util.UUID;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 /**
@@ -402,4 +400,3 @@ public class BreweryRegistrationModel extends AbstractModel {
         }
     }
 }
-

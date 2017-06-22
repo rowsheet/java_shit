@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import java.util.UUID;
 
 import com.google.gson.*;
+import jnr.ffi.annotations.In;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
@@ -140,13 +142,13 @@ public class AbstractController {
         // Ensure the passwords are not null, not empty and between 10 and 250 chars.
         if (password == null || password == "") {
             throw new InvalidParameterException("Invalid password.");
-        } else if (password.length() < 10 || password.length() > 250) {
-            throw new InvalidParameterException("Invalid password.");
+        } else if (password.length() < 8) {
+            throw new InvalidParameterException("Password is too short! Must be at least 8 characters!");
+        } else if (password.length() > 250) {
+            throw new InvalidParameterException("Password is too long! Must be shorter than 250 characters!");
         }
         // Ensure passwords match.
         if (!password.equals(confirm_password)) {
-            System.out.println(password);
-            System.out.println(confirm_password);
             throw new InvalidParameterException("Passwords do not match");
         }
     }

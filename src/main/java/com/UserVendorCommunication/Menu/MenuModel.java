@@ -42,7 +42,7 @@ public class MenuModel extends AbstractModel {
             int stars,
             String content
     ) throws Exception {
-        // We need to validate the vendor request and make sure "beer_reviews" is one of the vendor features
+        // We need to validate the user request and make sure "beer_reviews" is one of the vendor features
         // and is in the cookie before we insert a new record.
         this.validateCookiePermission(cookie, "beer_reviews");
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBeerReviewSQL);
