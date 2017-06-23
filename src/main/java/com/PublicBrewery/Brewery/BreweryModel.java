@@ -20,32 +20,32 @@ public class BreweryModel extends AbstractModel {
     private String loadBreweryInfo_stage1 =
             "SELECT " +
                     "   v.id as vendor_id, " +
-                    "   vi.display_name, " +
-                    "   vi.about_text, " +
-                    "   TO_CHAR(vi.mon_open, 'HH:MI AM') AS mon_open," +
-                    "   TO_CHAR(vi.mon_close, 'HH:MI AM') AS mon_close," +
-                    "   TO_CHAR(vi.tue_open, 'HH:MI AM') AS tue_open," +
-                    "   TO_CHAR(vi.tue_close, 'HH:MI AM') AS tue_close," +
-                    "   TO_CHAR(vi.wed_open, 'HH:MI AM') AS wed_open," +
-                    "   TO_CHAR(vi.wed_close, 'HH:MI AM') AS wed_close," +
-                    "   TO_CHAR(vi.thu_open, 'HH:MI AM') AS thu_open," +
-                    "   TO_CHAR(vi.thu_close, 'HH:MI AM') AS thu_close," +
-                    "   TO_CHAR(vi.fri_open, 'HH:MI AM') AS fri_open," +
-                    "   TO_CHAR(vi.fri_close, 'HH:MI AM') AS fri_close," +
-                    "   TO_CHAR(vi.sat_open, 'HH:MI AM') AS sat_open," +
-                    "   TO_CHAR(vi.sat_close, 'HH:MI AM') AS sat_close," +
-                    "   TO_CHAR(vi.sun_open, 'HH:MI AM') AS sun_open," +
-                    "   TO_CHAR(vi.sun_close, 'HH:MI AM') AS sun_close," +
+                    "   COALESCE(vi.display_name, 'NA') AS display_name," +
+                    "   COALESCE(vi.about_text, 'NA') AS about_text, " +
+                    "   COALESCE(TO_CHAR(vi.mon_open, 'HH:MI AM'), '00:00:00') AS mon_open," +
+                    "   COALESCE(TO_CHAR(vi.mon_close, 'HH:MI AM'), '00:00:00') AS mon_close," +
+                    "   COALESCE(TO_CHAR(vi.tue_open, 'HH:MI AM'), '00:00:00') AS tue_open," +
+                    "   COALESCE(TO_CHAR(vi.tue_close, 'HH:MI AM'), '00:00:00') AS tue_close," +
+                    "   COALESCE(TO_CHAR(vi.wed_open, 'HH:MI AM'), '00:00:00') AS wed_open," +
+                    "   COALESCE(TO_CHAR(vi.wed_close, 'HH:MI AM'), '00:00:00') AS wed_close," +
+                    "   COALESCE(TO_CHAR(vi.thu_open, 'HH:MI AM'), '00:00:00') AS thu_open," +
+                    "   COALESCE(TO_CHAR(vi.thu_close, 'HH:MI AM'), '00:00:00') AS thu_close," +
+                    "   COALESCE(TO_CHAR(vi.fri_open, 'HH:MI AM'), '00:00:00') AS fri_open," +
+                    "   COALESCE(TO_CHAR(vi.fri_close, 'HH:MI AM'), '00:00:00') AS fri_close," +
+                    "   COALESCE(TO_CHAR(vi.sat_open, 'HH:MI AM'), '00:00:00') AS sat_open," +
+                    "   COALESCE(TO_CHAR(vi.sat_close, 'HH:MI AM'), '00:00:00') AS sat_close," +
+                    "   COALESCE(TO_CHAR(vi.sun_open, 'HH:MI AM'), '00:00:00') AS sun_open," +
+                    "   COALESCE(TO_CHAR(vi.sun_close, 'HH:MI AM'), '00:00:00') AS sun_close," +
                     "   v.street_address, " +
                     "   v.city, " +
                     "   v.state, " +
                     "   v.zip, " +
-                    "   vi.public_phone, " +
-                    "   vi.public_email, " +
+                    "   COALESCE(vi.public_phone, 000000000) AS public_phone, " +
+                    "   COALESCE(vi.public_email, 'NA') AS public_email, " +
                     "   v.official_business_name " +
                     " FROM " +
                     "   vendors v " +
-                    "INNER JOIN " +
+                    "LEFT JOIN " +
                     "   vendor_info vi " +
                     "ON " +
                     "   v.id = vi.vendor_id " +
@@ -86,6 +86,7 @@ public class BreweryModel extends AbstractModel {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
         try {
+            System.out.print(this.loadBreweryInfo_stage1);
             // Prepare statments.
             stage1 = this.DAO.prepareStatement(this.loadBreweryInfo_stage1);
             stage2 = this.DAO.prepareStatement(this.loadBreweryInfo_stage2);

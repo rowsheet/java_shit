@@ -16,26 +16,22 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
-/*
 args = {
-	brewery_id: 21
+	brewery_id: 41 
 }
-for (i = 0; i < 50; i++) {
-	soap.createClient(publicbrewery_url, function(err, client) {
-		if (err) {
-			console.log(err);
-		} else {
-			client.loadBreweryInfo(args, function(err, result) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log(JSON.stringify(JSON.parse(result.return), null, 4));
-				}
-			});
-		}
-	});
-}
-*/
+soap.createClient(publicbrewery_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.loadBreweryInfo(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
 /*
 args = {
 	brewery_id: 21
@@ -172,6 +168,7 @@ soap.createClient(useraccounts_url, function(err, client) {
 	}
 });
 */
+/*
 args = {
 	email_address: "new_account@gmail.com",
 	password: "fuckyou123123",
@@ -190,3 +187,4 @@ soap.createClient(useraccounts_url, function(err, client) {
 		});
 	}
 });
+*/

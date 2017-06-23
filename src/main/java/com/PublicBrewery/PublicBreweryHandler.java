@@ -18,9 +18,14 @@ public class PublicBreweryHandler {
 
     /**
      * Load the basic brewery page info:
+     *
      *      1) About
      *      2) Hours
      *      3) Location
+     *      4) Food Menu
+     *      5) Beer Menu
+     *      6) Events
+     *      7) Reviews
      *
      * @param brewery_id
      * @return JSON

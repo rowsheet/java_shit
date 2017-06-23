@@ -46,10 +46,11 @@ public class VendorAuthenticationModel extends AbstractModel {
                     "   sessions " +
                     "(" +
                     "   session_key," +
-                    "   account_id" +
+                    "   account_id," +
+                    "   ip_address " +
                     ") VALUES (" +
-                    "?,?) " +
-                    "ON CONFLICT (account_id)" +
+                    "?,?,?) " +
+                    "ON CONFLICT (account_id, ip_address)" +
                     "DO UPDATE " +
                     "SET session_key = ?";
 
@@ -139,7 +140,8 @@ public class VendorAuthenticationModel extends AbstractModel {
 
     public String vendorLogin(
             String email_address,
-            String password
+            String password,
+            String ip_address
     ) throws Exception {
         PreparedStatement stage1 = null;
         PreparedStatement stage2 = null;
@@ -195,7 +197,8 @@ public class VendorAuthenticationModel extends AbstractModel {
             // Set statement variables.
             stage2.setString(1, session_key);
             stage2.setInt(2, account_id);
-            stage2.setString(3, session_key);
+            stage2.setString(3, ip_address);
+            stage2.setString(4, session_key);
             stage2.execute();
             /*
             Stage 3)
@@ -256,7 +259,7 @@ public class VendorAuthenticationModel extends AbstractModel {
      * session-key if it exists. If not, throws an exception.
      *
      * @param session_key
-     * @return
+     * @return timestamp
      * @throws Exception
      */
     public String checkVendorSession (

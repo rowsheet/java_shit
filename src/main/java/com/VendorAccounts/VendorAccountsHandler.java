@@ -102,12 +102,14 @@ public class VendorAccountsHandler {
     @WebMethod
     public String vendorLogin(
             @WebParam(name = "email_address") String email_address,
-            @WebParam(name = "password") String password
+            @WebParam(name = "password") String password,
+            @WebParam(name = "ip_address") String ip_address
     ) throws Exception {
         VendorAuthenticationController vendorAuthenticationController = new VendorAuthenticationController();
         return vendorAuthenticationController.vendorLogin(
                 email_address,
-                password
+                password,
+                ip_address
         );
     }
 

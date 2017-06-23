@@ -3,17 +3,13 @@ package com.UserAccounts.NativeAuth;
 import com.Common.AbstractModel;
 import com.Common.UserCookie;
 import com.Common.UserPermission;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
-import jnr.ffi.annotations.In;
 
-import javax.jws.soap.SOAPBinding;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.UUID;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by alexanderkleinhans on 6/21/17.
@@ -139,6 +135,15 @@ public class NativeAuthModel extends AbstractModel {
                     "   sessions " +
                     "WHERE " +
                     "   session_key = ?";
+
+    private String checkUserSessionSQL_stage1 =
+            "SELECT " +
+                    "   creation_timestamp " +
+                    "FROM " +
+                    "   sessions " +
+                    "WHERE " +
+                    "   session_key = ? " +
+                    "LIMIT 1";
 
     public NativeAuthModel() throws Exception {}
 
@@ -303,16 +308,16 @@ public class NativeAuthModel extends AbstractModel {
             }
             // Make sure id is legit (if zero, email didn't match).
             if (account_id == 0) {
-                throw new Exception("Unrecognized email address.");
+                throw new NativeAuthException("Unrecognized email address.");
             }
             // Make sure status is valid.
             if (!status.equals("email_verified")) {
-                throw new Exception("Account not yet verified. Please check email for confirmation code.");
+                throw new NativeAuthException("Account not yet verified. Please check email for confirmation code.");
             }
             // Now make sure password is correct.
             String hash_from_provided_password = this.getHash(password, salt);
             if (!hash_from_provided_password.equals(pass_hash)) {
-                throw new Exception("Invalid password!");
+                throw new NativeAuthException("Invalid password!");
             }
             /*
             Stage 2
@@ -358,6 +363,14 @@ public class NativeAuthModel extends AbstractModel {
              */
             this.DAO.commit();
             return userCookie;
+        } catch (NativeAuthException ex) {
+            System.out.print(ex);
+            // Just roll back and throw back up the chain.
+            if (this.DAO != null) {
+                System.out.println("ROLLING BACK!");
+                this.DAO.rollback();
+            }
+            throw new NativeAuthException(ex.getMessage());
         } catch (Exception ex) {
             System.out.println(ex);
             if (this.DAO != null) {
@@ -419,7 +432,7 @@ public class NativeAuthModel extends AbstractModel {
                 account_id = stage1Result.getInt("id");
             }
             if (account_id == 0) {
-                throw new Exception("Unknown confirmation code.");
+                throw new NativeAuthException("Unknown confirmation code.");
             }
             /*
             Stage 2
@@ -496,8 +509,25 @@ public class NativeAuthModel extends AbstractModel {
              */
             this.DAO.commit();
             return account_id;
+        } catch (NativeAuthException ex) {
+            System.out.print(ex);
+            // Just roll back and throw back up the chain.
+            if (this.DAO != null) {
+                System.out.println("ROLLING BACK!");
+                this.DAO.rollback();
+            }
+            throw new NativeAuthException(ex.getMessage());
         } catch (Exception ex) {
             System.out.print(ex);
+            if (this.DAO != null) {
+                System.out.println("ROLLING BACK!");
+                this.DAO.rollback();
+            }
+            // Try to parse the exception.
+            if (ex.getMessage().contains("duplicate key") &&
+                    ex.getMessage().contains("user_account_permissions_account_id_user_permission_id_idx")) {
+                throw new Exception("The email address for this account has already been verified!");
+            }
             throw new Exception("Unable to confirm user account.");
         } finally {
             if (stage1 != null) {
@@ -537,6 +567,51 @@ public class NativeAuthModel extends AbstractModel {
         } finally {
             if (stage1 != null) {
                 stage1.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    /**
+     * Checks the session and returns the timestamp of the session based on a
+     * session-key if it exists. If not, throws an exception.
+     *
+     * @param session_key
+     * @return timestamp
+     * @throws Exception
+     */
+    public String checkUserSession(
+            String session_key
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        try {
+            stage1 = this.DAO.prepareStatement(checkUserSessionSQL_stage1);
+            stage1.setString(1, session_key);
+            stage1Result = stage1.executeQuery();
+            String creation_timestamp = null;
+            while (stage1Result.next()) {
+                creation_timestamp = stage1Result.getString("creation_timestamp");
+            }
+            if (creation_timestamp == null) {
+                throw new NativeAuthException("Invalid session key. No session found.");
+            }
+            return creation_timestamp;
+        } catch (NativeAuthException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new Exception("Unable to check user session."); // unknown reason.
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

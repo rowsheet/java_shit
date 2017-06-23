@@ -9,7 +9,8 @@ public class VendorAuthenticationController extends AbstractController {
 
         public String vendorLogin(
                 String email_address,
-                String password
+                String password,
+                String ip_address
         ) throws Exception {
                 // Validate input parameters.
                 this.validateEmailAddress(email_address);
@@ -18,7 +19,8 @@ public class VendorAuthenticationController extends AbstractController {
                 VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
                 return vendorAuthenticationModel.vendorLogin(
                         email_address,
-                        password
+                        password,
+                        ip_address
                 );
         }
 

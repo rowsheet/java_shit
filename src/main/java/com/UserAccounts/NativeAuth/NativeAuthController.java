@@ -17,8 +17,8 @@ public class NativeAuthController extends AbstractController {
             boolean over_21
     ) throws Exception {
         // Validate input parameters.
-        this.validateString(first_name, "first_name");
-        this.validateString(last_name, "last_name");
+        this.validateString(first_name, "First Name");
+        this.validateString(last_name, "Last Name");
         this.validateEmailAddress(email_address);
         this.validatePasswordPair(password, confirm_password);
         if (!over_21) {
@@ -71,7 +71,10 @@ public class NativeAuthController extends AbstractController {
         // Validate input parameters.
         this.validateString(session_key, "session_key");
         // Initialize model and create the data.
-        return "something";
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        return nativeAuthModel.checkUserSession(
+                session_key
+        );
     }
 
     public void userLogout(

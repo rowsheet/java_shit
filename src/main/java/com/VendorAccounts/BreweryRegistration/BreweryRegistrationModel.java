@@ -324,6 +324,10 @@ public class BreweryRegistrationModel extends AbstractModel {
             while (stage1Result.next()) {
                 account_id = stage1Result.getInt("account_id");
             }
+            if (account_id == 0) {
+                // There was no account for that confirmation code.
+                throw new BreweryRegistrationException("Unrecognized brewery confirmation code.");
+            }
             /*
             Stage 2)
              */
@@ -376,7 +380,16 @@ public class BreweryRegistrationModel extends AbstractModel {
             this.DAO.commit();
             // Return the vendor_id.
             return vendor_id;
+        } catch (BreweryRegistrationException ex) {
+            // Roll back the transaction if anything has gone wrong.
+            System.out.println(ex);
+            if (this.DAO != null) {
+                this.DAO.rollback();
+            }
+            // This exception needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
+            System.out.println(ex);
             // Roll back the transaction if anything has gone wrong.
             // Clean up.
             if (this.DAO != null) {

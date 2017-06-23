@@ -5,6 +5,7 @@ import com.UserAccounts.NativeAuth.NativeAuthController;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.print.attribute.standard.MediaSize;
 
 /**
  * Created by alexanderkleinhans on 5/27/17.
@@ -98,7 +99,10 @@ public class UserAccountsHandler {
     public String checkUserSession(
             @WebParam(name = "session_key") String session_key
     ) throws Exception {
-        return "something";
+        NativeAuthController nativeAuthController = new NativeAuthController();
+        return nativeAuthController.checkUserSession(
+                session_key
+        );
     }
 
     /**
