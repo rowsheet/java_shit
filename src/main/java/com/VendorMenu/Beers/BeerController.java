@@ -17,7 +17,8 @@ public class BeerController extends AbstractController {
             String[] beer_tastes,
             String description,
             float price,
-            String[] beer_sizes
+            String[] beer_sizes,
+            String hop_score
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -26,13 +27,21 @@ public class BeerController extends AbstractController {
         this.validateBitterness(bitterness);
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
+        if (beer_tastes.length == 0) {
+            throw new Exception("Must have at least one \"beer taste\".");
+        }
         for (String beer_taste: beer_tastes) {
             this.validateBeerTaste(beer_taste);
         }
         this.validateText(description, "description");
+        if (beer_sizes.length == 0) {
+            throw new Exception("Must have at least one \"beer size\".");
+        }
         for (String beer_size: beer_sizes) {
             this.validateBeerSize(beer_size);
         }
+        this.validateHopScore(hop_score);
+        this.validatePrice(price);
         // Initialize model and create the data.
         BeerModel beerModel = new BeerModel();
         return beerModel.createBeer(
@@ -45,7 +54,8 @@ public class BeerController extends AbstractController {
                 beer_tastes,
                 description,
                 price,
-                beer_sizes
+                beer_sizes,
+                hop_score
         );
     }
 }

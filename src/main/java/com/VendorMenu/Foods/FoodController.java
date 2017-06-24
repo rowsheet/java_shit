@@ -17,6 +17,10 @@ public class FoodController extends AbstractController {
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
         this.validateText(description, "description");
+        this.validatePrice(price);
+        if (food_sizes.length == 0) {
+            throw new Exception("Must have at least one \"food size\".");
+        }
         for (String food_size: food_sizes) {
             this.validateFoodSize(food_size);
         }

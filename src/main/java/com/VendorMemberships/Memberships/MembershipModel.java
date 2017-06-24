@@ -35,7 +35,7 @@ public class MembershipModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createMembershipSQL);
         preparedStatement.setInt(1, this.vendorCookie.vendorID);
-        preparedStatement.setInt(2, this.vendorCookie.featureID);
+        preparedStatement.setInt(2, this.vendorCookie.requestFeatureID);
         preparedStatement.setString(3, name);
         preparedStatement.setString(4, description);
         preparedStatement.setArray(5, this.DAO.createArrayOf("membership_category", membership_categories));

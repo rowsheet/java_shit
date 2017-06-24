@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class VendorCookie {
     public String sessionKey;
     public int vendorID;
-    public int featureID;
+    public int requestFeatureID;
     public int accountID;
     public HashMap<String, VendorFeature> vendorFeatures;
 }

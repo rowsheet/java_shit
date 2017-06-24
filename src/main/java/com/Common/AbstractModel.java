@@ -64,20 +64,46 @@ public class AbstractModel {
     }
 
     /**
-     * Takes a cookie as a JSON string, a certain featureID and
-     * returns the vendorID and featureID if the cookie has that
+     * Takes a cookie from a vendor request.
+     *
+     *      1) Validates session key (ensure requesting user is logged in).
+     *      2) Parses cookie setting the requestFeatureID to the featureID in the
+     *         cookies request if the cookie has the feature required by the model,
+     *         otherwise tells the user to fuck off with that unauthorized request.
+     *
+     * Takes a cookie as a JSON string, a certain requestFeatureID and
+     * returns the vendorID and requestFeatureID if the cookie has that
      * feature set. If not, insufficient permissions exception will
      * be raised.
      * @param cookie
-     * @param feature_id
+     * @param feature_name
      * @throws Exception
      */
 
-    protected void validateCookieVendorFeature(String cookie, String feature_id)
+    protected void validateCookieVendorFeature(String cookie, String feature_name)
         throws Exception {
-        this.vendorCookie.vendorID = 1;
-        this.vendorCookie.featureID = 1;
-        this.vendorCookie.accountID = 2;
+        System.out.println("cookie from model");
+        System.out.println(cookie);
+        Gson gson = new Gson();
+        this.vendorCookie = gson.fromJson(cookie, VendorCookie.class);
+        System.out.println(this.vendorCookie.sessionKey);
+        VendorFeature vendorFeature = this.vendorCookie.vendorFeatures.get(feature_name);
+        if (vendorFeature == null) {
+            // No feature by that name exists in the request cookie, meaning this
+            // request does not have permission for this request, according to what
+            // the model is asking for.
+            throw new Exception("You do not currently have permission to modify: " + feature_name + "."); // Fuck Off!
+        } else {
+            // If it is in the cookie, get the ID of the feature and set the
+            // requestFeatureID to this.
+            //
+            // If the request gets through here but fails on a foreign key constraint
+            // that means the user SPOOFED THEIR COOKIE. Record that shit, take down
+            // any and all information and eventually blacklist that user and all related
+            // accounts (or investigate). The user is manually setting permissions
+            // maliciously.
+            this.vendorCookie.requestFeatureID = vendorFeature.feature_id;
+        }
     }
 
     /**

@@ -51,24 +51,26 @@ public class AbstractController {
     protected void validateTimestamp(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
-            throw new InvalidParameterException("Invalid " + input_name + " Timestamp");
+            throw new InvalidParameterException("Invalid " + input_name);
         }
         Pattern pattern = Pattern.compile("^\\d{4}[-]?\\d{1,2}[-]?\\d{1,2} \\d{1,2}:\\d{1,2}:\\d{1,2}[.]?\\d{1,6}$");
         if (!pattern.matcher(input).matches()) {
-            throw new InvalidParameterException("Invalid " + input_name + " Timestamp");
+            throw new InvalidParameterException("Invalid " + input_name);
         }
         SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             simpleDateFormat.parse(input);
         } catch (Exception e) {
-            throw new InvalidParameterException("Invalid " + input_name + " Timestamp");
+            throw new InvalidParameterException("Invalid " + input_name);
         }
     }
 
     protected void validateText(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
-            throw new InvalidParameterException("Invalid " + input_name + " Text");
+            throw new InvalidParameterException("Invalid " + input_name);
+        } else if (input.length() == 0) {
+            throw new InvalidParameterException("Invalid " + input_name);
         }
     }
 
@@ -81,22 +83,29 @@ public class AbstractController {
 
     protected void validateBeerColor(int input)
         throws InvalidParameterException {
-        if (input < 0 || input > 40) {
+        if (input < 1 || input > 40) {
             throw new InvalidParameterException("Invalid beer color, out of range.");
         }
     }
 
     protected void validateBitterness(int input)
         throws InvalidParameterException {
-        if (input < 0 || input > 90) {
+        if (input < 1 || input > 90) {
             throw new InvalidParameterException("Invalid beer bitterness, out of range.");
         }
     }
 
     protected void validateAbv(int input)
         throws InvalidParameterException {
-        if (input < 0 || input > 20) {
+        if (input < 1 || input > 20) {
             throw new InvalidParameterException("Invalid beer ABV, out of range");
+        }
+    }
+
+    protected void validatePrice(float input)
+        throws InvalidParameterException {
+        if (input < 0.01) {
+            throw new InvalidParameterException("Invalid price.");
         }
     }
 
@@ -370,14 +379,14 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid Event Category");
         } else if (
-                "grand_opening" != input.intern() &&
-                "new_beer" != input.intern() &&
-                "holiday" != input.intern() &&
-                "birthday" != input.intern() &&
-                "festival" != input.intern() &&
-                "show" != input.intern() &&
-                "ladies_night" != input.intern() &&
-                "something_dogs " != input.intern()
+                "Grand Opening" != input.intern() &&
+                "New Beer" != input.intern() &&
+                "Holiday" != input.intern() &&
+                "Birthday" != input.intern() &&
+                "Festival" != input.intern() &&
+                "Show" != input.intern() &&
+                "Ladies Night" != input.intern() &&
+                "Something Dogs " != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid Event Category");
         }
@@ -388,20 +397,20 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid beer style.");
         } else if (
-                "belgian_styles" != input.intern() &&
-                "bocks" != input.intern() &&
-                "brown_ales" != input.intern() &&
-                "dark_lagers" != input.intern() &&
-                "hybrid_beers" != input.intern() &&
-                "india_pale_ales" != input.intern() &&
-                "pale_ales" != input.intern() &&
-                "pilseners_and_pale_lagers" != input.intern() &&
-                "porters" != input.intern() &&
-                "scottish_style_ales" != input.intern() &&
-                "specialty_beers" != input.intern() &&
-                "stouts" != input.intern() &&
-                "strong_ales" != input.intern() &&
-                "wheat_beers" != input.intern()
+                "Belgian Styles" != input.intern() &&
+                "Bocks" != input.intern() &&
+                "Brown Ales" != input.intern() &&
+                "Dark Lagers" != input.intern() &&
+                "Hybrid Beers" != input.intern() &&
+                "India Pale Ales" != input.intern() &&
+                "Pale Ales" != input.intern() &&
+                "Pilseners and Pale Lagers" != input.intern() &&
+                "Porters" != input.intern() &&
+                "Scottish Style Ales" != input.intern() &&
+                "Specialty Beers" != input.intern() &&
+                "Stouts" != input.intern() &&
+                "Strong Ales" != input.intern() &&
+                "Wheat Beers" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid beer style.");
         }
@@ -412,12 +421,12 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid beer taste.");
         } else if (
-                "sour" != input.intern() &&
-                "crips" != input.intern() &&
-                "dark" != input.intern() &&
-                "malty" != input.intern() &&
-                "hoppy" != input.intern() &&
-                "fruity" != input.intern()
+                "Sour" != input.intern() &&
+                "Crisp" != input.intern() &&
+                "Dark" != input.intern() &&
+                "Malty" != input.intern() &&
+                "Hoppy" != input.intern() &&
+                "Fruity" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid beer taste.");
         }
@@ -428,29 +437,29 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid beer size.");
         } else if (
-                "weizen" != input.intern() &&
-                "pilsner" != input.intern() &&
-                "nonic_pint" != input.intern() &&
-                "shaker_pint" != input.intern() &&
-                "tupip_pint" != input.intern() &&
-                "willi_becher" != input.intern() &&
-                "stange" != input.intern() &&
-                "tumbler" != input.intern() &&
-                "tulip" != input.intern() &&
-                "snifter" != input.intern() &&
-                "wine" != input.intern() &&
-                "thistle" != input.intern() &&
-                "pokal" != input.intern() &&
-                "flute" != input.intern() &&
-                "goblet" != input.intern() &&
-                "mug" != input.intern() &&
-                "dimpled_mug" != input.intern() &&
-                "takard_mug" != input.intern() &&
-                "stein" != input.intern() &&
-                "oktoberfest_mug" != input.intern() &&
-                "hopside_down" != input.intern() &&
-                "boot" != input.intern() &&
-                "yard" != input.intern()
+                "Weizen" != input.intern() &&
+                "Pilsner" != input.intern() &&
+                "Nonic Pint" != input.intern() &&
+                "Shaker Pint" != input.intern() &&
+                "Tupip Pint" != input.intern() &&
+                "Willi Becher" != input.intern() &&
+                "Stange" != input.intern() &&
+                "Tumbler" != input.intern() &&
+                "Tuplip" != input.intern() &&
+                "Snifter" != input.intern() &&
+                "Wine" != input.intern() &&
+                "Thistle" != input.intern() &&
+                "Pokal" != input.intern() &&
+                "Flute" != input.intern() &&
+                "Goblet" != input.intern() &&
+                "Mug" != input.intern() &&
+                "Dimpled Mug" != input.intern() &&
+                "Takard Mug" != input.intern() &&
+                "Stein" != input.intern() &&
+                "Oktoberfest Mug" != input.intern() &&
+                "Hopside Down" != input.intern() &&
+                "Boot" != input.intern() &&
+                "Yard" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid beer size.");
         }
@@ -461,11 +470,11 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid food size.");
         } else if (
-                "bite" != input.intern() &&
-                "snack" != input.intern() &&
-                "lunchable" != input.intern() &&
-                "shareable" != input.intern() &&
-                "drunk" != input.intern()
+                "Bite" != input.intern() &&
+                "Snack" != input.intern() &&
+                "Lunchable" != input.intern() &&
+                "Shareable" != input.intern() &&
+                "Drunk" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid food size.");
         }
@@ -578,4 +587,18 @@ public class AbstractController {
         }
     }
 
+    protected void validateHopScore(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid hop score.");
+        } else if (
+                "low" != input.intern() &&
+                        "single" != input.intern() &&
+                        "double" != input.intern() &&
+                        "tripple" != input.intern() &&
+                        "quadruple" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid hop score.");
+        }
+    }
 }

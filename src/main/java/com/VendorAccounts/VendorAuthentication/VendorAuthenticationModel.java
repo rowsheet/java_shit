@@ -110,9 +110,21 @@ public class VendorAuthenticationModel extends AbstractModel {
     ) throws Exception {
         String session_key = this.parseSessionKey(cookie);
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.vendorLogoutSQL_stage1);
-        preparedStatement.setString(1, session_key);
-        if (preparedStatement.executeUpdate() < 1) {
-            throw new Exception("Unable to log out, unknown session key.");
+        try {
+            preparedStatement.setString(1, session_key);
+            if (preparedStatement.executeUpdate() < 1) {
+                throw new Exception("Unable to log out, unknown session key.");
+            }
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            throw new Exception("Unable to log out."); // unknown reason.
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
         }
         return "success";
     }
@@ -144,8 +156,10 @@ public class VendorAuthenticationModel extends AbstractModel {
             String ip_address
     ) throws Exception {
         PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
+        ResultSet stage3Result = null;
         try {
             // Disable auto-commit.
             this.DAO.setAutoCommit(false);
@@ -159,7 +173,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             // Fetches the pass_hash and salt for account where email_address matches and account_type = "vendor".
             stage1.setString(1, email_address);
             stage1.setString(2, "vendor");
-            ResultSet stage1Result = stage1.executeQuery();
+            stage1Result = stage1.executeQuery();
             String pass_hash = null;
             String salt = null;
             int account_id = 0;
@@ -204,7 +218,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             Stage 3)
              */
             stage3.setInt(1, account_id);
-            ResultSet stage3Result = stage3.executeQuery();
+            stage3Result = stage3.executeQuery();
             int vendor_id = 0;
             HashMap<String , VendorFeature> stringVendorFeatureHashMap = new HashMap<String, VendorFeature>();
             while (stage3Result.next()) {
@@ -248,8 +262,21 @@ public class VendorAuthenticationModel extends AbstractModel {
             }
             throw new Exception("Unable to log in vendor.");
         } finally {
-            if (stage1 != null) { stage1 = null; }
-            if (stage2 != null) { stage2 = null; }
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
             this.DAO.setAutoCommit(true);
         }
     }
@@ -266,10 +293,11 @@ public class VendorAuthenticationModel extends AbstractModel {
             String session_key
     ) throws Exception {
         PreparedStatement stage1 = null;
+        ResultSet resultSet = null;
         try {
             stage1 = this.DAO.prepareStatement(this.checkVendorSessionSQL_stage1);
             stage1.setString(1, session_key);
-            ResultSet resultSet = stage1.executeQuery();
+            resultSet = stage1.executeQuery();
             String creation_timestamp = null;
             while (resultSet.next()) {
                 creation_timestamp = resultSet.getString("creation_timestamp");
@@ -283,7 +311,15 @@ public class VendorAuthenticationModel extends AbstractModel {
             System.out.println(ex);
             throw new Exception("Unable to check session.");
         } finally {
-            if (stage1 != null) { stage1 = null; }
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
         }
     }
 

@@ -21,11 +21,17 @@ public class EventController extends AbstractController {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
-        this.validateTimestamp(start_date, "start_date");
-        this.validateTimestamp(end_date, "end_date");
+        this.validateTimestamp(start_date, "start date");
+        this.validateTimestamp(end_date, "end date");
         this.validateText(description, "description");
+        if (event_categories.length == 0) {
+            throw new Exception("Must have at least one \"event category\".");
+        }
         for (String event_category : event_categories) {
             this.validateEventCategory(event_category);
+        }
+        if (weekdays.length == 0) {
+            throw new Exception("Must have at least one \"weekday\".");
         }
         for (String weekday : weekdays) {
             this.validateWeekday(weekday);

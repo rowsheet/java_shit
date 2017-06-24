@@ -43,7 +43,7 @@ public class PromotionModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createPromotionSQL);
         preparedStatement.setInt(1, this.vendorCookie.vendorID);
-        preparedStatement.setInt(2, this.vendorCookie.featureID);
+        preparedStatement.setInt(2, this.vendorCookie.requestFeatureID);
         preparedStatement.setInt(3, membership_id);
         preparedStatement.setString(4, title);
         preparedStatement.setString(5, description);

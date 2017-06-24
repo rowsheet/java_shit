@@ -30,7 +30,8 @@ public class VendorMenuHandler {
             @WebParam(name="beer_tastes") String[] beer_tastes,
             @WebParam(name="description") String description,
             @WebParam(name="price") float price,
-            @WebParam(name="beer_sizes") String[] beer_sizes
+            @WebParam(name="beer_sizes") String[] beer_sizes,
+            @WebParam(name="hop_score") String hop_score
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.createBeer(
@@ -43,7 +44,8 @@ public class VendorMenuHandler {
                 beer_tastes,
                 description,
                 price,
-                beer_sizes
+                beer_sizes,
+                hop_score
         );
     }
 

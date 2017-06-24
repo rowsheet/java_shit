@@ -28,7 +28,7 @@ public class VendorEventsHandler {
             @WebParam(name="description") String description,
             @WebParam(name="event_categories") String[] event_categories,
             @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
-            @WebParam(name="weekday") String[] weekdays
+            @WebParam(name="weekdays") String[] weekdays
     ) throws Exception {
         EventController eventController = new EventController();
         return eventController.createEvent(
