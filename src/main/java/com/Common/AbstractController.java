@@ -48,6 +48,23 @@ public class AbstractController {
         }
     }
 
+    protected void validateDate(String input, String input_name)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid " + input_name);
+        }
+        Pattern pattern = Pattern.compile("^\\d{4}[-]?\\d{1,2}[-]?\\d{1,2}$");
+        if (!pattern.matcher(input).matches()) {
+            throw new InvalidParameterException("Invalid " + input_name);
+        }
+        SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        try {
+            simpleDateFormat.parse(input);
+        } catch (Exception e) {
+            throw new InvalidParameterException("Invalid " + input_name);
+        }
+    }
+
     protected void validateTimestamp(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
@@ -386,7 +403,7 @@ public class AbstractController {
                 "Festival" != input.intern() &&
                 "Show" != input.intern() &&
                 "Ladies Night" != input.intern() &&
-                "Something Dogs " != input.intern()
+                "Bring Your Dog" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid Event Category");
         }

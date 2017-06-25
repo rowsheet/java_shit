@@ -75,6 +75,16 @@ public class AbstractModel {
      * returns the vendorID and requestFeatureID if the cookie has that
      * feature set. If not, insufficient permissions exception will
      * be raised.
+     *
+     * SECURITY NOTE!
+     *
+     *      Do not set this model's vendorID from the cookie! Get if from the Session ONLY!
+     *
+     *      Resource ownership is checked from this models vendorID in update and delete statements.
+     *
+     *      If the vendorID is parsed right from the cookie, it will allow users to be
+     *      able to spoof resource ownership if they know resourceIDs and vendorIDs!
+     *
      * @param cookie
      * @param feature_name
      * @throws Exception

@@ -11,11 +11,33 @@ import javax.jws.WebService;
  */
 @WebService
 public class VendorEventsHandler {
+
     @WebMethod
-    public String Testing(
-            @WebParam(name="something") String something
-    ) {
-        return "VALUE:" + something;
+    public boolean updateEvent(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id,
+            @WebParam(name="name") String name,
+            @WebParam(name="start_date") String start_date,
+            @WebParam(name="end_date") String end_date,
+            @WebParam(name="rsvp_required") boolean rsvp_required,
+            @WebParam(name="description") String description,
+            @WebParam(name="event_categories") String[] event_categories,
+            @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
+            @WebParam(name="weekdays") String[] weekdays
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.updateEvent(
+                cookie,
+                id,
+                name,
+                start_date,
+                end_date,
+                rsvp_required,
+                description,
+                event_categories,
+                initial_est_occupancy,
+                weekdays
+        );
     }
 
     @WebMethod
