@@ -347,6 +347,10 @@ public class FoodModel extends AbstractModel {
                 vendorFoodHashMap.put(vendorFood.vendor_food_id, vendorFood);
                 vendor_food_ids += String.valueOf(vendorFood.vendor_food_id) + ",";
             }
+            // If there are no foods, return the empty hash map.
+            if (vendor_food_ids == "") {
+                return vendorFoodHashMap;
+            }
             vendor_food_ids += ")";
             // Remove trailing comma.
             vendor_food_ids = vendor_food_ids.replace(",)", ")");

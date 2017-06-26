@@ -344,7 +344,7 @@ public class NativeAuthModel extends AbstractModel {
             userCookie.sessionKey = session_key;
             userCookie.emailAddress = email_address;
             userCookie.userName = email_address; // Yeah I know.
-            userCookie.userPermissions = new HashMap<Integer, UserPermission>();
+            userCookie.userPermissions = new HashMap<String, UserPermission>();
             /*
             Stage 3
             Fetch all user permissions.
@@ -356,7 +356,7 @@ public class NativeAuthModel extends AbstractModel {
                 UserPermission userPermission = new UserPermission();
                 userPermission.permission_id = stage3Result.getInt("id");
                 userPermission.name = stage3Result.getString("name");
-                userCookie.userPermissions.put(userPermission.permission_id, userPermission);
+                userCookie.userPermissions.put(userPermission.name, userPermission);
             }
             /*
             Done. Commit.

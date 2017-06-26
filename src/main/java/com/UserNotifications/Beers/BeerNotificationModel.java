@@ -47,7 +47,7 @@ public class BeerNotificationModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createBeerNotificationSQL);
         preparedStatement.setInt(1, this.userCookie.userID);
-        preparedStatement.setInt(2, this.userCookie.userPermissionID);
+        preparedStatement.setInt(2, this.userCookie.requestPermissionID);
         preparedStatement.setString(3, name);
         preparedStatement.setInt(4,min_color);
         preparedStatement.setInt(5,max_color);

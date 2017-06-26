@@ -384,6 +384,10 @@ public class BeerModel extends AbstractModel {
                 // Create the brewery_ids where clause.
                 beer_ids += String.valueOf(beer.beer_id) + ",";
             }
+            // If there are no beers, return the empty hash map, else continue.
+            if (beer_ids == "") {
+                return beerHashMap;
+            }
             beer_ids += ")";
             // Remove trailing comma.
             beer_ids = beer_ids.replace(",)", ")");

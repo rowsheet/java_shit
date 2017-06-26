@@ -36,18 +36,36 @@ public class AbstractModel {
 
     /**
      * Takes a cookie as a JSON string, a certain permission
-     * and returns the userID and userPermissionID if the
+     * and returns the userID and requestPermissionID if the
      * user permission is there. If not, an insufficient
      * permissions exception will be raised.
+     *
+     * SECURITY NOTE!
+     *
+     *      Do not set this model's userID from the cookie! Get if from the Session ONLY!
+     *
+     *      If the userID is parsed right from the cookie, it will allow users to be
+     *      able to spoof their userID which may be used in resource ownership!
+     *
      * @param cookie
-     * @param user_permission_id
+     * @param permission_name
      * @return UserCookie
      */
 
-    protected void validateCookiePermission(String cookie, String user_permission_id)
+    protected void validateCookiePermission(String cookie, String permission_name)
         throws Exception {
-        this.userCookie.userID = 1;
-        this.userCookie.userPermissionID = 11;
+        Gson gson = new Gson();
+        this.userCookie = gson.fromJson(cookie, UserCookie.class);
+        UserPermission userPermission = this.userCookie.userPermissions.get(permission_name);
+        if (userPermission == null) {
+            // This cookie has no permission with the key required by the model.
+        } else {
+            // This cookie has permission with the key required by the model, if it fails
+            // on the check constraint after this, it means the cookie was intentionally
+            // forged or permissions changed between the time the user logged in and made
+            // this request.
+            this.userCookie.requestPermissionID = userPermission.permission_id;
+        }
     }
 
     /**

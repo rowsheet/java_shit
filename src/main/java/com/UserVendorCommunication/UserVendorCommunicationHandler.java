@@ -53,7 +53,7 @@ public class UserVendorCommunicationHandler {
     }
 
     @WebMethod
-    public int createVendoReview(
+    public int createVendorReview(
             @WebParam(name="cookie") String cookie,
             @WebParam(name="vendor_id") int vendor_id,
             @WebParam(name="stars") int stars,

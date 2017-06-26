@@ -15,9 +15,9 @@ public class MenuController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(beer_id, "beer_id");
+        this.validateID(beer_id, "Beer ID");
         this.validateStars(stars);
-        this.validateText(content, "content");
+        this.validateText(content, "Content");
         // Initialize model and create the data.
         MenuModel menuModel = new MenuModel();
         return menuModel.createBeerReview(
@@ -36,9 +36,9 @@ public class MenuController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(vendor_food_id, "food_id");
+        this.validateID(vendor_food_id, "Food ID");
         this.validateStars(stars);
-        this.validateText(content, "content");
+        this.validateText(content, "Content");
         // Initialize model and create the data.
         MenuModel menuModel = new MenuModel();
         return menuModel.createFoodReview(
@@ -49,4 +49,3 @@ public class MenuController extends AbstractController {
         );
     }
 }
-

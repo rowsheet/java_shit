@@ -18,7 +18,6 @@ public class ReviewModel extends AbstractModel {
                     "   vr.account_id, " +
                     "   vr.vendor_id, " +
                     "   vr.stars, " +
-                    "   vr.title, " +
                     "   vr.content, " +
                     // Create the username where it's null.
                     "   COALESCE(a.username, concat('user'::text, TRIM(LEADING FROM to_char(a.id, '999999999'))::text)) as username," +
@@ -69,7 +68,6 @@ public class ReviewModel extends AbstractModel {
                 vendorReview.account_id = stage1Result.getInt("account_id");
                 vendorReview.vendor_id = stage1Result.getInt("vendor_id");
                 vendorReview.stars = stage1Result.getInt("stars");
-                vendorReview.title = stage1Result.getString("title");
                 vendorReview.content = stage1Result.getString("content");
                 vendorReview.username = stage1Result.getString("username");
                 vendorReview.days_ago = stage1Result.getInt("days_ago");

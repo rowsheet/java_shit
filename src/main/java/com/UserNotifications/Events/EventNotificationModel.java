@@ -37,7 +37,7 @@ public class EventNotificationModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createEventNotificationSQL);
         preparedStatement.setInt(1, this.userCookie.userID);
-        preparedStatement.setInt(2, this.userCookie.userPermissionID);
+        preparedStatement.setInt(2, this.userCookie.requestPermissionID);
         preparedStatement.setString(3, name);
         preparedStatement.setInt(4, expected_occupancy);
         preparedStatement.setArray(5, this.DAO.createArrayOf("weekday", weekdays));

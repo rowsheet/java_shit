@@ -12,7 +12,6 @@ public class VendorReview {
     public int account_id;
     public int vendor_id;
     public int stars;
-    public String title;
     public String content;
 
     /**
@@ -26,7 +25,6 @@ public class VendorReview {
         this.account_id = 0;
         this.vendor_id = 0;
         this.stars = 0;
-        this.title = null;
         this.content = null;
 
         this.username = null;

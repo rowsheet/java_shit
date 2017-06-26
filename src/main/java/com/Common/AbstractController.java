@@ -603,7 +603,7 @@ public class AbstractController {
 
     protected void validateStars(int input)
             throws InvalidParameterException {
-        if (input < 0 || input > 5) {
+        if (input < 1 || input > 5) {
             throw new InvalidParameterException("Invalid star out of range.");
         }
     }

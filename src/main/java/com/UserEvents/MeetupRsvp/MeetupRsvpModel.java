@@ -31,7 +31,7 @@ public class MeetupRsvpModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement =  this.DAO.prepareStatement(this.createMeetupRsvpSQL);
         preparedStatement.setInt(1, this.userCookie.userID);
-        preparedStatement.setInt(2, this.userCookie.userPermissionID);
+        preparedStatement.setInt(2, this.userCookie.requestPermissionID);
         preparedStatement.setInt(3, meetup_id);
         ResultSet resultSet = preparedStatement.executeQuery();
         // Get the id of the new entry.

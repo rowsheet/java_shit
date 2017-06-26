@@ -34,7 +34,7 @@ public class UserMessagingModel extends AbstractModel {
         // After we insert the record, we need to get the ID of the record back.
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.createUserMessageSQL);
         preparedStatement.setInt(1, this.userCookie.userID);
-        preparedStatement.setInt(2, this.userCookie.userPermissionID);
+        preparedStatement.setInt(2, this.userCookie.requestPermissionID);
         preparedStatement.setInt(3, reciever_account_id);
         // Under the assumption that recieving messages has not been disabled for the user.
         preparedStatement.setInt(4, 5);

@@ -9,9 +9,9 @@ import java.util.HashMap;
  */
 public class UserCookie {
     public int userID;
-    public int userPermissionID;
+    public int requestPermissionID;
     public String sessionKey;
     public String emailAddress;
     public String userName;
-    public HashMap<Integer, UserPermission> userPermissions;
+    public HashMap<String, UserPermission> userPermissions;
 }
