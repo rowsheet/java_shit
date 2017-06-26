@@ -7,6 +7,21 @@ import com.Common.AbstractController;
  */
 public class FoodController extends AbstractController {
 
+    public boolean deleteFood(
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input perameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "food ID");
+        // Initialize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.deleteFood(
+                cookie,
+                id
+        );
+    }
+
     public boolean updateFood(
             String cookie,
             int id,

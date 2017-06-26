@@ -10,17 +10,35 @@ import com.google.gson.*;
  */
 public class BreweryController extends AbstractController {
     public String loadBreweryInfo(
-            int brewery_id
+            int brewery_id,
+            int beer_limit,
+            int food_limit,
+            int image_limit,
+            int event_limit,
+            int review_limit
     ) throws Exception {
         // Validate input parameters.
         this.validateID(brewery_id, "vendor_id");
+        this.validateFeedLimit(beer_limit);
+        this.validateFeedLimit(food_limit);
+        this.validateFeedLimit(image_limit);
+        this.validateFeedLimit(event_limit);
+        this.validateFeedLimit(review_limit);
         // Initialize model and create the data.
         BreweryModel breweryModel = new BreweryModel();
         // Load the data structure we're loading.
         Brewery brewery = null;
         // Load the data using the model.
-        brewery = breweryModel.loadBreweryInfo(brewery_id);
+        brewery = breweryModel.loadBreweryInfo(
+                brewery_id,
+                beer_limit,
+                food_limit,
+                image_limit,
+                event_limit,
+                review_limit
+        );
         // Return JSON or data structure returned by model.
+        // Don't
         return this.returnJSON(brewery);
     }
 }

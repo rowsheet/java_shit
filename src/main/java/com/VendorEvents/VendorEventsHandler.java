@@ -1,5 +1,6 @@
 package com.VendorEvents;
 
+import com.Common.Event;
 import com.VendorEvents.Events.EventController;
 
 import javax.jws.WebMethod;
@@ -63,6 +64,18 @@ public class VendorEventsHandler {
             event_categories,
             initial_est_occupancy,
             weekdays
+        );
+    }
+
+    @WebMethod
+    public boolean deleteEvent (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.deleteEvent(
+                cookie,
+                id
         );
     }
 }

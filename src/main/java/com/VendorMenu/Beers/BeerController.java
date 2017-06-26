@@ -1,11 +1,23 @@
 package com.VendorMenu.Beers;
 
 import com.Common.AbstractController;
+import com.Common.Beer;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
  */
 public class BeerController extends AbstractController {
+
+    public boolean deleteBeer(
+            String cookie,
+            int id
+    ) throws Exception {
+        BeerModel beerModel = new BeerModel();
+        return beerModel.deleteBeer(
+                cookie,
+                id
+        );
+    }
 
     public boolean updateBeer (
             String cookie,

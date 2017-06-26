@@ -78,7 +78,12 @@ public class BreweryModel extends AbstractModel {
      * @throws Exception
      */
     public Brewery loadBreweryInfo(
-            int brewry_id
+            int brewry_id,
+            int beer_limit, //@TODO implement
+            int food_limit, //@TODO implement
+            int image_limit, //@TODO implement
+            int event_limit,
+            int review_limit
     ) throws Exception {
         // Create statments.
         PreparedStatement stage1 = null;
@@ -86,7 +91,6 @@ public class BreweryModel extends AbstractModel {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
         try {
-            System.out.print(this.loadBreweryInfo_stage1);
             // Prepare statments.
             stage1 = this.DAO.prepareStatement(this.loadBreweryInfo_stage1);
             stage2 = this.DAO.prepareStatement(this.loadBreweryInfo_stage2);
@@ -139,22 +143,22 @@ public class BreweryModel extends AbstractModel {
             Stage 3
              */
             BeerModel beerModel = new BeerModel();
-            brewery.beerMenu = beerModel.loadBeerMenu(brewry_id);
+            brewery.beerMenu = beerModel.loadBeerMenuPaginated(brewry_id, beer_limit, 0, "creation_timestamp", true);
             /*
             Stage 4
              */
             FoodModel foodModel = new FoodModel();
-            brewery.foodMenu = foodModel.loadFoodMenu(brewry_id);
+            brewery.foodMenu = foodModel.loadFoodMenuPaginated(brewry_id, food_limit, 0, "creation_timestamp", true);
             /*
             Stage 5
              */
             EventModel eventModel = new EventModel();
-            brewery.events = eventModel.loadEvents(brewry_id, 5, 0);
+            brewery.events = eventModel.loadEvents(brewry_id, event_limit, 0);
             /*
             Stage 6
              */
             ReviewModel reviewModel = new ReviewModel();
-            brewery.reviews = reviewModel.loadBreweryReviews(brewry_id, 5, 0);
+            brewery.reviews = reviewModel.loadBreweryReviews(brewry_id, review_limit, 0);
             return brewery;
         } catch (Exception ex) {
             System.out.println(ex);

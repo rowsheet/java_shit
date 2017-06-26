@@ -2,7 +2,7 @@ package com.VendorAccounts;
 
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
-import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
+import com.VendorAccounts.General.GeneralController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -152,11 +152,56 @@ public class VendorAccountsHandler {
     }
 
     @WebMethod
-    public int createVendorAccountAssociation(
+    public boolean updateBreweryInfo (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "email_address") String email_address,
-            @WebParam(name = "vendor_id") int vendor_id
+            @WebParam(name = "display_name") String display_name,
+            @WebParam(name = "about_text") String about_text,
+            @WebParam(name = "mon_open") String mon_open,
+            @WebParam(name = "mon_close") String mon_close,
+            @WebParam(name = "tue_open") String tue_open,
+            @WebParam(name = "tue_close") String tue_close,
+            @WebParam(name = "wed_open") String wed_open,
+            @WebParam(name = "wed_close") String wed_close,
+            @WebParam(name = "thu_open") String thu_open,
+            @WebParam(name = "thu_close") String thu_close,
+            @WebParam(name = "fri_open") String fri_open,
+            @WebParam(name = "fri_close") String fri_close,
+            @WebParam(name = "sat_open") String sat_open,
+            @WebParam(name = "sat_close") String sat_close,
+            @WebParam(name = "sun_open") String sun_open,
+            @WebParam(name = "sun_close") String sun_close,
+            @WebParam(name = "street_address") String street_address,
+            @WebParam(name = "city") String city,
+            @WebParam(name = "state") String state,
+            @WebParam(name = "zip") String zip,
+            @WebParam(name = "public_phone") int public_phone,
+            @WebParam(name = "public_email") String public_email
     ) throws Exception {
-        return 1;
+        GeneralController generalController = new GeneralController();
+        return generalController.updateBreweryInfo(
+                cookie,
+                display_name,
+                about_text,
+                mon_open,
+                mon_close,
+                tue_open,
+                tue_close,
+                wed_open,
+                wed_close,
+                thu_open,
+                thu_close,
+                fri_open,
+                fri_close,
+                sat_open,
+                sat_close,
+                sun_open,
+                sun_close,
+                street_address,
+                city,
+                state,
+                zip,
+                public_phone,
+                public_email
+        );
     }
 }

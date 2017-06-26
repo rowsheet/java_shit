@@ -25,4 +25,31 @@ public class BeerController extends AbstractController {
         // Return JSON or data structure returned by model.
         return this.returnJSON(beerHashMap);
     }
+
+    public String loadBeerMenuPaginated(
+        int brewery_id,
+        int limit,
+        int offset,
+        String order_by,
+        boolean descending // will put newest first by default.
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateID(brewery_id, "vendor_id"); // Yes, I know it's called brewery_id and its the same thing.
+        this.validateBeerMenuOrderBy(order_by);
+        // Initialize model and create the data.
+        BeerModel beerModel = new BeerModel();
+        // Load the data structure we're loading.
+        HashMap<Integer, Beer> beerHashMap = new HashMap<Integer, Beer>();
+        // Load the data using the model.
+        beerHashMap = beerModel.loadBeerMenuPaginated(
+                brewery_id,
+                limit,
+                offset,
+                order_by,
+                descending
+        );
+        // Return JSON or data structure returned by model.
+        return this.returnJSON(beerHashMap);
+    }
+
 }

@@ -9,7 +9,13 @@ import java.sql.*;
  */
 public class EventModel extends AbstractModel {
 
-    private String updateEventSQL_stage2 =
+    private String deleteEventSQL_Stage3 =
+            "DELETE FROM " +
+                    "   events " +
+                    "WHERE " +
+                    "   id = ?";
+
+    private String confirmEventOwnershipSQL =
             "SELECT " +
                     "   e.id " +
                     "FROM " +
@@ -58,6 +64,82 @@ public class EventModel extends AbstractModel {
                     "RETURNING id";
 
     public EventModel() throws Exception {}
+
+    public boolean deleteEvent (
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+             */
+            this.validateCookieVendorFeature(cookie, "events");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmEventOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2.setInt(2, this.vendorCookie.vendorID);
+            stage2Result = stage2.executeQuery();
+            int beer_id = 0;
+            while (stage2Result.next()) {
+                beer_id = stage2Result.getInt("id");
+            }
+            if (beer_id == 0) {
+                // Beer is not owned by sender of this request. This might
+                // be some malicious shit. Record it and blacklist.
+                // @TODO blacklist this request.
+                throw new EventException("This account does not have have permission to delete this event."); // Fuck off
+            }
+            /*
+            Stage 3
+            Update data.
+             */
+            stage3 = this.DAO.prepareStatement(this.deleteEventSQL_Stage3);
+            stage3.setInt(1, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            // Unknown error.
+            throw new Exception("Unable to delete event.");
+        } finally {
+            /*
+            Reset auto-commit to true.
+             */
+            this.DAO.setAutoCommit(true);
+            /*
+            Clean up.
+             */
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 
     /**
      * Updates event item per request as long as sesion and user valid.
@@ -110,7 +192,7 @@ public class EventModel extends AbstractModel {
             Stage 2
             Ensure resource owndership.
              */
-            stage2 = this.DAO.prepareStatement(this.updateEventSQL_stage2);
+            stage2 = this.DAO.prepareStatement(this.confirmEventOwnershipSQL);
             stage2.setInt(1, id);
             stage2.setInt(2, this.vendorCookie.vendorID);
             stage2Result = stage2.executeQuery();

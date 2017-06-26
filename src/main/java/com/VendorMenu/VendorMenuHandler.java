@@ -126,6 +126,18 @@ public class VendorMenuHandler {
     }
 
     @WebMethod
+    public boolean deleteBeer (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws  Exception {
+        BeerController beerController = new BeerController();
+        return beerController.deleteBeer (
+                cookie,
+                id
+        );
+    }
+
+    @WebMethod
     public int createFood(
             @WebParam(name="cookie") String cookie,
             @WebParam(name="name") String name,
@@ -160,6 +172,18 @@ public class VendorMenuHandler {
                 description,
                 price,
                 food_sizes
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFood (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws  Exception {
+        FoodController foodController = new FoodController();
+        return foodController.deleteFood (
+                cookie,
+                id
         );
     }
 }

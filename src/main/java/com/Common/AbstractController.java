@@ -35,10 +35,6 @@ public class AbstractController {
         return this.gson.toJson(object);
     }
 
-    public enum Weekday {
-
-    }
-
     protected void validateString(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
@@ -78,6 +74,21 @@ public class AbstractController {
         try {
             simpleDateFormat.parse(input);
         } catch (Exception e) {
+            throw new InvalidParameterException("Invalid " + input_name);
+        }
+    }
+
+    protected void validateTime(String input, String input_name)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid " + input_name);
+        }
+        /*
+        Change this when something better comes along. 01:00 AM is valide 1:00 AM is not valid.
+        needs to parse to sql time.
+         */
+        Pattern pattern = Pattern.compile("([0][1-9]|[1][0-2]):([0-5][0-9]) (AM|PM)");
+        if (!pattern.matcher(input).matches()) {
             throw new InvalidParameterException("Invalid " + input_name);
         }
     }
@@ -126,6 +137,17 @@ public class AbstractController {
         }
     }
 
+    protected void validateFeedLimit(int input)
+        throws InvalidParameterException {
+        if ((input < 0) || (input > 50)) {
+            // Limit larger that 50 is some bullshit and someone's probably trying to
+            // fuck with the API should blacklist that shit or give them malicious
+            // data/turn on high alert tracking.
+            // @TODO handle wierdly large feed limits.
+            throw new InvalidParameterException("Invalid feed limit");
+        }
+    }
+
     protected void validateUserMessage(String input)
         throws InvalidParameterException {
         if (input == null || input == "") {
@@ -143,6 +165,14 @@ public class AbstractController {
             throw new InvalidParameterException("Invalid email address.");
         }
         // @TODO Check email address againts this regex: (?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])
+    }
+
+    protected void validatePhone(int input)
+            throws InvalidParameterException {
+        // @TODO check a regex.
+        if (input == 0) {
+            throw new InvalidParameterException("Invalid phone number");
+        }
     }
 
     protected void validateUUID(String input)
@@ -351,6 +381,39 @@ public class AbstractController {
     */
 
     /**
+     * VALIDATE order_by column_names.
+     *
+     */
+
+    //@TODO add trigger for hop_score and add it to this.
+    protected void validateBeerMenuOrderBy(String input)
+            throws InvalidParameterException {
+            if (input == null || input == "") {
+                throw new InvalidParameterException("Invalid Beer Menu Order-By");
+            } else if (
+                    "creation_timestamp" != input.intern() &&
+                    "color" != input.intern() &&
+                    "bitterness" != input.intern() &&
+                    "abv" != input.intern() &&
+                    "price" != input.intern()
+                    ) {
+                throw new InvalidParameterException("Invalid Beer Menu Order-By");
+            }
+    }
+
+    protected void validateFoodMenuOrderBy(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid Food Menu Order-By");
+        } else if (
+                "creation_timestamp" != input.intern() &&
+                        "price" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid Food Menu Order-By");
+        }
+    }
+
+    /**
      * VALIDATE Postgres ENUMS
      * note: checking with == was not working and was giving false negatives, so check valid
      * enum strings with:
@@ -491,7 +554,8 @@ public class AbstractController {
                 "Snack" != input.intern() &&
                 "Lunchable" != input.intern() &&
                 "Shareable" != input.intern() &&
-                "Drunk" != input.intern()
+                "Drunk" != input.intern() &&
+                "Gourmet" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid food size.");
         }

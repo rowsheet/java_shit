@@ -11,7 +11,11 @@ import java.sql.*;
  */
 public class BeerModel extends AbstractModel {
 
-    private String updateBeerSQL_stage2 =
+    /*
+    Confirm's beer owndership per vendor_id (From session table)
+    and beer_id in request.
+     */
+    private String confirmBeerOwnershipSQL =
             "SELECT " +
                     "   b.id " +
                     "FROM" +
@@ -25,6 +29,12 @@ public class BeerModel extends AbstractModel {
                     "AND " +
                     "   v.id = ? " +
                     "LIMIT 1";
+
+    private String deleteBeerSQL_stage3 =
+            "DELETE FROM " +
+                    "   beers " +
+                    "WHERE " +
+                    "   id = ?";
 
     private String updateBeerSQL_stage3 =
             "UPDATE " +
@@ -64,6 +74,102 @@ public class BeerModel extends AbstractModel {
                     "RETURNING id";
 
     public BeerModel() throws Exception {}
+
+    /**
+     * Deletes a beer with matching ID assuming beer is owned by user.
+     *
+     *      1) Validates session and permissions.
+     *      2) Ensures resource ownership.
+     *      3) Updates data.
+     *
+     * Do all three steps in a transaction and roll back on exception;
+     *
+     * @param cookie
+     * @param id
+     * @return boolean true on success or error.
+     * @throws Exception
+     */
+    public boolean deleteBeer(
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+             */
+            this.validateCookieVendorFeature(cookie, "beer_menu");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmBeerOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2.setInt(2, this.vendorCookie.vendorID);
+            stage2Result = stage2.executeQuery();
+            int beer_id = 0;
+            while (stage2Result.next()) {
+                beer_id = stage2Result.getInt("id");
+            }
+            if (beer_id == 0) {
+                // Beer is not owned by sender of this request. This might
+                // be some malicious shit. Record it and blacklist.
+                // @TODO blacklist this request.
+                throw new BeerException("This account does not have have permission to delete this beer."); // Fuck off
+            }
+            /*
+            Stage 3
+            Update data.
+             */
+            stage3 = this.DAO.prepareStatement(this.deleteBeerSQL_stage3);
+            stage3.setInt(1, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (BeerException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            // Unknown error.
+            throw new Exception("Unable to delete beer.");
+        } finally {
+            /*
+            Reset auto-commit to true.
+             */
+            this.DAO.setAutoCommit(true);
+            /*
+            Clean up.
+             */
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 
     /**
      * Updates beer as per request as long as session and user valid and beer is
@@ -121,7 +227,7 @@ public class BeerModel extends AbstractModel {
             Stage 2
             Ensure resource ownership.
              */
-            stage2 = this.DAO.prepareStatement(this.updateBeerSQL_stage2);
+            stage2 = this.DAO.prepareStatement(this.confirmBeerOwnershipSQL);
             stage2.setInt(1, id);
             stage2.setInt(2, this.vendorCookie.vendorID);
             stage2Result = stage2.executeQuery();
@@ -168,7 +274,7 @@ public class BeerModel extends AbstractModel {
             System.out.println("ROLLING BACK");
             this.DAO.rollback();
             // Unknown error.
-            throw new Exception("Unable to create beer.");
+            throw new Exception("Unable to update beer.");
         } finally {
             /*
             Reset auto-commit to true.

@@ -2,6 +2,7 @@ package com.PublicBrewery.Food;
 
 import com.Common.AbstractController;
 import com.Common.VendorFood;
+import jnr.ffi.annotations.In;
 
 import java.util.HashMap;
 
@@ -22,6 +23,32 @@ public class FoodController extends AbstractController {
         // Load the data using the model.
         vendorFoodHashMap = foodModel.loadFoodMenu(
                 brewery_id
+        );
+        // Return JSON or data structure returned by model.
+        return this.returnJSON(vendorFoodHashMap);
+    }
+
+    public String loadFoodMenuPaginated(
+            int brewery_id,
+            int limit,
+            int offset,
+            String order_by,
+            boolean descending // will put newest first by default.
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateID(brewery_id, "vendor_id"); // Yes, I know it's called brewery_id and its the same thing.
+        this.validateFoodMenuOrderBy(order_by);
+        // Initialize model and create the data.
+        FoodModel foodModel = new FoodModel();
+        // Load the data structure we're loading.
+        HashMap<Integer, VendorFood> vendorFoodHashMap = new HashMap<Integer, VendorFood>();
+        // Load the data using the model.
+        vendorFoodHashMap = foodModel.loadFoodMenuPaginated(
+                brewery_id,
+                limit,
+                offset,
+                order_by,
+                descending
         );
         // Return JSON or data structure returned by model.
         return this.returnJSON(vendorFoodHashMap);

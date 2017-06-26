@@ -7,6 +7,21 @@ import com.Common.AbstractController;
  */
 public class EventController extends AbstractController {
 
+    public boolean deleteEvent(
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "event_id");
+        // Initilaize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.deleteEvent(
+                cookie,
+                id
+        );
+    }
+
     public boolean updateEvent (
             String cookie,
             int id,

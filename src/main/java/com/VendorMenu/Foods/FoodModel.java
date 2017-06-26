@@ -1,8 +1,6 @@
 package com.VendorMenu.Foods;
 
 import com.Common.AbstractModel;
-import com.sun.org.apache.regexp.internal.RE;
-import sun.awt.FontDescriptor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +10,13 @@ import java.sql.ResultSet;
  */
 public class FoodModel extends AbstractModel {
 
-    private String updateFoodSQL_stage2 =
+    private String deleteFoodSQL_stage3 =
+            "DELETE FROM " +
+                    "   vendor_foods " +
+                    "WHERE " +
+                    "   id = ?";
+
+    private String confirmFoodOwnershipSQL =
             "SELECT " +
                     "   vf.id " +
                     "FROM " +
@@ -44,7 +48,7 @@ public class FoodModel extends AbstractModel {
                     "(" +
                     "   vendor_id," +
                     "   feature_id," +
-
+                    "   name, " +
                     "   description," +
                     "   price," +
                     "   food_sizes" +
@@ -52,7 +56,95 @@ public class FoodModel extends AbstractModel {
                     "?,?,?,?,?,?::food_size[])" +
                     "RETURNING id";
 
-   public FoodModel() throws Exception {}
+    public FoodModel() throws Exception {}
+
+    /**
+     * Deletes food item per request as long as session and user valid.
+     *
+     *      1) Validates session and permission.
+     *      2) Ensures resource ownership.
+     *      3) Deletes food.
+     *
+     * Do all in a transaction or roll back.
+     *
+     * @param cookie
+     * @param id
+     * @return true on success else exception.
+     * @throws Exception
+     */
+    public boolean deleteFood (
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto-commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+             */
+            this.validateCookieVendorFeature(cookie, "food_menu");
+            /*
+            Stage 2
+            Ensure resource owndership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmFoodOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2.setInt(2, this.vendorCookie.vendorID);
+            stage2Result = stage2.executeQuery();
+            int food_id = 0;
+            while (stage2Result.next()) {
+                food_id = stage2Result.getInt("id");
+            }
+            if (food_id == 0) {
+                // Food is not owned by sender of this request. This might
+                // be some malicious shit. Record it and blacklist.
+                // @TODO blacklist this request.
+                throw new FoodException("This account does not have have permission to delete this food item."); // Fuck off
+            }
+            /*
+            Stage 3
+            Update data.
+             */
+            stage3 = this.DAO.prepareStatement(this.deleteFoodSQL_stage3);
+            stage3.setInt(1, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (FoodException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println(ex.getMessage());
+            this.DAO.rollback();
+            // Unknown reason.
+            throw new Exception("Unable to delete food.");
+        } finally {
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 
     /**
      * Updates food item per request as long as sesion and user valid.
@@ -97,7 +189,7 @@ public class FoodModel extends AbstractModel {
             Stage 2
             Ensure resource owndership.
              */
-            stage2 = this.DAO.prepareStatement(this.updateFoodSQL_stage2);
+            stage2 = this.DAO.prepareStatement(this.confirmFoodOwnershipSQL);
             stage2.setInt(1, id);
             stage2.setInt(2, this.vendorCookie.vendorID);
             stage2Result = stage2.executeQuery();
@@ -196,7 +288,8 @@ public class FoodModel extends AbstractModel {
                     ex.getMessage().contains("already exists")) {
                 throw new Exception("This brewery already has a food item with that name!");
             }
-            throw new Exception(ex.getMessage());
+            // Unknown reason.
+            throw new Exception("Unable to create food.");
         } finally {
             // Clean up and return.
             if (preparedStatement != null) {
@@ -210,5 +303,4 @@ public class FoodModel extends AbstractModel {
             }
         }
     }
-
 }
