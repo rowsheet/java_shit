@@ -3,6 +3,7 @@ package com.PublicBrewery.Brewery;
 import com.Common.AbstractModel;
 
 import com.Common.Brewery;
+import com.Common.VendorPageImage;
 import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Events.EventModel;
@@ -54,7 +55,11 @@ public class BreweryModel extends AbstractModel {
     private String loadBreweryInfo_stage2 =
             "SELECT " +
                     "   display_order, " +
-                    "   filename " +
+                    "   filename, " +
+                    "   TO_CHAR(creation_timestamp, 'MM-DD-YYYY HH24:MI:SS') AS upload_date, " +
+                    "   id as image_id," +
+                    "   show_in_main_gallery, " +
+                    "   show_in_main_slider " +
                     "FROM " +
                     "   vendor_page_images " +
                     "WHERE " +
@@ -135,9 +140,14 @@ public class BreweryModel extends AbstractModel {
             stage2.setInt(1, brewry_id);
             stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
-                int display_order = stage2Result.getInt("display_order");
-                String filename = stage2Result.getString("filename");
-                brewery.page_images.put(display_order, filename);
+                VendorPageImage vendorPageImage = new VendorPageImage();
+                vendorPageImage.filename = stage2Result.getString("filename");
+                vendorPageImage.upload_date = stage2Result.getString("upload_date");
+                vendorPageImage.image_id = stage2Result.getInt("image_id");
+                vendorPageImage.display_order = stage2Result.getInt("display_order");
+                vendorPageImage.show_in_main_slider = stage2Result.getBoolean("show_in_main_slider");
+                vendorPageImage.show_in_main_gallery = stage2Result.getBoolean("show_in_main_gallery");
+                brewery.page_images.put(vendorPageImage.display_order, vendorPageImage);
             }
             /*
             Stage 3

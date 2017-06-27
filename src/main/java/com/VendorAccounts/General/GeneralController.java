@@ -83,4 +83,54 @@ public class GeneralController extends AbstractController {
                 public_email
         );
     }
+
+    public String uploadVendorPageImage(
+            String cookie,
+            String filename
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(filename, "filename");
+        // Initialize model and return data.
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.uploadVendorPageImage(
+                cookie,
+                filename
+        );
+    }
+
+    public boolean updateVendorPageImage(
+            String cookie,
+            int image_id,
+            boolean show_in_main_gallery,
+            boolean show_in_main_slider,
+            int display_order
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        // Initialize model and return data.
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.updateVendorPageImage(
+                cookie,
+                image_id,
+                show_in_main_gallery,
+                show_in_main_slider,
+                display_order
+        );
+    }
+
+    public String deleteVendorPageImage(
+            String cookie,
+            int image_id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        // Initialize model and return data.
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.deleteVenodrPageImage(
+                cookie,
+                image_id
+        );
+    }
+
 }

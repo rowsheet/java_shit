@@ -13,7 +13,7 @@ public class Brewery {
      * General Info
      */
     public String display_name;
-    public HashMap<Integer, String> page_images;
+    public HashMap<Integer, VendorPageImage> page_images;
     /**
      * About Info
      */
@@ -60,7 +60,7 @@ public class Brewery {
     public Brewery() {
         this.vendor_id = 0;
         this.display_name = null;
-        this.page_images = new HashMap<Integer, String>();
+        this.page_images = new HashMap<Integer, VendorPageImage>();
         this.about_text = null;
         this.mon_open = null;
         this.mon_close = null;

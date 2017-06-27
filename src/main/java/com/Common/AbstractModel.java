@@ -135,6 +135,28 @@ public class AbstractModel {
     }
 
     /**
+     * Does the same thing as above, but resets the requestFeatureID to what it was originally.
+     *
+     * @param cookie
+     * @param feature_name
+     * @param extra
+     * @throws Exception
+     */
+    protected void validateCookieVendorFeature(String cookie, String feature_name, boolean extra)
+        throws Exception {
+        if (extra) {
+            if (this.vendorCookie.requestFeatureID == 0) {
+                throw new Exception("You must validate cookie without extra before validating with extra.");
+            }
+            int originalRequestFeatureID = this.vendorCookie.requestFeatureID;
+            this.validateCookieVendorFeature(cookie, feature_name);
+            this.vendorCookie.requestFeatureID = originalRequestFeatureID;
+        } else {
+            this.validateCookieVendorFeature(cookie, feature_name);
+        }
+    }
+
+    /**
      * Just parses a vendor JSON cookie and returns the session key.
      *
      * @param cookie

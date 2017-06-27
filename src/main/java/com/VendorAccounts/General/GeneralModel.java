@@ -5,9 +5,12 @@ import com.Common.VendorCookie;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
 import com.google.gson.Gson;
 
+import javax.print.attribute.standard.PresentationDirection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 /**
  * Created by alexanderkleinhans on 6/24/17.
@@ -232,4 +235,268 @@ public class GeneralModel extends AbstractModel {
             }
         }
     }
+
+    private String uploadVendorPageImagesSQL_stage1 =
+            "SELECT " +
+                    "   COUNT(*) AS count_star " +
+                    "FROM " +
+                    "   vendor_page_images " +
+                    "WHERE " +
+                    "   vendor_id = ?";
+
+    private String uploadVendorPageImagesSQL_stage3 =
+            "INSERT INTO " +
+                    "   vendor_page_images " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   filename," +
+                    "   feature_id " +
+                    ") VALUES (" +
+                    "?,?,?)";
+
+    /**
+     * Inserts into vendor page images directory.
+     *
+     * Set's the display order to an increment of whatever the max display order is for images
+     * of this vendor.
+     *
+     * Do each image one by one in a transaction and roll back on failure.
+     *
+     * NOTE: although "vendor_page_images_[number]" is a feature, the only on in
+     * the check constraint is actually "vendor_page_images".
+     * This means that users will not be able to unload, but if vendor_page_images_[number]
+     * is not meant, a job will have to notify them and manually delete if wanted.
+     *
+     * @param cookie
+     * @param filename
+     * @return directory path for image for vendorID.
+     * @throws Exception
+     */
+    public String uploadVendorPageImage(
+        String cookie,
+        String filename
+    ) throws Exception {
+        // Initialize prepared statements because we're going to need
+        // to clean them up in the finally block.
+        // We'll need one for the check of how many images are already
+        // there and one for each image.
+        PreparedStatement stage1 = null;
+        PreparedStatement stage3 = null;
+        // We only need two result sets, for the first query of how many
+        // images this vendor already has and the max display order.
+        ResultSet stage1Result = null;
+        try {
+            // Start a transaction and disable auto-commit.
+            this.DAO.setAutoCommit(false);
+            // Validate the cookie and get the vendorID.
+            this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            // Find out how many page images they have. If it's over a certain amount,
+            // they need to have certain permissions.
+            stage1 = this.DAO.prepareStatement(this.uploadVendorPageImagesSQL_stage1);
+            stage1.setInt(1, this.vendorCookie.vendorID);
+            stage1Result = stage1.executeQuery();
+            int image_count = 0;
+            while (stage1Result.next()) {
+                image_count = stage1Result.getInt("count_star");
+            }
+            // Depending on the image count, see if the user has the
+            // permissions it needs.
+            if (image_count > 20) {
+                // This is not set in check constraints, so validate with extra so the
+                // original requestFeatureID "vendor_page_images" remains the same.
+                this.validateCookieVendorFeature(cookie, "vendor_page_images_20", true);
+            }
+            //@TODO add other counts for more images.
+            // Insert the record.
+            stage3 = this.DAO.prepareStatement(this.uploadVendorPageImagesSQL_stage3);
+            stage3.setInt(1, this.vendorCookie.vendorID);
+            stage3.setString(2, this.getDirPathForVendorID(this.vendorCookie.vendorID) + filename);
+            stage3.setInt(3, this.vendorCookie.requestFeatureID);
+            stage3.execute();
+            // Done. Commit.
+            this.DAO.commit();
+            // Return the directory path we want to put the file in. In the future, we might
+            // make this more sophisticated to optimize file serving but for now, just set it
+            // to the vendor_id.
+            return this.getDirPathForVendorID(this.vendorCookie.vendorID);
+        } catch (Exception ex) {
+            System.out.println(ex);
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            // Try to parse exception message.
+            if (ex.getMessage().contains("already exists")) {
+                throw new Exception("Sorry! You already have a photo called " + filename + ". We don't want to overwrite it.");
+            }
+            // Unknown reason.
+            throw new Exception("Unable to upload file.");
+        } finally {
+            // Clean up prepeared statemtns.
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            // Clean up result set.
+            if (stage1Result != null) {
+                 stage1Result.close();
+            }
+            // Clean up DAO.
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String verifyVendorPageImageOwnershipSQL =
+            "SELECT " +
+                    "   filename " + // also used in delete.
+                    "FROM " +
+                    "   vendor_page_images " +
+                    "WHERE " +
+                    "   vendor_id = ? " +
+                    "AND " +
+                    "   id = ?";
+
+    private String updateVendorPageImageSQL_stage2 =
+            "UPDATE " +
+                    "   vendor_page_images " +
+                    "SET " +
+                    "   show_in_main_gallery = ?, " +
+                    "   show_in_main_slider = ?, " +
+                    "   display_order = ? " +
+                    "WHERE " +
+                    "   id = ?";
+    /**
+     * Updates page image data where id matches.
+     *
+     *      1) Verify resource ownership.
+     *      2) Update data
+     *
+     * Return excetpion if something goes wrong.
+     *
+     * @param cookie
+     * @param show_in_main_gallery
+     * @param show_in_main_slider
+     * @param display_order
+     * @return
+     * @throws Exception
+     */
+    public boolean updateVendorPageImage(
+            String cookie,
+            int image_id,
+            boolean show_in_main_gallery,
+            boolean show_in_main_slider,
+            int display_order
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        try {
+            // Verify cookie.
+            this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            /*
+            Stage 1
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyVendorPageImageOwnershipSQL);
+            stage1.setInt(1, this.vendorCookie.vendorID);
+            stage1.setInt(2, image_id);
+            String filename = null;
+            stage1Result = stage1.executeQuery();
+            while (stage1Result.next()) {
+                filename = stage1Result.getString("filename");
+            }
+            if (filename == null) {
+                throw new GeneralException("You don't have permission to update this image.");
+            }
+            /*
+             Stage 2
+              */
+            stage2 = this.DAO.prepareStatement(this.updateVendorPageImageSQL_stage2);
+            stage2.setBoolean(1, show_in_main_gallery);
+            stage2.setBoolean(2, show_in_main_slider);
+            stage2.setInt(3, display_order);
+            stage2.setInt(4, image_id);
+            stage2.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Try to parse error.
+            if (ex.getMessage().contains("already exists") && ex.getMessage().contains("display_order")) {
+                throw new Exception("Sorry! You can't have two images with the same display order.");
+            }
+            // Unknown error.
+            throw new Exception("Could not delete image.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+        }
+    }
+
+    private String deleteVendorPageImageSQL_stage2 =
+            "DELETE FROM " +
+                    "   vendor_page_images " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public String deleteVenodrPageImage(
+            String cookie,
+            int image_id
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        try {
+            // Verify cookie.
+            this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            /*
+            Stage 1
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyVendorPageImageOwnershipSQL);
+            stage1.setInt(1, this.vendorCookie.vendorID);
+            stage1.setInt(2, image_id);
+            String filename = null;
+            stage1Result = stage1.executeQuery();
+            while (stage1Result.next()) {
+                filename = stage1Result.getString("filename");
+            }
+            if (filename == null) {
+                throw new GeneralException("You don't have permission to delete this image.");
+            }
+            /*
+             Stage 2
+              */
+            stage2 = this.DAO.prepareStatement(this.deleteVendorPageImageSQL_stage2);
+            stage2.setInt(1, image_id);
+            stage2.execute();
+            System.out.println("GOT DELETE");
+            return filename;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Unknown error.
+            throw new Exception(ex.getMessage());
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+        }
+    }
+
+    private String getDirPathForVendorID(int vendor_id) {
+        return Integer.toString(vendor_id) + "/";
+    }
+
 }

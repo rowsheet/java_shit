@@ -3,3 +3,6 @@ lib
 out
 target
 SkipHopp.iml
+*.swp
+*.swo
+*.swn

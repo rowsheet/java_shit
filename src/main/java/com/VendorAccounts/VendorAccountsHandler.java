@@ -1,8 +1,10 @@
 package com.VendorAccounts;
 
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
+import com.VendorAccounts.General.GeneralModel;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
 import com.VendorAccounts.General.GeneralController;
+import com.sun.tools.javah.Gen;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -204,4 +206,47 @@ public class VendorAccountsHandler {
                 public_email
         );
     }
+
+    @WebMethod
+    public String uploadVendorPageImage (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "filename") String filename
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.uploadVendorPageImage(
+                cookie,
+                filename
+        );
+    }
+
+    @WebMethod
+    public boolean updateVendorPageImage(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "image_id") int image_id,
+            @WebParam(name = "show_in_main_gallery") boolean show_in_main_gallery,
+            @WebParam(name = "show_in_main_slider") boolean show_in_main_slider,
+            @WebParam(name = "display_order") int display_order
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.updateVendorPageImage(
+                cookie,
+                image_id,
+                show_in_main_gallery,
+                show_in_main_slider,
+                display_order
+        );
+    }
+
+    @WebMethod
+    public String deleteVendorPageImage (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "image_id") int image_id
+    ) throws Exception {
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.deleteVenodrPageImage(
+                cookie,
+                image_id
+        );
+    }
+
 }

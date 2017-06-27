@@ -2,6 +2,7 @@ const sap = require('soap-as-promised');
 
 var useraccounts_url = "http://localhost:9000/UserAccounts?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
+var vendoraccounts_url = "http://localhost:9000/VendorAccounts?wsdl";
 /*
 sap.createClient(publicbrewery_url)
 	.then((client) => client.loadBeerMenuPaginated({
@@ -34,6 +35,7 @@ sap.createClient(publicbrewery_url)
 		console.log(error);
 	}));
 */
+/*
 sap.createClient(publicbrewery_url)
 	.then((client) => client.loadFoodMenu({
 		"brewery_id": 21
@@ -44,7 +46,18 @@ sap.createClient(publicbrewery_url)
 		console.log("ERROR");
 		console.log(error);
 	}));
-
+*/
+sap.createClient(vendoraccounts_url)
+	.then((client) => client.uploadVendorPageImages({
+		"cookie": "something fucking stupid",
+		"files": ["asdfasd","asdfasfd","asdfasdf"]
+	}).then(function(result) {
+		console.log("OK");
+		console.log(JSON.parse(result.return));
+	}).catch(function(error) {
+		console.log("ERROR");
+		console.log(error);
+	}));
 /*
 sap.createClient(useraccounts_url)
 	.then((client) => client.userLogin({
@@ -71,9 +84,6 @@ sap.createClient(useraccounts_url)
 		console.log(error);
 	}));
 */
-
-var vendoraccounts_url = "http://localhost:9000/VendorAccounts?wsdl";
-
 /*
 sap.createClient(vendoraccounts_url)
 	.then((client) => client.checkVendorSession({
@@ -86,7 +96,6 @@ sap.createClient(vendoraccounts_url)
 		console.log(error);
 	}));
 */
-
 /*
 sap.createClient(vendoraccounts_url)
 	.then((client) => client.updateBreweryInfo({
