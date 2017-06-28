@@ -82,4 +82,54 @@ public class FoodController extends AbstractController {
                 food_sizes
         );
     }
+
+    public String uploadVendorFoodImage (
+           String cookie,
+           String filename,
+           int vendor_food_id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(filename, "filename");
+        // Initialize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.uploadVendorFoodImage(
+                cookie,
+                filename,
+                vendor_food_id
+        );
+    }
+
+    public boolean updateVendorFoodImage (
+            String cookie,
+            int food_image_id,
+            int display_order
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(food_image_id, "food_image_id");
+        // Initilize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.updateVendorFoodImage(
+                cookie,
+                food_image_id,
+                display_order
+        );
+    }
+
+    public String deleteVendorFoodImage (
+            String cookie,
+            int food_image_id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(food_image_id, "food_image_id");
+        // Initilize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.deleteVendorFoodImage(
+                cookie,
+                food_image_id
+        );
+    }
+
 }

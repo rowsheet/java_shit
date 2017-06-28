@@ -112,4 +112,54 @@ public class EventController extends AbstractController {
                 weekdays
         );
     }
+
+    public String uploadEventImage(
+            String cookie,
+            String filename,
+            int event_id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(filename, "filename");
+        // Initialize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.uploadEventImage(
+                cookie,
+                filename,
+                event_id
+        );
+    }
+
+    public boolean updateEventImage(
+            String cookie,
+            int event_image_id,
+            int display_order
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(event_image_id, "event_image_id");
+        // Initialize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.updateEventImage(
+                cookie,
+                event_image_id,
+                display_order
+        );
+    }
+
+    public String deleteEventImage(
+            String cookie,
+            int event_image_id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(event_image_id, "event_image_id");
+        // Initialize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.deleteEventImage(
+                cookie,
+                event_image_id
+        );
+    }
+
 }

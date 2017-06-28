@@ -207,6 +207,17 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Creates a file entry for a page_image resource conditional upon
+     * sufficient cookie and permissions.
+     *
+     * Returns file_path of new image (i.e. [vendor_id]/[image_name])
+     *
+     * @param cookie
+     * @param filename
+     * @return filepath.
+     * @throws Exception
+     */
     @WebMethod
     public String uploadVendorPageImage (
             @WebParam(name = "cookie") String cookie,
@@ -219,6 +230,17 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Updates image. Returns true or throws exception.
+     *
+     * @param cookie
+     * @param image_id
+     * @param show_in_main_gallery
+     * @param show_in_main_slider
+     * @param display_order
+     * @return success
+     * @throws Exception
+     */
     @WebMethod
     public boolean updateVendorPageImage(
             @WebParam(name = "cookie") String cookie,
@@ -237,6 +259,14 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Deletes image. Returns filename or throws exception.
+     *
+     * @param cookie
+     * @param image_id
+     * @return filename
+     * @throws Exception
+     */
     @WebMethod
     public String deleteVendorPageImage (
             @WebParam(name = "cookie") String cookie,

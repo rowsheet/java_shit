@@ -476,7 +476,6 @@ public class GeneralModel extends AbstractModel {
             stage2 = this.DAO.prepareStatement(this.deleteVendorPageImageSQL_stage2);
             stage2.setInt(1, image_id);
             stage2.execute();
-            System.out.println("GOT DELETE");
             return filename;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

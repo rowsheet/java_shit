@@ -1,6 +1,5 @@
 package com.VendorEvents;
 
-import com.Common.Event;
 import com.VendorEvents.Events.EventController;
 
 import javax.jws.WebMethod;
@@ -78,4 +77,83 @@ public class VendorEventsHandler {
                 id
         );
     }
+
+    /*
+    Images
+     */
+
+    /**
+     * Inserts record into event_images with default
+     * display order and a null event_id.
+     *
+     * Record must belong to a vendor with the feature "event_images".
+     *
+     * Although event_id can be null, it has a comopound foreign key
+     * to events alongside the vendor_id, so the image must be owned
+     * by a event item owned by the same vendor_id.
+     *
+     * Returns filepath of new image.
+     *
+     * @param cookie
+     * @param filename
+     * @return filepath
+     * @throws Exception
+     */
+    @WebMethod
+    public String uploadEventImage(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "filename") String filename,
+            @WebParam(name = "event_id") int event_id
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.uploadEventImage(
+                cookie,
+                filename,
+                event_id
+        );
+    }
+
+    /**
+     * Updates image. Returns true or throws exception message.
+     *
+     * @param cookie
+     * @param event_image_id
+     * @param display_order
+     * @return success
+     * @throws Exception
+     */
+    @WebMethod
+    public boolean updateEventImage(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "event_image_id") int event_image_id,
+            @WebParam(name = "display_order") int display_order
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.updateEventImage(
+                cookie,
+                event_image_id,
+                display_order
+        );
+    }
+
+    /**
+     * Deletes image. Returns filename or throws exception.
+     *
+     * @param cookie
+     * @param event_image_id
+     * @return
+     * @throws Exception
+     */
+    @WebMethod
+    public String deleteEventImage (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "event_image_id") int event_image_id
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.deleteEventImage(
+                cookie,
+                event_image_id
+        );
+    }
+
 }

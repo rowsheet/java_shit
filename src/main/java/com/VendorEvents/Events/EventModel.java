@@ -196,11 +196,11 @@ public class EventModel extends AbstractModel {
             stage2.setInt(1, id);
             stage2.setInt(2, this.vendorCookie.vendorID);
             stage2Result = stage2.executeQuery();
-            int food_id = 0;
+            int event_id = 0;
             while (stage2Result.next()) {
-                food_id = stage2Result.getInt("id");
+                event_id = stage2Result.getInt("id");
             }
-            if (food_id == 0) {
+            if (event_id == 0) {
                 // Event is not owned by sender of this request. This might
                 // be some malicious shit. Record it and blacklist.
                 // @TODO blacklist this request.
@@ -328,6 +328,121 @@ public class EventModel extends AbstractModel {
                 this.DAO.close();
             }
         }
+    }
+
+    private String verifyEventOwnershipSQL =
+            "SELECT " +
+                    "   COUNT(*) AS count_star " +
+                    "FROM " +
+                    "   events " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   vendor_id = ?";
+
+    private String uploadEventImageSQL_stage2 =
+            "INSERT INTO " +
+                    "   event_images" +
+                    "(" +
+                    "   event_id, " +
+                    "   filename, " +
+                    "   feature_id, " +
+                    "   vendor_id" +
+                    ") VALUES (" +
+                    "?,?,?,?)";
+
+    public String uploadEventImage(
+            String cookie,
+            String filename,
+            int event_id
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        try {
+            /*
+            Validate feature permissions.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_event_images");
+            /*
+            Stage 1
+            Validate Resource ownership.
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyEventOwnershipSQL);
+            stage1.setInt(1, event_id);
+            stage1.setInt(2, this.vendorCookie.vendorID);
+            stage1Result = stage1.executeQuery();
+            int count_star = 0;
+            while (stage1Result.next()) {
+                count_star = stage1Result.getInt("count_star");
+            }
+            if (count_star == 0) {
+                throw new EventException("You do not have permission to upload photos for this event.");
+            }
+            /*
+            Create filepath.
+            right now, it's just going to be:
+                vendor_id/event_id
+             */
+            String file_path = Integer.toString(vendorCookie.vendorID) + "/" +
+                    Integer.toString(event_id) + "/" + filename;
+            /*
+            Stage 2
+            Insert new record.
+             */
+            stage2 = this.DAO.prepareStatement(this.uploadEventImageSQL_stage2);
+            stage2.setInt(1, event_id);
+            stage2.setString(2, filename);
+            stage2.setInt(3, this.vendorCookie.requestFeatureID);
+            stage2.setInt(4, this.vendorCookie.vendorID);
+            stage2.execute();
+            /*
+            Done.
+             */
+            return file_path;
+        } catch (EventException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            // Try to parse the exception.
+            if (ex.getMessage().contains("event_id") &&
+                    ex.getMessage().contains("filename") &&
+                    ex.getMessage().contains("already exists")) {
+                throw new Exception("This event already has an image named: " + filename  + ".");
+            }
+            // Unknown reason.
+            throw new Exception("Unable to upload event image.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public boolean updateEventImage(
+            String cookie,
+            int event_image_id,
+            int display_order
+    ) throws Exception {
+        return true;
+    }
+
+    public String deleteEventImage(
+            String cookie,
+            int event_image_id
+    ) throws Exception {
+        return "something";
     }
 
 }

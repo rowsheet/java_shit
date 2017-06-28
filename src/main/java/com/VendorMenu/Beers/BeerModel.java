@@ -368,4 +368,120 @@ public class BeerModel extends AbstractModel {
             }
         }
     }
+
+    private String verifyBeerOwnershipSQL =
+            "SELECT " +
+                    "   COUNT(*) AS count_star " +
+                    "FROM " +
+                    "   beers " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   vendor_id = ?";
+
+    private String uploadBeerImageSQL_stage2 =
+            "INSERT INTO " +
+                    "   beer_images" +
+                    "(" +
+                    "   beer_id, " +
+                    "   filename, " +
+                    "   feature_id, " +
+                    "   vendor_id" +
+                    ") VALUES (" +
+                    "?,?,?,?)";
+
+    public String uploadBeerImage(
+            String cookie,
+            String filename,
+            int beer_id
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        try {
+            /*
+            Validate feature permissions.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_beer_images");
+            /*
+            Stage 1
+            Validate Resource ownership.
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyBeerOwnershipSQL);
+            stage1.setInt(1, beer_id);
+            stage1.setInt(2, this.vendorCookie.vendorID);
+            stage1Result = stage1.executeQuery();
+            int count_star = 0;
+            while (stage1Result.next()) {
+                count_star = stage1Result.getInt("count_star");
+            }
+            if (count_star == 0) {
+                throw new BeerException("You do not have permission to upload photos for this beer.");
+            }
+            /*
+            Create filepath.
+            right now, it's just going to be:
+                vendor_id/beer_id
+             */
+            String file_path = Integer.toString(vendorCookie.vendorID) + "/" +
+                    Integer.toString(beer_id) + "/" + filename;
+            /*
+            Stage 2
+            Insert new record.
+             */
+            stage2 = this.DAO.prepareStatement(this.uploadBeerImageSQL_stage2);
+            stage2.setInt(1, beer_id);
+            stage2.setString(2, filename);
+            stage2.setInt(3, this.vendorCookie.requestFeatureID);
+            stage2.setInt(4, this.vendorCookie.vendorID);
+            stage2.execute();
+            /*
+            Done.
+             */
+            return file_path;
+        } catch (BeerException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            // Try to parse the exception.
+            if (ex.getMessage().contains("beer_id") &&
+                    ex.getMessage().contains("filename") &&
+                    ex.getMessage().contains("already exists")) {
+                throw new Exception("This beer already has an image named: " + filename  + ".");
+            }
+            // Unknown reason.
+            throw new Exception("Unable to upload beer image.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public boolean updateBeerImage(
+            String cookie,
+            int beer_image_id,
+            int display_order
+    ) throws Exception {
+        return true;
+    }
+
+    public String deleteBeerImage (
+            String cookie,
+            int beer_image_id
+    ) throws Exception {
+        return "something";
+    }
+
 }

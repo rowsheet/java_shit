@@ -110,8 +110,6 @@ public class AbstractModel {
 
     protected void validateCookieVendorFeature(String cookie, String feature_name)
         throws Exception {
-        System.out.println("cookie from model");
-        System.out.println(cookie);
         Gson gson = new Gson();
         this.vendorCookie = gson.fromJson(cookie, VendorCookie.class);
         System.out.println(this.vendorCookie.sessionKey);
