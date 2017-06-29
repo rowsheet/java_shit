@@ -39,7 +39,7 @@ public class Beer {
      * Images
      * These go HashMap<display_order, file_path>
      */
-    public HashMap<Integer, String > images;
+    public HashMap<Integer, BeerImage> images;
 
     public Beer() {
         this.vendor_id = 0;
@@ -59,6 +59,6 @@ public class Beer {
 
         this.reviews = new ArrayList<BeerReview>();
 
-        this.images = new HashMap<Integer, String>();
+        this.images = new HashMap<Integer, BeerImage>();
     }
 }

@@ -19,11 +19,6 @@ public class BreweryController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateID(brewery_id, "vendor_id");
-        this.validateFeedLimit(beer_limit);
-        this.validateFeedLimit(food_limit);
-        this.validateFeedLimit(image_limit);
-        this.validateFeedLimit(event_limit);
-        this.validateFeedLimit(review_limit);
         // Initialize model and create the data.
         BreweryModel breweryModel = new BreweryModel();
         // Load the data structure we're loading.

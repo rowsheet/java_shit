@@ -28,7 +28,7 @@ public class GeneralController extends AbstractController {
         String city,
         String state,
         String zip,
-        int public_phone,
+        String public_phone,
         String public_email
     ) throws Exception {
         // Validate input parameters.

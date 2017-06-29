@@ -34,7 +34,7 @@ public class VendorFood {
      * Images
      * These go HashMap<display_order, file_path>
      */
-    public HashMap<Integer, String > images;
+    public HashMap<Integer,VendorFoodImage> images;
 
     public VendorFood() {
         this.vendor_id = 0;
@@ -50,7 +50,7 @@ public class VendorFood {
 
         this.reviews = new ArrayList<VendorFoodReview>();
 
-        this.images = new HashMap<Integer, String>();
+        this.images = new HashMap<Integer, VendorFoodImage>();
     }
 
 }

@@ -26,7 +26,7 @@ public class Event {
      * Images
      * These go HashMap<display_order, file_path>
      */
-    public HashMap<Integer, String > images;
+    public HashMap<Integer, EventImage> images;
 
     public Event() {
         this.event_id = 0;
@@ -41,6 +41,6 @@ public class Event {
         this.initial_est_occupancy = 0;
         this.weekdays = null;
 
-        this.images = new HashMap<Integer, String>();
+        this.images = new HashMap<Integer, EventImage>();
     }
 }

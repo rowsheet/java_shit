@@ -115,23 +115,10 @@ public class PublicBreweryHandler {
     }
 
     /**
-     * Loads beer details, including reviews and full images (to be put in a modal).
-     *
-     * @param beer_id
-     * @return JSON
-     */
-    // @WebMethod
-    // public String loadBeerDetails(
-    //         @WebParam(name="beer_id") int beer_id
-    // ) throws Exception {
-    //     return "something";
-    // }
-
-    /**
      * Loads all the foods and food categoreis for a particular brewery.
      *
      * @param brewery_id
-     * @return JSON
+     * @return JSON(VendorFoods map keyed by ID) else exception
      */
     @WebMethod
     public String loadFoodMenu(
@@ -143,6 +130,19 @@ public class PublicBreweryHandler {
         );
     }
 
+    /**
+     * Loads all foods and categories for a specific brewery with a limit-offset
+     * ordering by a specified field. Order by field matches up with valid column
+     * and is validated in the controller. Must specificy descending or not.
+     *
+     * @param brewery_id
+     * @param limit
+     * @param offset
+     * @param order_by
+     * @param descending
+     * @return JSON(VendorFoods map keyed by ID) else exception
+     * @throws Exception
+     */
     @WebMethod
     public String loadFoodMenuPaginated(
             @WebParam(name="brewery_id") int brewery_id,
@@ -160,19 +160,6 @@ public class PublicBreweryHandler {
                 descending
         );
     }
-
-    /**
-     * Loads food details, including reviews and full images (to be put in a modal).
-     *
-     * @param food_id
-     * @return JSON
-     */
-    // @WebMethod
-    // public String loadFoodDetail(
-    //         @WebParam(name="food_id") int food_id
-    // ) throws Exception {
-    //     return "something";
-    // }
 
     /**
      * Loads events for a brewery in chronological order.
@@ -195,19 +182,6 @@ public class PublicBreweryHandler {
                 offset
         );
     }
-
-    /**
-     * Loads event details with all other info.
-     *
-     * @param event_id
-     * @return JSON
-     */
-    // @WebMethod
-    // public String loadEventDetail(
-    //         @WebParam(name="event_id") int event_id
-    // ) throws Exception {
-    //     return "something";
-    // }
 
     /**
      * Loads chronological brewery reviews for a brewery based on a pagination and count.

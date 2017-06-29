@@ -47,6 +47,7 @@ sap.createClient(publicbrewery_url)
 		console.log(error);
 	}));
 */
+/*
 sap.createClient(vendoraccounts_url)
 	.then((client) => client.uploadVendorPageImages({
 		"cookie": "something fucking stupid",
@@ -58,6 +59,7 @@ sap.createClient(vendoraccounts_url)
 		console.log("ERROR");
 		console.log(error);
 	}));
+*/
 /*
 sap.createClient(useraccounts_url)
 	.then((client) => client.userLogin({
@@ -130,3 +132,13 @@ sap.createClient(vendoraccounts_url)
 		console.log(error);
 	}));
 */
+sap.createClient(useraccounts_url)
+	.then((client) => client.confirmUserAccount({
+		"confirmation_code": "8f210d97-0830-48d7-bee2-d8213ba8d08a"
+	}).then(function(result) {
+		console.log("OK");
+		console.log(JSON.parse(result.return));
+	}).catch(function(error) {
+		console.log("ERROR");
+		console.log(error);
+	}));

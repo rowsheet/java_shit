@@ -176,7 +176,7 @@ public class VendorAccountsHandler {
             @WebParam(name = "city") String city,
             @WebParam(name = "state") String state,
             @WebParam(name = "zip") String zip,
-            @WebParam(name = "public_phone") int public_phone,
+            @WebParam(name = "public_phone") String public_phone,
             @WebParam(name = "public_email") String public_email
     ) throws Exception {
         GeneralController generalController = new GeneralController();

@@ -2,6 +2,7 @@ package com.PublicBrewery.Events;
 
 import com.Common.AbstractModel;
 import com.Common.Event;
+import com.Common.EventImage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -76,6 +77,7 @@ public class EventModel extends AbstractModel {
             HashMap<Integer, Event> eventHashMap = new HashMap<Integer, Event>();
             /*
             Stage 1
+            Select all events.
              */
             stage1.setInt(1, brewery_id);
             stage1.setInt(2, limit);
@@ -100,16 +102,18 @@ public class EventModel extends AbstractModel {
             }
             /*
             Stage 2
+            Select all event images.
              */
             stage2.setInt(1, brewery_id);
             stage2.setInt(2, limit);
             stage2.setInt(3, offset);
             stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
-                int display_order = stage2Result.getInt("display_order");
-                String filename = stage2Result.getString("filename");
-                int event_id = stage2Result.getInt("event_id");
-                eventHashMap.get(event_id).images.put(display_order, filename);
+                EventImage eventImage = new EventImage();
+                eventImage.display_order = stage2Result.getInt("display_order");
+                eventImage.filename = stage2Result.getString("filename");
+                eventImage.event_id = stage2Result.getInt("event_id");
+                eventHashMap.get(eventImage.event_id).images.put(eventImage.display_order, eventImage);
             }
             return eventHashMap;
         } catch (Exception ex) {

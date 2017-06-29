@@ -376,7 +376,7 @@ public class FoodModel extends AbstractModel {
              */
             stage2 = this.DAO.prepareStatement(this.uploadVendorFoodImageSQL_stage2);
             stage2.setInt(1, vendor_food_id);
-            stage2.setString(2, filename);
+            stage2.setString(2, file_path);
             stage2.setInt(3, this.vendorCookie.requestFeatureID);
             stage2.setInt(4, this.vendorCookie.vendorID);
             stage2.execute();

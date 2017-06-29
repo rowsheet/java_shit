@@ -134,7 +134,7 @@ public class GeneralModel extends AbstractModel {
             String city,
             String state,
             String zip,
-            int public_phone,
+            String public_phone,
             String public_email
     ) throws Exception {
         PreparedStatement stage2 = null;
@@ -175,7 +175,7 @@ public class GeneralModel extends AbstractModel {
             stage2.setTime(14, new Time(simpleDateFormat.parse(sat_close).getTime()));
             stage2.setTime(15, new Time(simpleDateFormat.parse(sun_open).getTime()));
             stage2.setTime(16, new Time(simpleDateFormat.parse(sun_close).getTime()));
-            stage2.setInt(17, public_phone);
+            stage2.setString(17, public_phone);
             stage2.setString(18, public_email);
             stage2.setInt(19, vendorCookie.vendorID);
             stage2.setString(20, display_name);
@@ -194,7 +194,7 @@ public class GeneralModel extends AbstractModel {
             stage2.setTime(33, new Time(simpleDateFormat.parse(sat_close).getTime()));
             stage2.setTime(34, new Time(simpleDateFormat.parse(sun_open).getTime()));
             stage2.setTime(35, new Time(simpleDateFormat.parse(sun_close).getTime()));
-            stage2.setInt(36, public_phone);
+            stage2.setString(36, public_phone);
             stage2.setString(37, public_email);
             stage2.execute();
             /*

@@ -1,9 +1,6 @@
 package com.PublicBrewery.Food;
 
-import com.Common.AbstractModel;
-import com.Common.VendorCookie;
-import com.Common.VendorFood;
-import com.Common.VendorFoodReview;
+import com.Common.*;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.ArrayList;
@@ -147,6 +144,7 @@ public class FoodModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage3);
             /*
             Stage 1
+            Load all foods.
              */
             stage1.setInt(1, brewery_id);
             stage1Result = stage1.executeQuery();
@@ -165,6 +163,7 @@ public class FoodModel extends AbstractModel {
             }
             /*
             Stage 2
+            Load all reviews.
              */
             stage2.setInt(1, brewery_id);
             stage2Result = stage2.executeQuery();
@@ -182,19 +181,21 @@ public class FoodModel extends AbstractModel {
             }
             /*
             Stage 3
+            Load all images.
              */
             stage3.setInt(1, brewery_id);
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
-                int vendor_food_id = stage3Result.getInt("vendor_food_id");
-                int display_order = stage3Result.getInt("display_order");
-                String filename = stage3Result.getString("filename");
-                vendorFoodHashMap.get(vendor_food_id).images.put(display_order, filename);
+                VendorFoodImage vendorFoodImage = new VendorFoodImage();
+                vendorFoodImage.food_id = stage3Result.getInt("vendor_food_id");
+                vendorFoodImage.display_order = stage3Result.getInt("display_order");
+                vendorFoodImage.filename = stage3Result.getString("filename");
+                vendorFoodHashMap.get(vendorFoodImage.food_id).images.put(vendorFoodImage.display_order, vendorFoodImage);
             }
             /*
             Stage 4
+            Calculate review averages.
              */
-            // Go through each food and calcualte the review star averages.
             for (VendorFood vendorFood : vendorFoodHashMap.values()) {
                 if (vendorFood.reviews.size() > 0) {
                     float total = 0;
@@ -381,10 +382,11 @@ public class FoodModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.loadFoodMenuPaginatedSQL_stage3);
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
-                int vendor_food_id = stage3Result.getInt("vendor_food_id");
-                int display_order = stage3Result.getInt("display_order");
-                String filename = stage3Result.getString("filename");
-                vendorFoodHashMap.get(vendor_food_id).images.put(display_order, filename);
+                VendorFoodImage vendorFoodImage = new VendorFoodImage();
+                vendorFoodImage.food_id = stage3Result.getInt("vendor_food_id");
+                vendorFoodImage.display_order = stage3Result.getInt("display_order");
+                vendorFoodImage.filename = stage3Result.getString("filename");
+                vendorFoodHashMap.get(vendorFoodImage.food_id).images.put(vendorFoodImage.display_order, vendorFoodImage);
             }
             /*
             Stage 4

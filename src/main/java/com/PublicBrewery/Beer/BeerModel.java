@@ -2,6 +2,7 @@ package com.PublicBrewery.Beer;
 
 import com.Common.AbstractModel;
 import com.Common.Beer;
+import com.Common.BeerImage;
 import com.Common.BeerReview;
 import com.sun.org.apache.regexp.internal.RE;
 import org.omg.PortableInterceptor.INACTIVE;
@@ -206,10 +207,11 @@ public class BeerModel extends AbstractModel {
             stage3.setInt(1, brewery_id);
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
-                int beer_id = stage3Result.getInt("beer_id");
-                int display_order = stage3Result.getInt("display_order");
-                String filename = stage3Result.getString("filename");
-                beerHashMap.get(beer_id).images.put(display_order, filename);
+                BeerImage beerImage = new BeerImage();
+                beerImage.beer_id = stage3Result.getInt("beer_id");
+                beerImage.display_order = stage3Result.getInt("display_order");
+                beerImage.filename = stage3Result.getString("filename");
+                beerHashMap.get(beerImage.beer_id).images.put(beerImage.display_order, beerImage);
             }
             /*
             Stage 4
@@ -418,10 +420,11 @@ public class BeerModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.loadBeerMenuPaginatedSQL_stage3);
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
-                int beer_id = stage3Result.getInt("beer_id");
-                int display_order = stage3Result.getInt("display_order");
-                String filename = stage3Result.getString("filename");
-                beerHashMap.get(beer_id).images.put(display_order, filename);
+                BeerImage beerImage = new BeerImage();
+                beerImage.beer_id = stage3Result.getInt("beer_id");
+                beerImage.display_order = stage3Result.getInt("display_order");
+                beerImage.filename = stage3Result.getString("filename");
+                beerHashMap.get(beerImage.beer_id).images.put(beerImage.display_order, beerImage);
             }
             /*
             Stage 4

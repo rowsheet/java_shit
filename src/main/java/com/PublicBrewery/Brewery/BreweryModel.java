@@ -41,7 +41,7 @@ public class BreweryModel extends AbstractModel {
                     "   v.city, " +
                     "   v.state, " +
                     "   v.zip, " +
-                    "   COALESCE(vi.public_phone, 000000000) AS public_phone, " +
+                    "   COALESCE(vi.public_phone, 'NA') AS public_phone, " +
                     "   COALESCE(vi.public_email, 'NA') AS public_email, " +
                     "   v.official_business_name " +
                     " FROM " +
