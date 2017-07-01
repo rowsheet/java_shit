@@ -38,9 +38,11 @@ public class GeneralModel extends AbstractModel {
                     "   sun_close, " +
                     "   public_phone, " +
                     "   public_email," +
+                    "   brewery_has, " +
+                    "   brewery_friendly, " +
                     "   vendor_id " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " +
+                    "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?::brewery_has[],?::brewery_friendly[],?) " +
                     "ON CONFLICT (vendor_id) DO UPDATE " +
                     "SET " +
                     "   display_name = ?, " +
@@ -60,7 +62,9 @@ public class GeneralModel extends AbstractModel {
                     "   sun_open = ?, " +
                     "   sun_close = ?, " +
                     "   public_phone = ?, " +
-                    "   public_email = ?";
+                    "   public_email = ?," +
+                    "   brewery_has = ?::brewery_has[], " +
+                    "   brewery_friendly = ?::brewery_friendly[]";
 
     private String updateBreweryInfoSQL_stage3 =
             "UPDATE " +
@@ -135,7 +139,9 @@ public class GeneralModel extends AbstractModel {
             String state,
             String zip,
             String public_phone,
-            String public_email
+            String public_email,
+            String[] brewery_has,
+            String[] brewery_friendly
     ) throws Exception {
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
@@ -177,25 +183,29 @@ public class GeneralModel extends AbstractModel {
             stage2.setTime(16, new Time(simpleDateFormat.parse(sun_close).getTime()));
             stage2.setString(17, public_phone);
             stage2.setString(18, public_email);
-            stage2.setInt(19, vendorCookie.vendorID);
-            stage2.setString(20, display_name);
-            stage2.setString(21, about_text);
-            stage2.setTime(22, new Time(simpleDateFormat.parse(mon_open).getTime()));
-            stage2.setTime(23, new Time(simpleDateFormat.parse(mon_close).getTime()));
-            stage2.setTime(24, new Time(simpleDateFormat.parse(tue_open).getTime()));
-            stage2.setTime(25, new Time(simpleDateFormat.parse(tue_close).getTime()));
-            stage2.setTime(26, new Time(simpleDateFormat.parse(wed_open).getTime()));
-            stage2.setTime(27, new Time(simpleDateFormat.parse(wed_close).getTime()));
-            stage2.setTime(28, new Time(simpleDateFormat.parse(thu_open).getTime()));
-            stage2.setTime(29, new Time(simpleDateFormat.parse(thu_close).getTime()));
-            stage2.setTime(30, new Time(simpleDateFormat.parse(fri_open).getTime()));
-            stage2.setTime(31, new Time(simpleDateFormat.parse(fri_close).getTime()));
-            stage2.setTime(32, new Time(simpleDateFormat.parse(sat_open).getTime()));
-            stage2.setTime(33, new Time(simpleDateFormat.parse(sat_close).getTime()));
-            stage2.setTime(34, new Time(simpleDateFormat.parse(sun_open).getTime()));
-            stage2.setTime(35, new Time(simpleDateFormat.parse(sun_close).getTime()));
-            stage2.setString(36, public_phone);
-            stage2.setString(37, public_email);
+            stage2.setArray(19, this.DAO.createArrayOf("brewery_has", brewery_has));
+            stage2.setArray(20, this.DAO.createArrayOf("brewery_friendly", brewery_friendly));
+            stage2.setInt(21, vendorCookie.vendorID);
+            stage2.setString(22, display_name);
+            stage2.setString(23, about_text);
+            stage2.setTime(24, new Time(simpleDateFormat.parse(mon_open).getTime()));
+            stage2.setTime(25, new Time(simpleDateFormat.parse(mon_close).getTime()));
+            stage2.setTime(26, new Time(simpleDateFormat.parse(tue_open).getTime()));
+            stage2.setTime(27, new Time(simpleDateFormat.parse(tue_close).getTime()));
+            stage2.setTime(28, new Time(simpleDateFormat.parse(wed_open).getTime()));
+            stage2.setTime(29, new Time(simpleDateFormat.parse(wed_close).getTime()));
+            stage2.setTime(30, new Time(simpleDateFormat.parse(thu_open).getTime()));
+            stage2.setTime(31, new Time(simpleDateFormat.parse(thu_close).getTime()));
+            stage2.setTime(32, new Time(simpleDateFormat.parse(fri_open).getTime()));
+            stage2.setTime(33, new Time(simpleDateFormat.parse(fri_close).getTime()));
+            stage2.setTime(34, new Time(simpleDateFormat.parse(sat_open).getTime()));
+            stage2.setTime(35, new Time(simpleDateFormat.parse(sat_close).getTime()));
+            stage2.setTime(36, new Time(simpleDateFormat.parse(sun_open).getTime()));
+            stage2.setTime(37, new Time(simpleDateFormat.parse(sun_close).getTime()));
+            stage2.setString(38, public_phone);
+            stage2.setString(39, public_email);
+            stage2.setArray(40, this.DAO.createArrayOf("brewery_has", brewery_has));
+            stage2.setArray(41, this.DAO.createArrayOf("brewery_friendly", brewery_friendly));
             stage2.execute();
             /*
             Stage 3
@@ -219,7 +229,7 @@ public class GeneralModel extends AbstractModel {
             System.out.println("ROLLING BACK");
             this.DAO.rollback();
             // Unknown error.
-            throw new Exception("Unable to create beer.");
+            throw new Exception("Unable to update brewery info.");
         } finally {
             /*
             Clean up.
@@ -498,4 +508,55 @@ public class GeneralModel extends AbstractModel {
         return Integer.toString(vendor_id) + "/";
     }
 
+    private String setGoogleMapsAddressSQL =
+        "UPDATE " +
+                "   vendors " +
+                "SET " +
+                "   google_maps_address = ?," +
+                "   latitude = ?, " +
+                "   longitude = ?, " +
+                "   google_maps_zoom = ? " +
+                "WHERE id = ?";
+
+    public boolean setGoogleMapsAddress(
+            String cookie,
+            String googleMapsAddress,
+            float latitude,
+            float longitude,
+            int googleMapsZoom
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            /*
+            Validate session.
+            This model does not need a feature since vendor info is applicable to all vendors.
+                    */
+            VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
+            Gson gson = new Gson();
+            VendorCookie vendorCookie = gson.fromJson(cookie, VendorCookie.class);
+            vendorAuthenticationModel.checkVendorSession(vendorCookie.sessionKey);
+            /*
+            Update the data.
+             */
+            preparedStatement = this.DAO.prepareStatement(this.setGoogleMapsAddressSQL);
+            preparedStatement.setString(1, googleMapsAddress);
+            preparedStatement.setFloat(2, latitude);
+            preparedStatement.setFloat(3, longitude);
+            preparedStatement.setInt(4, googleMapsZoom);
+            preparedStatement.setInt(5, vendorCookie.vendorID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Unknown reason.
+            throw new Exception("Unable to update google maps address at this time.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 }

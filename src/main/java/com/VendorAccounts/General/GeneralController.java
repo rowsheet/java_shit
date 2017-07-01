@@ -29,7 +29,9 @@ public class GeneralController extends AbstractController {
         String state,
         String zip,
         String public_phone,
-        String public_email
+        String public_email,
+        String[] brewery_has,
+        String[] brewery_friendly
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -55,6 +57,12 @@ public class GeneralController extends AbstractController {
         this.validateZipCode(zip);
         this.validatePhone(public_phone);
         this.validateEmailAddress(public_email);
+        for (int i = 0; i < brewery_has.length; i++) {
+            this.validateBreweryHas(brewery_has[i]);
+        }
+        for (int i = 0; i < brewery_friendly.length; i++) {
+            this.validateBreweryFriendly(brewery_friendly[i]);
+        }
         // Initialize model and create the data.
         GeneralModel generalModel = new GeneralModel();
         return generalModel.updateBreweryInfo(
@@ -80,7 +88,9 @@ public class GeneralController extends AbstractController {
                 state,
                 zip,
                 public_phone,
-                public_email
+                public_email,
+                brewery_has,
+                brewery_friendly
         );
     }
 
@@ -130,6 +140,27 @@ public class GeneralController extends AbstractController {
         return generalModel.deleteVenodrPageImage(
                 cookie,
                 image_id
+        );
+    }
+
+    public boolean setGoogleMapsAddress(
+            String cookie,
+            String googleMapsAddress,
+            float latitude,
+            float longitude,
+            int googleMapsZoom
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateLatLong(latitude, longitude);
+        // Initialize model and set data.
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.setGoogleMapsAddress(
+                cookie,
+                googleMapsAddress,
+                latitude,
+                longitude,
+                googleMapsZoom
         );
     }
 

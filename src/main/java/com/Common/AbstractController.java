@@ -3,6 +3,8 @@ package com.Common;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.UUID;
 
@@ -404,6 +406,16 @@ public class AbstractController {
         }
     }
 
+    protected void validateLatLong(float latitude, float longitude)
+        throws Exception {
+        if ((latitude < -90.0) || (longitude > 90.0)) {
+            throw new InvalidParameterException("Invalid latitude");
+        }
+        if ((longitude < -180.0) || (longitude > 180.0)) {
+            throw new InvalidParameterException("Invalid longitude");
+        }
+    }
+
     /**
      * VALIDATE Postgres ENUMS
      * note: checking with == was not working and was giving false negatives, so check valid
@@ -477,7 +489,7 @@ public class AbstractController {
                 "Pale Ales" != input.intern() &&
                 "Pilseners and Pale Lagers" != input.intern() &&
                 "Porters" != input.intern() &&
-                "Scottish Style Ales" != input.intern() &&
+                "Scottish-Style Ales" != input.intern() &&
                 "Specialty Beers" != input.intern() &&
                 "Stouts" != input.intern() &&
                 "Strong Ales" != input.intern() &&
@@ -671,6 +683,31 @@ public class AbstractController {
                         "quadruple" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid hop score.");
+        }
+    }
+
+    protected void validateBreweryHas(String input)
+        throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid hop score.");
+        } else if (
+                "Beer" != input.intern() &&
+                        "Music" != input.intern() &&
+                        "Food" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid brewery \"Has\" item.");
+        }
+    }
+
+    protected void validateBreweryFriendly(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid hop score.");
+        } else if (
+                "Dogs" != input.intern() &&
+                        "Kids" != input.intern()
+                ) {
+            throw new InvalidParameterException("Invalid brewery \"Friendly\" item.");
         }
     }
 }

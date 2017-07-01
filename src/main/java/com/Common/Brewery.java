@@ -1,7 +1,6 @@
 package com.Common;
 
-import jnr.ffi.annotations.In;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -45,6 +44,18 @@ public class Brewery {
     public String public_phone;
     public String public_email;
     /**
+     * Has and Friendly
+     */
+    public String[] brewery_has;
+    public String[] brewery_friendly;
+    /**
+     * Google Maps Info
+     */
+    public String google_maps_address;
+    public float latitude;
+    public float longitude;
+    public int google_maps_zoom;
+    /**
      * Extra Info
      */
     public String official_business_name;
@@ -82,6 +93,12 @@ public class Brewery {
         this.zip = null;
         this.public_phone = null;
         this.public_email = null;
+        this.brewery_has = null;
+        this.brewery_friendly = null;
+        this.google_maps_address = null;
+        this.latitude = (float)0.0;
+        this.longitude = (float)0.0;
+        this.google_maps_zoom = 0;
         this.official_business_name = null;
         this.beerMenu = new HashMap<Integer, Beer>();
         this.foodMenu = new HashMap<Integer, VendorFood>();

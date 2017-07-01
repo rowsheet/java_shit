@@ -3,6 +3,7 @@ const sap = require('soap-as-promised');
 var useraccounts_url = "http://localhost:9000/UserAccounts?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 var vendoraccounts_url = "http://localhost:9000/VendorAccounts?wsdl";
+var publicsearch_url = "http://localhost:9000/PublicSearch?wsdl";
 /*
 sap.createClient(publicbrewery_url)
 	.then((client) => client.loadBeerMenuPaginated({
@@ -132,9 +133,30 @@ sap.createClient(vendoraccounts_url)
 		console.log(error);
 	}));
 */
+/*
 sap.createClient(useraccounts_url)
 	.then((client) => client.confirmUserAccount({
 		"confirmation_code": "8f210d97-0830-48d7-bee2-d8213ba8d08a"
+	}).then(function(result) {
+		console.log("OK");
+		console.log(JSON.parse(result.return));
+	}).catch(function(error) {
+		console.log("ERROR");
+		console.log(error);
+	}));
+*/
+sap.createClient(publicsearch_url)
+	.then((client) => client.searchBeers({
+		"min_color": 10,
+		"max_color": 30,
+		"min_bitterness": 10,
+		"max_bitterness": 50,
+		"min_abv": 8,
+		"max_abv": 17,
+		"styles": [],
+		"tastes": [],
+		"limit": 10,
+		"offset": 4 
 	}).then(function(result) {
 		console.log("OK");
 		console.log(JSON.parse(result.return));

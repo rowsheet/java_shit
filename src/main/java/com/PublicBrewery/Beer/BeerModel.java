@@ -4,13 +4,10 @@ import com.Common.AbstractModel;
 import com.Common.Beer;
 import com.Common.BeerImage;
 import com.Common.BeerReview;
-import com.sun.org.apache.regexp.internal.RE;
-import org.omg.PortableInterceptor.INACTIVE;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -395,7 +392,7 @@ public class BeerModel extends AbstractModel {
             beer_ids = beer_ids.replace(",)", ")");
             /*
             Stage 2
-            Get all the beers where beer_ids are in as where clause.
+            Get all the beer reviews where beer_ids are in as where clause.
              */
             this.loadBeerMenuPaginatedSQL_stage2 += beer_ids;
             stage2 = this.DAO.prepareStatement(this.loadBeerMenuPaginatedSQL_stage2);

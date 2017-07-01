@@ -42,6 +42,7 @@ public class Beer {
     public HashMap<Integer, BeerImage> images;
 
     public Beer() {
+        this.beer_id = 0;
         this.vendor_id = 0;
         this.name = null;
         this.color = 0;

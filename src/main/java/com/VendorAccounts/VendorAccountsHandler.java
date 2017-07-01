@@ -177,7 +177,9 @@ public class VendorAccountsHandler {
             @WebParam(name = "state") String state,
             @WebParam(name = "zip") String zip,
             @WebParam(name = "public_phone") String public_phone,
-            @WebParam(name = "public_email") String public_email
+            @WebParam(name = "public_email") String public_email,
+            @WebParam(name = "brewery_has") String[] brewery_has,
+            @WebParam(name = "brewery_friendly") String[] brewery_friendly
     ) throws Exception {
         GeneralController generalController = new GeneralController();
         return generalController.updateBreweryInfo(
@@ -203,7 +205,9 @@ public class VendorAccountsHandler {
                 state,
                 zip,
                 public_phone,
-                public_email
+                public_email,
+                brewery_has,
+                brewery_friendly
         );
     }
 
@@ -276,6 +280,36 @@ public class VendorAccountsHandler {
         return generalModel.deleteVenodrPageImage(
                 cookie,
                 image_id
+        );
+    }
+
+    /**
+     * Sets google maps address approved from API resposnse by user seeing
+     * it on map and saves lat-long as well.
+     *
+     * @param cookie
+     * @param google_maps_address
+     * @param latitude
+     * @param longitude
+     * @param google_maps_zoom
+     * @return
+     * @throws Exception
+     */
+    @WebMethod
+    public boolean setGoogleMapsAddress (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "google_maps_address") String google_maps_address,
+            @WebParam(name = "latitude") float latitude,
+            @WebParam(name = "longitude") float longitude,
+            @WebParam(name = "google_maps_zoom") int google_maps_zoom
+    ) throws Exception {
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.setGoogleMapsAddress(
+            cookie,
+            google_maps_address,
+            latitude,
+            longitude,
+            google_maps_zoom
         );
     }
 

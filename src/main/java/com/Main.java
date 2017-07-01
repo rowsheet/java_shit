@@ -2,6 +2,7 @@
  * Created by alexanderkleinhans on 5/19/17.
  */
 package com;
+import com.PublicSearch.PublicSearchHandler;
 import com.ThirdPartyMenu.ThirdPartyMenuHandler;
 import com.UserAccounts.UserAccountsHandler;
 import com.Sessions.SessionsHandler;
@@ -58,6 +59,7 @@ import javax.xml.ws.Endpoint;
  *   Public Systems
  *
  *   14) Public Brewery
+ *   15) Public Search
  */
 @WebService()
 public class Main {
@@ -185,5 +187,14 @@ public class Main {
     Endpoint.publish(
             base_url + "PublicBrewery",
             publicBreweryHandler);
+
+    /**
+     * Public Search
+     */
+    PublicSearchHandler publicSearchHandler = new PublicSearchHandler();
+    Endpoint.publish(
+            base_url + "PublicSearch",
+            publicSearchHandler
+    );
   }
 }

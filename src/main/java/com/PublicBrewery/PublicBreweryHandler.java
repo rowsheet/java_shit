@@ -1,13 +1,10 @@
 package com.PublicBrewery;
 
-import com.Common.Beer;
 import com.PublicBrewery.Brewery.BreweryController;
 import com.PublicBrewery.Beer.BeerController;
 import com.PublicBrewery.Food.FoodController;
 import com.PublicBrewery.Events.EventController;
-import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Reviews.ReviewController;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

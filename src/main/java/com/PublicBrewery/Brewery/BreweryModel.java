@@ -7,11 +7,11 @@ import com.Common.VendorPageImage;
 import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Events.EventModel;
-import com.PublicBrewery.Reviews.ReviewController;
 import com.PublicBrewery.Reviews.ReviewModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Array;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.
@@ -43,7 +43,13 @@ public class BreweryModel extends AbstractModel {
                     "   v.zip, " +
                     "   COALESCE(vi.public_phone, 'NA') AS public_phone, " +
                     "   COALESCE(vi.public_email, 'NA') AS public_email, " +
-                    "   v.official_business_name " +
+                    "   v.official_business_name," +
+                    "   COALESCE(v.google_maps_address, 'NA') AS google_maps_address, " +
+                    "   COALESCE(v.latitude, 0.0) AS latitude, " +
+                    "   COALESCE(v.longitude, 0.0) AS longitude, " +
+                    "   COALESCE(v.google_maps_zoom, 0) AS google_maps_zoom," +
+                    "   vi.brewery_has," +
+                    "   vi.brewery_friendly " +
                     " FROM " +
                     "   vendors v " +
                     "LEFT JOIN " +
@@ -110,6 +116,7 @@ public class BreweryModel extends AbstractModel {
             }
             while (stage1Result.next()) {
                 brewery.vendor_id = stage1Result.getInt("vendor_id");
+                brewery.official_business_name = stage1Result.getString("official_business_name");
                 brewery.display_name = stage1Result.getString("display_name");
                 brewery.about_text = stage1Result.getString("about_text");
                 brewery.mon_open = stage1Result.getString("mon_open");
@@ -132,7 +139,18 @@ public class BreweryModel extends AbstractModel {
                 brewery.zip = stage1Result.getString("zip");
                 brewery.public_phone = stage1Result.getString("public_phone");
                 brewery.public_email = stage1Result.getString("public_email");
-                brewery.official_business_name = stage1Result.getString("official_business_name");
+                brewery.google_maps_address = stage1Result.getString("google_maps_address");
+                brewery.latitude = stage1Result.getFloat("latitude");
+                brewery.longitude = stage1Result.getFloat("longitude");
+                brewery.google_maps_zoom = stage1Result.getInt("google_maps_zoom");
+                // Brewery "has" items are an array of enums in postgres.
+                Array brewery_has = stage1Result.getArray("brewery_has");
+                String[] str_brewery_has = (String[]) brewery_has.getArray();
+                brewery.brewery_has = str_brewery_has;
+                // Brewery "friendly" items are an array of enums in postgres.
+                Array brewery_friendly = stage1Result.getArray("brewery_friendly");
+                String[] str_brewery_friendly = (String[]) brewery_friendly.getArray();
+                brewery.brewery_friendly = str_brewery_friendly;
             }
             /*
             Stage 2
