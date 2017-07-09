@@ -28,9 +28,58 @@ public class AbstractModel {
         this.vendorCookie = new VendorCookie();
     }
 
+    private String checkSessionSQL =
+            "SELECT " +
+                    "   account_id " +
+                    "FROM " +
+                    "   sessions " +
+                    "WHERE " +
+                    "   session_key = ?";
+
     protected void cleanupDatabase() {
         if (this.DAO != null) {
             this.DAO = null;
+        }
+    }
+
+    protected void validateUserCookie(String cookie)
+        throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // @TODO fetch the session key and look it up, then setting
+            // the account_id to what it was from the session.
+            Gson gson = new Gson();
+            this.userCookie = gson.fromJson(cookie, UserCookie.class);
+            preparedStatement = this.DAO.prepareStatement(this.checkSessionSQL);
+            preparedStatement.setString(1, this.userCookie.sessionKey);
+            resultSet = preparedStatement.executeQuery();
+            int account_id = 0;
+            while (resultSet.next()) {
+                account_id = resultSet.getInt("account_id");
+            }
+            if (account_id == 0) {
+                throw new AbstractModelException("Invalid session key.");
+            }
+            this.userCookie.userID = account_id;
+        } catch (AbstractModelException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            // Unknown reason.
+            throw new Exception("Unable to check users session.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
         }
     }
 

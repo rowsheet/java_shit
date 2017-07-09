@@ -11,6 +11,9 @@ import java.util.UUID;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+import com.Email.EmailTemplates;
+import com.sendgrid.*;
+
 /**
  * Created by alexanderkleinhans on 6/21/17.
  */
@@ -220,8 +223,25 @@ public class NativeAuthModel extends AbstractModel {
             stage2.setString(5, confimration_code);
             stage2.execute();
             /*
-            @TODO Send the confimration email.
+             Send email.
              */
+            EmailTemplates emailTemplates = new EmailTemplates();
+            Email from = new Email("confirm_email@addesyn.com");
+            from.setName("Email Confirmation");
+            String subject = "Skiphopp Email Confirmation";
+            Email to = new Email(email_address);
+            Content content = new Content("text/html", emailTemplates.getUserConfirmationHtml(confimration_code));
+            Mail mail = new Mail(from, subject, to, content);
+
+            SendGrid sg = new SendGrid("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");
+            Request request = new Request();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println(response.getStatusCode());
+            System.out.println(response.getHeaders());
+            System.out.println(response.getBody());
             /*
             Done. Commit it.
              */

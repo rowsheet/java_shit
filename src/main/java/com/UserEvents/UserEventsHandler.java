@@ -1,7 +1,6 @@
 package com.UserEvents;
 
 import com.UserEvents.EventRsvp.EventRsvpController;
-import com.UserEvents.EventRsvp.EventRsvpModel;
 import com.UserEvents.Meetups.MeetupsController;
 import com.UserEvents.MeetupRsvp.MeetupRsvpController;
 
@@ -14,12 +13,6 @@ import javax.jws.WebService;
  */
 @WebService
 public class UserEventsHandler {
-    @WebMethod
-    public String Testing(
-            @WebParam(name="something") String something
-    ) {
-        return "VALUE:" + something;
-    }
 
     /**
      * Create a new meetup entry assuming user has "organize_meetup" permisison.

@@ -93,8 +93,8 @@ public class Brewery {
         this.zip = null;
         this.public_phone = null;
         this.public_email = null;
-        this.brewery_has = null;
-        this.brewery_friendly = null;
+        this.brewery_has = new String[]{};
+        this.brewery_friendly = new String[]{};
         this.google_maps_address = null;
         this.latitude = (float)0.0;
         this.longitude = (float)0.0;

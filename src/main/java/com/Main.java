@@ -4,6 +4,7 @@
 package com;
 import com.PublicSearch.PublicSearchHandler;
 import com.ThirdPartyMenu.ThirdPartyMenuHandler;
+import com.Trending.TrendingHandler;
 import com.UserAccounts.UserAccountsHandler;
 import com.Sessions.SessionsHandler;
 import com.ThirdPartyAccounts.ThirdPartyAccountsHandler;
@@ -195,6 +196,14 @@ public class Main {
     Endpoint.publish(
             base_url + "PublicSearch",
             publicSearchHandler
+    );
+    /**
+     * Trending
+     */
+    TrendingHandler trendingHandler = new TrendingHandler();
+    Endpoint.publish(
+            base_url + "Trending",
+            trendingHandler
     );
   }
 }

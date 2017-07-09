@@ -1,6 +1,7 @@
 package com.PublicSearch;
 
 import com.PublicSearch.Beer.BeerController;
+import com.PublicSearch.Brewery.BreweryController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -24,12 +25,6 @@ public class PublicSearchHandler {
             @WebParam(name="limit") int limit,
             @WebParam(name="offset") int offset
     ) throws Exception {
-        for (int i = 0; i < styles.length; i++) {
-            System.out.println(styles[i]);
-        }
-        for (int i = 0; i < tastes.length; i++) {
-            System.out.println(tastes[i]);
-        }
         BeerController beerController = new BeerController();
         return beerController.searchBeers(
                 min_color,
@@ -40,6 +35,43 @@ public class PublicSearchHandler {
                 max_abv,
                 styles,
                 tastes,
+                limit,
+                offset
+        );
+    }
+    @WebMethod
+    public String searchBreweries(
+        @WebParam(name="min_occupancy") int min_occupancy,
+        @WebParam(name="max_occupancy") int max_occupancy,
+        @WebParam(name="brewery_has") String[] brewery_has,
+        @WebParam(name="brewery_friendly") String[] brewery_friendly,
+        @WebParam(name="open_now") boolean open_now,
+        @WebParam(name="latitude") float latitude,
+        @WebParam(name="longitude") float longitude,
+        @WebParam(name="radius") float radius,
+        @WebParam(name="limit") int limit,
+        @WebParam(name="offset") int offset
+    ) throws Exception {
+        System.out.println(min_occupancy);
+        System.out.println(max_occupancy);
+        System.out.println(brewery_has);
+        System.out.println(brewery_friendly);
+        System.out.println(open_now);
+        System.out.println(latitude);
+        System.out.println(longitude);
+        System.out.println(radius);
+        System.out.println(limit);
+        System.out.println(offset);
+        BreweryController breweryController = new BreweryController();
+        return breweryController.searchBreweries(
+                min_occupancy,
+                max_occupancy,
+                brewery_has,
+                brewery_friendly,
+                open_now,
+                latitude,
+                longitude,
+                radius,
                 limit,
                 offset
         );

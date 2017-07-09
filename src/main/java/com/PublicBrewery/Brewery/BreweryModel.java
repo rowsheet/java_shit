@@ -8,10 +8,12 @@ import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Events.EventModel;
 import com.PublicBrewery.Reviews.ReviewModel;
+import org.apache.commons.io.input.BOMInputStream;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
+import java.util.ArrayList;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.
@@ -74,15 +76,95 @@ public class BreweryModel extends AbstractModel {
     public BreweryModel() throws Exception {}
 
     /**
+     * This is the overloaded (or underloaded?) function for loadBreweryInfo that
+     * defaults loading all information fully (including beer_menu, food_menu, and events).
+     *
+     * The overloaded function is to allow a disable of that so that a lighter version of
+     * this model loading can be used in search.
+     *
+     * @param brewry_id
+     * @param beer_limit
+     * @param food_limit
+     * @param image_limit
+     * @param event_limit
+     * @param review_limit
+     * @return
+     * @throws Exception
+     */
+    public Brewery loadBreweryInfo(
+            int brewry_id,
+            int beer_limit, //@TODO implement
+            int food_limit, //@TODO implement
+            int image_limit, //@TODO implement
+            int event_limit,
+            int review_limit
+    ) throws Exception {
+        // Don't skip anything (beers, foods or events).
+        // By setting these to false, it's an affirmative flog to load them.
+        // This is used in an overloading function for search to load a
+        // "lighter" version of the data.
+        boolean skip_beers = false;
+        boolean skip_foods = false;
+        boolean skip_events = false;
+        return this.loadBreweryInfo(
+            brewry_id,
+            beer_limit,
+            food_limit,
+            image_limit,
+            event_limit,
+            review_limit,
+            skip_beers,
+            skip_foods,
+            skip_events
+        );
+    }
+
+    /**
+     * Literally just loads brewery info without any limits on beers, foods
+     * or events because they are all skipped.
+     *
+     * @param brewery_id
+     * @return
+     * @throws Exception
+     */
+    public Brewery loadBreweryInfoForSearch(
+            int brewery_id,
+            int review_limit,
+            int image_limit
+    ) throws Exception {
+        int beer_limit = 0; // Doesn't matter.
+        int food_limit = 0; // Doesn't matter.
+        int event_limit = 0; // Doesn't matter.
+        boolean skip_beers = true;
+        boolean skip_foods = true;
+        boolean skip_events = true;
+        return this.loadBreweryInfo(
+                brewery_id,
+                beer_limit,
+                food_limit,
+                image_limit,
+                event_limit,
+                review_limit,
+                skip_beers,
+                skip_foods,
+                skip_events
+        );
+    }
+
+    /**
      * First load all of the info for the vendor where vendor_id matches.
      * Next load all image info where vendor_id matchs.
      *
+     * Note: Also has the option to skip loading of:
+     *
+     *      beers, events, or foods (for search)
+     *
      *      1) Load all vendor info.
      *      2) Load all images.
-     *      3) Load all beers and beer reviews for this vendor (using Beer Model).
-     *      4) Load all vendor foods and food reviews for this vendor (using Food Model).
-     *      5) Load all events.
-     *      6) Load all breweries.
+     *      3) Load all beers and beer reviews          (Option to skip).
+     *      4) Load all vendor foods and food reviews   (Option to skip).
+     *      5) Load all events                          (Option to skip).
+     *      6) Load all reviews.
      *
      * @param brewry_id
      * @return Brewery
@@ -94,7 +176,10 @@ public class BreweryModel extends AbstractModel {
             int food_limit, //@TODO implement
             int image_limit, //@TODO implement
             int event_limit,
-            int review_limit
+            int review_limit,
+            boolean skip_beers,
+            boolean skip_foods,
+            boolean skip_events
     ) throws Exception {
         // Create statments.
         PreparedStatement stage1 = null;
@@ -145,12 +230,18 @@ public class BreweryModel extends AbstractModel {
                 brewery.google_maps_zoom = stage1Result.getInt("google_maps_zoom");
                 // Brewery "has" items are an array of enums in postgres.
                 Array brewery_has = stage1Result.getArray("brewery_has");
-                String[] str_brewery_has = (String[]) brewery_has.getArray();
-                brewery.brewery_has = str_brewery_has;
+                String [] str_brewery_has = new String[]{};
+                if (brewery_has != null) {
+                    str_brewery_has = (String[]) brewery_has.getArray();
+                    brewery.brewery_has = str_brewery_has;
+                }
                 // Brewery "friendly" items are an array of enums in postgres.
                 Array brewery_friendly = stage1Result.getArray("brewery_friendly");
-                String[] str_brewery_friendly = (String[]) brewery_friendly.getArray();
-                brewery.brewery_friendly = str_brewery_friendly;
+                String[] str_brewery_friendly = new String[]{};
+                if (brewery_friendly != null) {
+                    str_brewery_friendly = (String[]) brewery_friendly.getArray();
+                    brewery.brewery_friendly = str_brewery_friendly;
+                }
             }
             /*
             Stage 2
@@ -170,18 +261,24 @@ public class BreweryModel extends AbstractModel {
             /*
             Stage 3
              */
-            BeerModel beerModel = new BeerModel();
-            brewery.beerMenu = beerModel.loadBeerMenuPaginated(brewry_id, beer_limit, 0, "creation_timestamp", true);
+            if (!skip_beers) {
+                BeerModel beerModel = new BeerModel();
+                brewery.beerMenu = beerModel.loadBeerMenuPaginated(brewry_id, beer_limit, 0, "creation_timestamp", true);
+            }
             /*
             Stage 4
              */
-            FoodModel foodModel = new FoodModel();
-            brewery.foodMenu = foodModel.loadFoodMenuPaginated(brewry_id, food_limit, 0, "creation_timestamp", true);
+            if (!skip_foods) {
+                FoodModel foodModel = new FoodModel();
+                brewery.foodMenu = foodModel.loadFoodMenuPaginated(brewry_id, food_limit, 0, "creation_timestamp", true);
+            }
             /*
             Stage 5
              */
-            EventModel eventModel = new EventModel();
-            brewery.events = eventModel.loadEvents(brewry_id, event_limit, 0);
+            if (! skip_events) {
+                EventModel eventModel = new EventModel();
+                brewery.events = eventModel.loadEvents(brewry_id, event_limit, 0);
+            }
             /*
             Stage 6
              */

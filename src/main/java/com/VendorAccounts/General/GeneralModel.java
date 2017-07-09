@@ -224,7 +224,6 @@ public class GeneralModel extends AbstractModel {
             this.DAO.commit();
             return true;
         } catch (Exception ex) {
-            System.out.print(ex.fillInStackTrace());
             System.out.print(ex.getMessage());
             System.out.println("ROLLING BACK");
             this.DAO.rollback();
@@ -515,7 +514,8 @@ public class GeneralModel extends AbstractModel {
                 "   google_maps_address = ?," +
                 "   latitude = ?, " +
                 "   longitude = ?, " +
-                "   google_maps_zoom = ? " +
+                "   google_maps_zoom = ?," +
+                "   geolocation = st_makepoint(?,?) " +
                 "WHERE id = ?";
 
     public boolean setGoogleMapsAddress(
@@ -543,7 +543,10 @@ public class GeneralModel extends AbstractModel {
             preparedStatement.setFloat(2, latitude);
             preparedStatement.setFloat(3, longitude);
             preparedStatement.setInt(4, googleMapsZoom);
-            preparedStatement.setInt(5, vendorCookie.vendorID);
+            // Set PostGIS lat long geometry.
+            preparedStatement.setFloat(5, latitude);
+            preparedStatement.setFloat(6, longitude);
+            preparedStatement.setInt(7, vendorCookie.vendorID);
             preparedStatement.execute();
             return true;
         } catch (Exception ex) {

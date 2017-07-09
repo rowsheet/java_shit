@@ -8,6 +8,9 @@ import java.sql.*;
 import java.util.UUID;
 import java.security.SecureRandom;
 
+import com.Email.EmailTemplates;
+import com.sendgrid.*;
+
 /**
  * Created by alexanderkleinhans on 6/2/17.
  */
@@ -249,10 +252,27 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage3.setInt(3, vendor_id);
             stage3.execute();
             /*
-            Commmit and return)
+             Send email.
+             */
+            EmailTemplates emailTemplates = new EmailTemplates();
+            Email from = new Email("confirm_brewery@addesyn.com");
+            from.setName("Brewery Confirmation");
+            String subject = "Skiphopp Brewery Email Confirmation";
+            Email to = new Email(primary_email);
+            Content content = new Content("text/html", emailTemplates.getBrewerConfirmationHtml(confimration_code));
+            Mail mail = new Mail(from, subject, to, content);
+
+            SendGrid sg = new SendGrid("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");
+            Request request = new Request();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+            System.out.println(response);
+            /*
+            Commmit and return
              */
             this.DAO.commit();
-            //@TODO Send a confimration email.
             // Return the new vendor_id.
             return vendor_id;
         } catch (Exception ex) {

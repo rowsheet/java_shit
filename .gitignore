@@ -6,3 +6,4 @@ SkipHopp.iml
 *.swp
 *.swo
 *.swn
+tests/node_modules/
