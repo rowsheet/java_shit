@@ -1,11 +1,14 @@
 package com.UserAccounts;
 
+import com.UserAccounts.GoogleAuth.GoogleAuthController;
 import com.UserAccounts.NativeAuth.NativeAuthController;
+import com.UserAccounts.PassportAuth.PassportController;
+import com.UserAccounts.PassportAuth.PassportModel;
+import com.UserAccounts.TwitterAuth.TwitterAuthController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.print.attribute.standard.MediaSize;
 
 /**
  * Created by alexanderkleinhans on 5/27/17.
@@ -74,14 +77,14 @@ public class UserAccountsHandler {
     @WebMethod
     public String userLogin(
             @WebParam(name="email_address") String email_address,
-            @WebParam(name="password") String password,
-            @WebParam(name="ip_address") String ip_address
+            @WebParam(name="ip_address") String ip_address,
+            @WebParam(name="password") String password
     ) throws Exception {
         NativeAuthController nativeAuthController = new NativeAuthController();
         return nativeAuthController.userLogin(
             email_address,
-            password,
-            ip_address
+            ip_address,
+            password
         );
     }
 
@@ -119,4 +122,61 @@ public class UserAccountsHandler {
         NativeAuthController nativeAuthController = new NativeAuthController();
         nativeAuthController.userLogout(session_key);
     }
+
+    /**---------------------------------------------------/
+     *
+     *      PASSPORT SHIT
+     *
+     * For passport authentication, there is no confirmation process that
+     * needs to take palace. Instead, there is a single method which does one of
+     * two things:
+     *
+     *      1) Registers the account if not account exists, then registers a session.
+     *      2) Registers the session only if an account already exists.
+     *
+     * In either case, under the assumption of a correct response from the third-party
+     * server, an account and session will be registered returning a session key.
+     ----------------------------------------------------*/
+
+    /**
+     * Sign the user in via a Google email address.
+     *
+     * @param email_address
+     * @param ip_address
+     * @throws Exception
+     */
+    @WebMethod
+    public String googleSignIn (
+            @WebParam(name="email_address") String email_address,
+            @WebParam(name="ip_address") String ip_address
+    ) throws Exception {
+        PassportController passportController = new PassportController();
+        return passportController.passportSignIn(
+                email_address,
+                ip_address,
+                "GooglePassport"
+        );
+    }
+
+    /**
+     * Sign the user in via a Twitter username.
+     *
+     * @param username
+     * @param ip_address
+     * @return
+     * @throws Exception
+     */
+    @WebMethod
+    public String twitterSignIn(
+            @WebParam(name="username") String username,
+            @WebParam(name="ip_address") String ip_address
+    ) throws Exception {
+        PassportController passportController = new PassportController();
+        return passportController.passportSignIn(
+                "@" + username, // Add the @ since it's twitter.
+                ip_address,
+                "TwitterPassport"
+        );
+    }
+
 }

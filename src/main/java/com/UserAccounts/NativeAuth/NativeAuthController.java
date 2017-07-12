@@ -48,8 +48,8 @@ public class NativeAuthController extends AbstractController {
 
     public String userLogin(
             String email_address,
-            String password,
-            String ip_address
+            String ip_address,
+            String password
     ) throws Exception {
         // Validate input parameters.
         this.validateEmailAddress(email_address);
@@ -59,8 +59,8 @@ public class NativeAuthController extends AbstractController {
         NativeAuthModel nativeAuthModel = new NativeAuthModel();
         UserCookie userCookie = nativeAuthModel.userLogin(
             email_address,
-            password,
-            ip_address
+            ip_address,
+            password
         );
         return this.returnJSON(userCookie);
     }

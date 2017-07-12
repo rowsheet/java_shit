@@ -62,7 +62,7 @@ public class MenuModel extends AbstractModel {
             }
             if (beer_reivew_id == 0) {
                 // Could create it. Don't know why...
-                throw new MenuException("Unable to create new beer.");
+                throw new MenuException("Unable to create new beer review.");
             }
             return beer_reivew_id;
         } catch (MenuException ex) {
@@ -70,6 +70,10 @@ public class MenuModel extends AbstractModel {
             // This needs to bubble up.
             throw new Exception(ex.getMessage());
         } catch (Exception ex) {
+            // Unknown error due to null pointer exception.
+            if (ex.getMessage() == null) {
+                throw new Exception("Oops! Something went wrong...");
+            }
             System.out.println(ex.getMessage());
             // Try to parse the exception.
             if (ex.getMessage().contains("user_account_permissions")) {
