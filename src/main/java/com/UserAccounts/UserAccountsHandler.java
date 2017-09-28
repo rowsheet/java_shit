@@ -1,10 +1,7 @@
 package com.UserAccounts;
 
-import com.UserAccounts.GoogleAuth.GoogleAuthController;
 import com.UserAccounts.NativeAuth.NativeAuthController;
 import com.UserAccounts.PassportAuth.PassportController;
-import com.UserAccounts.PassportAuth.PassportModel;
-import com.UserAccounts.TwitterAuth.TwitterAuthController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

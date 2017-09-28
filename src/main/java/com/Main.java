@@ -2,6 +2,7 @@
  * Created by alexanderkleinhans on 5/19/17.
  */
 package com;
+import com.Landing.LandingHandler;
 import com.PublicSearch.PublicSearchHandler;
 import com.ThirdPartyMenu.ThirdPartyMenuHandler;
 import com.Trending.TrendingHandler;
@@ -204,6 +205,16 @@ public class Main {
     Endpoint.publish(
             base_url + "Trending",
             trendingHandler
+    );
+    /**
+     * Landing Specific
+     * note: Only applied to this application, such as landing page analytics
+     * or contact forms, etc. Do not use this for other client apps!
+     */
+    LandingHandler landingHandler = new LandingHandler();
+    Endpoint.publish(
+            base_url + "Landing",
+            landingHandler
     );
   }
 }

@@ -254,6 +254,7 @@ public class BreweryRegistrationModel extends AbstractModel {
             /*
              Send email.
              */
+/*
             EmailTemplates emailTemplates = new EmailTemplates();
             Email from = new Email("confirm_brewery@addesyn.com");
             from.setName("Brewery Confirmation");
@@ -269,6 +270,7 @@ public class BreweryRegistrationModel extends AbstractModel {
             request.setBody(mail.build());
             Response response = sg.api(request);
             System.out.println(response);
+*/
             /*
             Commmit and return
              */

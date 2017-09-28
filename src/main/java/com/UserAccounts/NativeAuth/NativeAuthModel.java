@@ -25,7 +25,7 @@ public class NativeAuthModel extends AbstractModel {
     Get the password and hash where email matches.
      */
     private String userLoginSQL_stage1 =
-            "SELECT" +
+            "SELECT " +
                     "   pass_hash, " +
                     "   salt, " +
                     "   id, " +
@@ -114,7 +114,7 @@ public class NativeAuthModel extends AbstractModel {
 
     private String registerUserAccountSQL_stage1 =
             "INSERT INTO " +
-
+                    "   accounts " +
                     "(" +
                     "   email_address, " +
                     "   pass_hash, " +
@@ -229,6 +229,7 @@ public class NativeAuthModel extends AbstractModel {
             /*
              Send email.
              */
+/*
             EmailTemplates emailTemplates = new EmailTemplates();
             Email from = new Email("confirm_email@addesyn.com");
             from.setName("Email Confirmation");
@@ -244,6 +245,7 @@ public class NativeAuthModel extends AbstractModel {
             request.setBody(mail.build());
             Response response = sg.api(request);
             System.out.println(response.getStatusCode()); // Should be 202.
+*/
             /*
             Done. Commit it.
              */
