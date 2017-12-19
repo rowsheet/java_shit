@@ -28,7 +28,8 @@ public class FoodController extends AbstractController {
             String name,
             String description,
             float price,
-            String[] food_sizes
+            String[] food_sizes,
+            int food_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -42,6 +43,7 @@ public class FoodController extends AbstractController {
             this.validateFoodSize(food_size);
         }
         this.validateID(id, "food ID");
+        this.validateID(food_category_id, "food category ID");
         // Initialize model and create the data.
         FoodModel foodModel = new FoodModel();
         return foodModel.updateFood(
@@ -50,7 +52,8 @@ public class FoodController extends AbstractController {
                 name,
                 description,
                 price,
-                food_sizes
+                food_sizes,
+                food_category_id
         );
     }
 
@@ -59,7 +62,8 @@ public class FoodController extends AbstractController {
             String name,
             String description,
             float price,
-            String[] food_sizes
+            String[] food_sizes,
+            int food_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -72,6 +76,7 @@ public class FoodController extends AbstractController {
         for (String food_size: food_sizes) {
             this.validateFoodSize(food_size);
         }
+        this.validateID(food_category_id, "food category ID");
         // Initialize model and create the data.
         FoodModel foodModel = new FoodModel();
         return foodModel.createFood(
@@ -79,7 +84,60 @@ public class FoodController extends AbstractController {
                 name,
                 description,
                 price,
-                food_sizes
+                food_sizes,
+                food_category_id
+        );
+    }
+
+    public int createFoodCategory(
+            String cookie,
+            String category_name,
+            String hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateHexColor(hex_color);
+        // Initialize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.createFoodCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    public boolean updateFoodCategory(
+            String cookie,
+            int id,
+            String new_category_name,
+            String new_hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(new_category_name, "new_category_name.");
+        this.validateHexColor(new_hex_color);
+        // Initialize model and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.updateFoodCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    public boolean deleteFoodCategory(
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "food_category_id");
+        // Initialize mode and create data.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.deleteFoodCategory(
+                cookie,
+                id
         );
     }
 

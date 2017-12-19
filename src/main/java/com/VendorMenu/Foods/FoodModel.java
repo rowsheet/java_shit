@@ -38,7 +38,8 @@ public class FoodModel extends AbstractModel {
                     "   name = ?, " +
                     "   price = ?, " +
                     "   description = ?, " +
-                    "   food_sizes = ?::food_size[] " +
+                    "   food_sizes = ?::food_size[], " +
+                    "   vendor_food_category_id = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -51,9 +52,10 @@ public class FoodModel extends AbstractModel {
                     "   name, " +
                     "   description," +
                     "   price," +
-                    "   food_sizes" +
+                    "   food_sizes, " +
+                    "   vendor_food_category_id " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?::food_size[])" +
+                    "?,?,?,?,?,?::food_size[],?)" +
                     "RETURNING id";
 
     public FoodModel() throws Exception {}
@@ -170,7 +172,8 @@ public class FoodModel extends AbstractModel {
             String name,
             String description,
             float price,
-            String[] food_sizes
+            String[] food_sizes,
+            int food_category_id
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -212,7 +215,8 @@ public class FoodModel extends AbstractModel {
             stage3.setFloat(2, price);
             stage3.setString(3, description);
             stage3.setArray(4, this.DAO.createArrayOf("food_size", food_sizes));
-            stage3.setInt(5, id);
+            stage3.setInt(5, food_category_id);
+            stage3.setInt(6, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -251,7 +255,8 @@ public class FoodModel extends AbstractModel {
             String name,
             String description,
             float price,
-            String[] food_sizes
+            String[] food_sizes,
+            int food_category_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -267,6 +272,7 @@ public class FoodModel extends AbstractModel {
             preparedStatement.setString(4, description);
             preparedStatement.setFloat(5, price);
             preparedStatement.setArray(6, this.DAO.createArrayOf("food_size", food_sizes));
+            preparedStatement.setInt(7, food_category_id);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int food_id = 0;
@@ -304,15 +310,237 @@ public class FoodModel extends AbstractModel {
         }
     }
 
-    /*
-    public String uploadVendorFoodImage (
+    private String createFoodCategorySQL =
+            "INSERT INTO " +
+                    "vendor_food_categories (" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color" +
+                    ") VALUES (?,?,?) " +
+                    "RETURNING id";
+
+    private String confirmFoodCategoryOwnershipSQL =
+            "SELECT " +
+                    "   vendor_id " +
+                    "FROM " +
+                    "   vendor_food_categories " +
+                    "WHERE " +
+                    "   id = ?";
+
+    private String updateFoodCategorySQL =
+            "UPDATE vendor_food_categories " +
+                    "SET " +
+                    "   name = ?, " +
+                    "   hex_color = ? " +
+                    "WHERE " +
+                    "   id = ?";
+
+    private String deleteFoodCategorySQL =
+            "DELETE FROM vendor_food_categories " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public int createFoodCategory(
             String cookie,
-            String filename,
-            int vendor_food_id
+            String category_name,
+            String hex_color
     ) throws Exception {
-        return "something";
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Validate cookie. Just check for the "food_menu" permission. Food categories
+            // doesn't need to be it's own permission.
+            this.validateCookieVendorFeature(cookie, "food_menu");
+            // Just insert the category returning the ID.
+            preparedStatement = this.DAO.prepareStatement(this.createFoodCategorySQL);
+            preparedStatement.setInt(1, this.vendorCookie.vendorID);
+            preparedStatement.setString(2, category_name);
+            preparedStatement.setString(3, hex_color);
+            resultSet = preparedStatement.executeQuery();
+            // Get the new id of the new category.
+            int food_category_id = 0;
+            while (resultSet.next()) {
+                food_category_id = resultSet.getInt("id");
+            }
+            if (food_category_id == 0) {
+                throw new FoodException("Unable to create food.");
+            }
+            return food_category_id;
+        } catch (FoodException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // Try to parse exception message.
+            if (ex.getMessage().contains("food_categories_vendor_id_name_idx")) {
+                throw new Exception("This account already has an food with that name!");
+            }
+            throw new Exception("Unable to create food category.");
+        } finally {
+            // Clean up and return.
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
     }
-    */
+
+    public boolean updateFoodCategory(
+            String cookie,
+            int id,
+            String new_category_name,
+            String new_hex_color
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto-commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+            Just validate off of the "food_menu" permission.
+             */
+            this.validateCookieVendorFeature(cookie, "food_menu");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmFoodCategoryOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2Result = stage2.executeQuery();
+            int vendor_id = 0;
+            while (stage2Result.next()) {
+                vendor_id = stage2Result.getInt("vendor_id");
+            }
+            if (vendor_id != this.vendorCookie.vendorID) {
+                throw new FoodException("This account does not have permission to update this food category.");
+            }
+            /*
+            Stage 3
+            Update data.
+             */
+            stage3 = this.DAO.prepareStatement(this.updateFoodCategorySQL);
+            stage3.setString(1, new_category_name);
+            stage3.setString(2, new_hex_color);
+            stage3.setInt(3, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (FoodException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            throw new Exception("Unable to update food category.");
+        } finally {
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public boolean deleteFoodCategory(
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+             */
+            this.validateCookieVendorFeature(cookie, "food_menu");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmFoodCategoryOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2Result = stage2.executeQuery();
+            int vendor_id = 0;
+            while (stage2Result.next()) {
+                vendor_id = stage2Result.getInt("vendor_id");
+            }
+            if (vendor_id != this.vendorCookie.vendorID) {
+                throw new FoodException("This account does not have permission to delete this food category.");
+            }
+            /*
+            Stage 3
+            Delete data.
+             */
+            stage3 = this.DAO.prepareStatement(this.deleteFoodCategorySQL);
+            stage3.setInt(1, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (FoodException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            /*
+            Don't know what happened. Return unkonwn error.
+             */
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            throw new Exception("Unable to delete food category.");
+        } finally {
+            /*
+            Clean up.
+             */
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 
     private String verifyFoodOwnershipSQL =
             "SELECT " +

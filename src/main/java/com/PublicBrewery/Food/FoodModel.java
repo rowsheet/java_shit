@@ -16,16 +16,24 @@ public class FoodModel extends AbstractModel {
 
     private String loadFoodMenuSQL_stage1 =
             "SELECT" +
-                    "   id AS vendor_food_id," +
-                    "   vendor_id," +
-                    "   name," +
-                    "   description," +
-                    "   price," +
-                    "   food_sizes " +
+                    "   vf.id AS vendor_food_id," +
+                    "   vf.vendor_id AS vendor_food_vendor_id," +
+                    "   vf.name AS vendor_food_name," +
+                    "   vf.description AS vendor_food_description," +
+                    "   vf.price AS vendor_food_price," +
+                    "   vf.food_sizes AS vendor_food_food_sizes," +
+                    "   vf.vendor_food_category_id AS vendor_food_category_id," +
+                    "   vfc.name AS vendor_food_category_name," +
+                    "   vfc.hex_color AS vendor_food_category_hex_color, " +
+                    "   vfc.vendor_id AS vendor_food_category_vendor_id " +
                     "FROM" +
-                    "   vendor_foods " +
+                    "   vendor_foods AS vf " +
+                    "LEFT JOIN" +
+                    "   vendor_food_categories AS vfc " +
+                    "ON " +
+                    "   vf.vendor_food_category_id = vfc.id " +
                     "WHERE" +
-                    "   vendor_id = ?";
+                    "   vf.vendor_id = ?";
 
     /**
      * Bottom line, we need all the reviews for all the foods for this vendor where they exist.
@@ -151,14 +159,18 @@ public class FoodModel extends AbstractModel {
             HashMap<Integer, VendorFood> vendorFoodHashMap = new HashMap<Integer, VendorFood>();
             while (stage1Result.next()) {
                 VendorFood vendorFood = new VendorFood();
-                vendorFood.vendor_id = stage1Result.getInt("vendor_id");
+                vendorFood.vendor_id = stage1Result.getInt("vendor_food_vendor_id");
                 vendorFood.vendor_food_id = stage1Result.getInt("vendor_food_id");
-                vendorFood.name = stage1Result.getString("name");
-                vendorFood.description = stage1Result.getString("description");
-                vendorFood.price = stage1Result.getFloat("price");
-                Array food_sizes_array = stage1Result.getArray("food_sizes");
+                vendorFood.name = stage1Result.getString("vendor_food_name");
+                vendorFood.description = stage1Result.getString("vendor_food_description");
+                vendorFood.price = stage1Result.getFloat("vendor_food_price");
+                Array food_sizes_array = stage1Result.getArray("vendor_food_food_sizes");
                 String[] str_food_sizes = (String[]) food_sizes_array.getArray();
                 vendorFood.food_sizes = str_food_sizes;
+                vendorFood.vendor_food_category.name = stage1Result.getString("vendor_food_category_name");
+                vendorFood.vendor_food_category.vendor_id = stage1Result.getInt("vendor_food_category_vendor_id");
+                vendorFood.vendor_food_category.vendor_food_category_id = stage1Result.getInt("vendor_food_category_id");
+                vendorFood.vendor_food_category.hex_color = stage1Result.getString("vendor_food_category_hex_color");
                 vendorFoodHashMap.put(vendorFood.vendor_food_id, vendorFood);
             }
             /*

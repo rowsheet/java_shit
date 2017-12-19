@@ -12,12 +12,10 @@ import javax.jws.WebService;
  */
 @WebService
 public class VendorMenuHandler {
-    @WebMethod
-    public String Testing(
-            @WebParam(name = "something") String something
-    ) {
-        return "VALUE:" + something;
-    }
+
+    /*
+    BEER
+     */
 
     /**
      * Takes a vendor cookie (associated to a session) and data for a new beer
@@ -137,13 +135,18 @@ public class VendorMenuHandler {
         );
     }
 
+    /*
+    FOODS
+     */
+
     @WebMethod
     public int createFood(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
-            @WebParam(name = "food_sizes") String[] food_sizes
+            @WebParam(name = "food_sizes") String[] food_sizes,
+            @WebParam(name = "food_category_id") int food_category_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.createFood(
@@ -151,7 +154,8 @@ public class VendorMenuHandler {
                 name,
                 description,
                 price,
-                food_sizes
+                food_sizes,
+                food_category_id
         );
     }
 
@@ -162,7 +166,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
-            @WebParam(name = "food_sizes") String[] food_sizes
+            @WebParam(name = "food_sizes") String[] food_sizes,
+            @WebParam(name = "food_category_id") int food_category_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.updateFood(
@@ -171,7 +176,8 @@ public class VendorMenuHandler {
                 name,
                 description,
                 price,
-                food_sizes
+                food_sizes,
+                food_category_id
         );
     }
 
@@ -186,6 +192,56 @@ public class VendorMenuHandler {
                 id
         );
     }
+
+    /*
+    FOOD CATEGORIES
+     */
+
+    @WebMethod
+    public int createFoodCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="category_name") String category_name,
+            @WebParam(name="hex_color") String hex_color
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.createFoodCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean updateFoodCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id,
+            @WebParam(name="new_category_name") String new_category_name,
+            @WebParam(name="new_hex_color") String new_hex_color
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.updateFoodCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFoodCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.deleteFoodCategory(
+                cookie,
+                id
+        );
+    }
+
+    /*
+    FOOD IMAGES
+     */
 
     /**
      * Inserts record into vendor_food_images with default

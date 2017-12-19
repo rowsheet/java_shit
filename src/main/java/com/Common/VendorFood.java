@@ -18,6 +18,8 @@ public class VendorFood {
     public float price;
     public String[] food_sizes;
     public String creation_timestamp;
+    // Comes from other table but basically straight from the DB.
+    public VendorFoodCategory vendor_food_category;
 
     /**
      * These have to be calculated.
@@ -44,6 +46,7 @@ public class VendorFood {
         this.price = (float)0.0;
         this.food_sizes = null;
         this.creation_timestamp = null;
+        this.vendor_food_category = new VendorFoodCategory();
 
         this.review_count = 0;
         this.review_average = (float) 0.0;

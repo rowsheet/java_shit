@@ -342,3 +342,145 @@ soap.createClient(vendorevents_url, function(err, client) {
 	}
 });
 */
+/*
+args = {
+	"cookie": temp_cookie,
+	"category_name": "Unit Test Category",
+	"hex_color": "#eeeeee"
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.createFoodCategory(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	"cookie": temp_cookie,
+	"id": 6,
+	"new_category_name": "NEW Unit Test Category",
+	"new_hex_color": "#aaa"
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.updateFoodCategory(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	"cookie": temp_cookie,
+	"id": 6
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.deleteFoodCategory(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	"cookie": temp_cookie,
+	"name": "Unit Test Food",
+	"description": "whatever",
+	"price": 99.99,
+	"food_sizes": ["Snack"],
+	"food_category_id": 4
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.createFood(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	"cookie": temp_cookie,
+	"id": 50,
+	"name": "NEW Unit Test Food",
+	"description": "whatever",
+	"price": 99.99,
+	"food_sizes": ["Snack"],
+	"food_category_id": 4
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.updateFood(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+/*
+args = {
+	"cookie": temp_cookie,
+	"id": 50
+}
+soap.createClient(vendormenu_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.deleteFood(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
+*/
+args = {
+	"brewery_id": 21
+}
+soap.createClient(publicbrewery_url, function(err, client) {
+	if (err) {
+		console.log(err);
+	} else {
+		client.loadFoodMenu(args, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
+			}
+		});
+	}
+});
