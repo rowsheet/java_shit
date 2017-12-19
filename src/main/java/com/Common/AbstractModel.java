@@ -18,11 +18,14 @@ public class AbstractModel {
 
     public AbstractModel()
             throws Exception {
+        // Get DB credentials from env vars.
+        String db_username = System.getenv("DBUSERNAME");
+        String db_password = System.getenv("DBPASSWORD");
         // Initialize data access object.
         Class.forName("org.postgresql.Driver");
         this.DAO = DriverManager
                 .getConnection("jdbc:postgresql://localhost:5432/skiphopp",
-                        "alexanderkleinhans", "");
+                        db_username, db_password);
         // @TODO only initialize on of these and put the account type in the constructor.
         this.userCookie = new UserCookie();
         this.vendorCookie = new VendorCookie();
@@ -161,7 +164,6 @@ public class AbstractModel {
         throws Exception {
         Gson gson = new Gson();
         this.vendorCookie = gson.fromJson(cookie, VendorCookie.class);
-        System.out.println(this.vendorCookie.sessionKey);
         VendorFeature vendorFeature = this.vendorCookie.vendorFeatures.get(feature_name);
         if (vendorFeature == null) {
             // No feature by that name exists in the request cookie, meaning this

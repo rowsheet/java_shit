@@ -46,6 +46,17 @@ public class AbstractController {
         }
     }
 
+    protected void validateHexColor(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid hex color.");
+        }
+        Pattern pattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})");
+        if (!pattern.matcher(input).matches()) {
+            throw new InvalidParameterException("Invalid hex color.");
+        }
+    }
+
     protected void validateDate(String input, String input_name)
             throws InvalidParameterException {
         if (input == null || input == "") {

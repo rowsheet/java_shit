@@ -21,6 +21,7 @@ public class Event {
     public String[] event_categories;
     public int initial_est_occupancy;
     public String[] weekdays;
+    public EventCategory event_category;
 
     /**
      * Images
@@ -40,6 +41,7 @@ public class Event {
         this.event_categories = null;
         this.initial_est_occupancy = 0;
         this.weekdays = null;
+        this.event_category = new EventCategory();
 
         this.images = new HashMap<Integer, EventImage>();
     }

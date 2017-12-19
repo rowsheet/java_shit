@@ -17,21 +17,29 @@ public class EventModel extends AbstractModel {
 
     private String loadEventsSQL_stage1 =
             "SELECT" +
-                    "   id," +
-                    "   vendor_id, " +
-                    "   name, " +
-                    "   TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, " +
-                    "   TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date, " +
-                    "   description, " +
-                    "   event_categories, " +
-                    "   initial_est_occupancy, " +
-                    "   weekdays " +
+                    "   e.id as event_id," +
+                    "   e.vendor_id as event_vendor_id, " +
+                    "   e.name as event_name, " +
+                    "   TO_CHAR(e.start_date, 'YYYY-MM-DD') AS event_start_date, " +
+                    "   TO_CHAR(e.end_date, 'YYYY-MM-DD') AS event_end_date, " +
+                    "   e.description as event_description, " +
+                    "   e.event_categories as event_categories, " +
+                    "   e.initial_est_occupancy as event_initial_est_occupancy, " +
+                    "   e.weekdays as event_weekdays, " +
+                    "   ec.name as event_category_name, " +
+                    "   ec.id as event_category_id, " +
+                    "   ec.hex_color as event_category_hex_color, " +
+                    "   ec.vendor_id as event_category_vendor_id " + // I know, it's constraint by FK, whatever.
                     "FROM " +
-                    "   events " +
+                    "   events AS e " +
+                    "LEFT JOIN " +
+                    "   event_categories AS ec " +
+                    "ON " +
+                    "   e.event_category_id = ec.id " +
                     "WHERE " +
-                    "   vendor_id = ? " +
+                    "   e.vendor_id = ? " +
                     "ORDER BY " +
-                    "   start_date DESC " +
+                    "   e.start_date ASC " +
                     "LIMIT ? OFFSET ?";
 
     private String loadEventsSQL_stage2 =
@@ -44,7 +52,7 @@ public class EventModel extends AbstractModel {
                     "WHERE " +
                     "   event_id " +
                     "IN (" +
-                    "   SELECT id FROM events WHERE vendor_id = ? ORDER BY start_date DESC LIMIT ? OFFSET ? )";
+                    "   SELECT id FROM events WHERE vendor_id = ? ORDER BY start_date ASC LIMIT ? OFFSET ? )";
 
     public EventModel() throws Exception {}
 
@@ -85,19 +93,23 @@ public class EventModel extends AbstractModel {
             stage1Result = stage1.executeQuery();
             while (stage1Result.next()) {
                 Event event = new Event();
-                event.event_id = stage1Result.getInt("id");
-                event.vendor_id = stage1Result.getInt("vendor_id");
-                event.name = stage1Result.getString("name");
-                event.start_date = stage1Result.getString("start_date");
-                event.end_date = stage1Result.getString("end_date");
-                event.description = stage1Result.getString("description");
+                event.event_id = stage1Result.getInt("event_id");
+                event.vendor_id = stage1Result.getInt("event_vendor_id");
+                event.name = stage1Result.getString("event_name");
+                event.start_date = stage1Result.getString("event_start_date");
+                event.end_date = stage1Result.getString("event_end_date");
+                event.description = stage1Result.getString("event_description");
                 Array event_categories = stage1Result.getArray("event_categories");
                 String[] event_categories_str = (String[]) event_categories.getArray();
                 event.event_categories = event_categories_str;
-                event.initial_est_occupancy = stage1Result.getInt("initial_est_occupancy");
-                Array weekdays = stage1Result.getArray("weekdays");
+                event.initial_est_occupancy = stage1Result.getInt("event_initial_est_occupancy");
+                Array weekdays = stage1Result.getArray("event_weekdays");
                 String[] weekdays_str = (String[]) weekdays.getArray();
                 event.weekdays = weekdays_str;
+                event.event_category.name = stage1Result.getString("event_category_name");
+                event.event_category.hex_color = stage1Result.getString("event_category_hex_color");
+                event.event_category.event_category_id = stage1Result.getInt("event_category_id");
+                event.event_category.vendor_id = stage1Result.getInt("event_category_vendor_id");
                 eventHashMap.put(event.event_id, event);
             }
             /*

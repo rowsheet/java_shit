@@ -5,6 +5,7 @@ import com.VendorEvents.Events.EventController;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceProvider;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -23,7 +24,8 @@ public class VendorEventsHandler {
             @WebParam(name="description") String description,
             @WebParam(name="event_categories") String[] event_categories,
             @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
-            @WebParam(name="weekdays") String[] weekdays
+            @WebParam(name="weekdays") String[] weekdays,
+            @WebParam(name="event_category_id") int event_category_id
     ) throws Exception {
         EventController eventController = new EventController();
         return eventController.updateEvent(
@@ -36,7 +38,8 @@ public class VendorEventsHandler {
                 description,
                 event_categories,
                 initial_est_occupancy,
-                weekdays
+                weekdays,
+                event_category_id
         );
     }
 
@@ -50,7 +53,8 @@ public class VendorEventsHandler {
             @WebParam(name="description") String description,
             @WebParam(name="event_categories") String[] event_categories,
             @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
-            @WebParam(name="weekdays") String[] weekdays
+            @WebParam(name="weekdays") String[] weekdays,
+            @WebParam(name="event_category_id") int event_category_id
     ) throws Exception {
         EventController eventController = new EventController();
         return eventController.createEvent(
@@ -62,7 +66,8 @@ public class VendorEventsHandler {
             description,
             event_categories,
             initial_est_occupancy,
-            weekdays
+            weekdays,
+            event_category_id
         );
     }
 
@@ -73,6 +78,52 @@ public class VendorEventsHandler {
     ) throws Exception {
         EventController eventController = new EventController();
         return eventController.deleteEvent(
+                cookie,
+                id
+        );
+    }
+
+    /*
+    Event Categories
+     */
+
+    @WebMethod
+    public int createEventCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="category_name") String category_name,
+            @WebParam(name="hex_color") String hex_color
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.createEventCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean updateEventCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id,
+            @WebParam(name="new_category_name") String new_category_name,
+            @WebParam(name="new_hex_color") String new_hex_color
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.updateEventCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean deleteEventCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws Exception {
+        EventController eventController = new EventController();
+        return eventController.deleteEventCategory(
                 cookie,
                 id
         );

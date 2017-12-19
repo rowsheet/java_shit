@@ -1,7 +1,9 @@
 package com.VendorEvents.Events;
 
 import com.Common.AbstractModel;
+import com.Common.Event;
 
+import java.awt.peer.SystemTrayPeer;
 import java.sql.*;
 
 /**
@@ -41,7 +43,8 @@ public class EventModel extends AbstractModel {
                     "   description = ?, " +
                     "   event_categories = ?::event_category[], " +
                     "   initial_est_occupancy = ?, " +
-                    "   weekdays = ?::weekday[] " +
+                    "   weekdays = ?::weekday[], " +
+                    "   event_category_id = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -58,9 +61,10 @@ public class EventModel extends AbstractModel {
                     "   description," +
                     "   event_categories," +
                     "   initial_est_occupancy," +
-                    "   weekdays" +
+                    "   weekdays," +
+                    "   event_category_id " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?::event_category[],?,?::weekday[])" +
+                    "?,?,?,?,?,?,?,?::event_category[],?,?::weekday[],?) " +
                     "RETURNING id";
 
     public EventModel() throws Exception {}
@@ -160,9 +164,11 @@ public class EventModel extends AbstractModel {
      * @param event_categories
      * @param initial_est_occupancy
      * @param weekdays
+     * @param event_category_id
      * @return
      * @throws Exception
      */
+
     public boolean updateEvent (
             String cookie,
             int id,
@@ -173,7 +179,8 @@ public class EventModel extends AbstractModel {
             String description,
             String[] event_categories,
             int initial_est_occupancy,
-            String[] weekdays
+            String[] weekdays,
+            int event_category_id
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -219,7 +226,8 @@ public class EventModel extends AbstractModel {
             stage3.setArray(6, this.DAO.createArrayOf("event_category", event_categories));
             stage3.setInt(7, initial_est_occupancy);
             stage3.setArray(8, this.DAO.createArrayOf("weekday", weekdays));
-            stage3.setInt(9, id);
+            stage3.setInt(9, event_category_id);
+            stage3.setInt(10, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -270,7 +278,8 @@ public class EventModel extends AbstractModel {
             String description,
             String[] event_categories,
             int initial_est_occupancy,
-            String[] weekdays
+            String[] weekdays,
+            int event_category_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -290,6 +299,7 @@ public class EventModel extends AbstractModel {
             preparedStatement.setArray(8, this.DAO.createArrayOf("event_category", event_categories));
             preparedStatement.setInt(9, initial_est_occupancy);
             preparedStatement.setArray(10, this.DAO.createArrayOf("weekday", weekdays));
+            preparedStatement.setInt(11, event_category_id);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int event_id = 0;
@@ -323,6 +333,238 @@ public class EventModel extends AbstractModel {
             }
             if (resultSet != null) {
                 resultSet = null;
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String createEventCategorySQL =
+        "INSERT INTO " +
+                "event_categories (" +
+                "   vendor_id, " +
+                "   name, " +
+                "   hex_color" +
+                ") VALUES (?,?,?) " +
+                "RETURNING id";
+
+    private String confirmEventCategoryOwnershipSQL =
+            "SELECT " +
+                    "   vendor_id " +
+                    "FROM " +
+                    "   event_categories " +
+                    "WHERE " +
+                    "   id = ?";
+
+    private String updateEventCategorySQL =
+        "UPDATE event_categories " +
+                "SET " +
+                "   name = ?, " +
+                "   hex_color = ? " +
+                "WHERE " +
+                "   id = ?";
+
+    private String deleteEventCategorySQL =
+        "DELETE FROM event_categories " +
+                "WHERE " +
+                "   id = ?";
+
+    public int createEventCategory(
+            String cookie,
+            String category_name,
+            String hex_color
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Validate cookie. Just check for the "events" permission. Event categories
+            // doesn't need to be it's own permission.
+            this.validateCookieVendorFeature(cookie, "events");
+            // Just insert the category returning the ID.
+            preparedStatement = this.DAO.prepareStatement(this.createEventCategorySQL);
+            preparedStatement.setInt(1, this.vendorCookie.vendorID);
+            preparedStatement.setString(2, category_name);
+            preparedStatement.setString(3, hex_color);
+            resultSet = preparedStatement.executeQuery();
+            // Get the new id of the new category.
+            int event_category_id = 0;
+            while (resultSet.next()) {
+                event_category_id = resultSet.getInt("id");
+            }
+            if (event_category_id == 0) {
+                throw new EventException("Unable to create event.");
+            }
+            return event_category_id;
+        } catch (EventException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // Try to parse exception message.
+            if (ex.getMessage().contains("event_categories_vendor_id_name_idx")) {
+                throw new Exception("This account already has an event with that name!");
+            }
+            throw new Exception("Unable to create event category.");
+        } finally {
+            // Clean up and return.
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public boolean updateEventCategory(
+            String cookie,
+            int id,
+            String new_category_name,
+            String new_hex_color
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto-commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+            Just validate off of the "events" permission.
+             */
+            this.validateCookieVendorFeature(cookie, "events");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmEventCategoryOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2Result = stage2.executeQuery();
+            int vendor_id = 0;
+            while (stage2Result.next()) {
+               vendor_id = stage2Result.getInt("vendor_id");
+            }
+            if (vendor_id != this.vendorCookie.vendorID) {
+                throw new EventException("This account does not have permission to update this event category.");
+            }
+            /*
+            Stage 3
+            Update data.
+             */
+            stage3 = this.DAO.prepareStatement(this.updateEventCategorySQL);
+            stage3.setString(1, new_category_name);
+            stage3.setString(2, new_hex_color);
+            stage3.setInt(3, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (EventException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            throw new Exception("Unable to update event category.");
+        } finally {
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public boolean deleteEventCategory(
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        try {
+            /*
+            Disable auto commit.
+             */
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+            Validate session.
+             */
+            this.validateCookieVendorFeature(cookie, "events");
+            /*
+            Stage 2
+            Ensure resource ownership.
+             */
+            stage2 = this.DAO.prepareStatement(this.confirmEventCategoryOwnershipSQL);
+            stage2.setInt(1, id);
+            stage2Result = stage2.executeQuery();
+            int vendor_id = 0;
+            while (stage2Result.next()) {
+                vendor_id = stage2Result.getInt("vendor_id");
+            }
+            if (vendor_id != this.vendorCookie.vendorID) {
+                throw new EventException("This account does not have permission to delete this event category.");
+            }
+            /*
+            Stage 3
+            Delete data.
+             */
+            stage3 = this.DAO.prepareStatement(this.deleteEventCategorySQL);
+            stage3.setInt(1, id);
+            stage3.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (EventException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            /*
+            Don't know what happened. Return unkonwn error.
+             */
+            System.out.println(ex.getMessage());
+            System.out.println("ROLLING BACK");
+            this.DAO.rollback();
+            throw new Exception("Unable to delete event category.");
+        } finally {
+            /*
+            Clean up.
+             */
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

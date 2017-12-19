@@ -1,6 +1,7 @@
 package com.VendorEvents.Events;
 
 import com.Common.AbstractController;
+import com.Common.Event;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -32,7 +33,8 @@ public class EventController extends AbstractController {
             String description,
             String[] event_categories,
             int initial_est_occupancy,
-            String[] weekdays
+            String[] weekdays,
+            int event_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -44,8 +46,8 @@ public class EventController extends AbstractController {
         if (event_categories.length == 0) {
             throw new Exception("Must have at least one \"event category\".");
         }
-        for (String event_category : event_categories) {
-            this.validateEventCategory(event_category);
+        for (String old_event_category : event_categories) {
+            this.validateEventCategory(old_event_category);
         }
         if (weekdays.length == 0) {
             throw new Exception("Must have at least one \"weekday\".");
@@ -65,7 +67,8 @@ public class EventController extends AbstractController {
                 description,
                 event_categories,
                 initial_est_occupancy,
-                weekdays
+                weekdays,
+                event_category_id
         );
     }
 
@@ -78,7 +81,8 @@ public class EventController extends AbstractController {
             String description,
             String[] event_categories,
             int initial_est_occupancy,
-            String[] weekdays
+            String[] weekdays,
+            int event_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -89,8 +93,8 @@ public class EventController extends AbstractController {
         if (event_categories.length == 0) {
             throw new Exception("Must have at least one \"event category\".");
         }
-        for (String event_category : event_categories) {
-            this.validateEventCategory(event_category);
+        for (String old_event_category : event_categories) {
+            this.validateEventCategory(old_event_category);
         }
         if (weekdays.length == 0) {
             throw new Exception("Must have at least one \"weekday\".");
@@ -109,7 +113,60 @@ public class EventController extends AbstractController {
                 description,
                 event_categories,
                 initial_est_occupancy,
-                weekdays
+                weekdays,
+                event_category_id
+        );
+    }
+
+    public int createEventCategory(
+            String cookie,
+            String category_name,
+            String hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateHexColor(hex_color);
+        // Initialize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.createEventCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    public boolean updateEventCategory(
+            String cookie,
+            int id,
+            String new_category_name,
+            String new_hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(new_category_name, "new_category_name.");
+        this.validateHexColor(new_hex_color);
+        // Initialize model and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.updateEventCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    public boolean deleteEventCategory(
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "event_category_id");
+        // Initialize mode and create data.
+        EventModel eventModel = new EventModel();
+        return eventModel.deleteEventCategory(
+                cookie,
+                id
         );
     }
 
