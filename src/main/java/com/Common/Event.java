@@ -18,7 +18,6 @@ public class Event {
     public String end_date;
     public boolean rsvp_required;
     public String description;
-    public String[] event_categories;
     public int initial_est_occupancy;
     public String[] weekdays;
     public EventCategory event_category;
@@ -38,7 +37,6 @@ public class Event {
         this.end_date = null;
         this.rsvp_required = false;
         this.description = null;
-        this.event_categories = null;
         this.initial_est_occupancy = 0;
         this.weekdays = null;
         this.event_category = new EventCategory();

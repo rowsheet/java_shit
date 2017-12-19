@@ -23,7 +23,6 @@ public class EventModel extends AbstractModel {
                     "   TO_CHAR(e.start_date, 'YYYY-MM-DD') AS event_start_date, " +
                     "   TO_CHAR(e.end_date, 'YYYY-MM-DD') AS event_end_date, " +
                     "   e.description as event_description, " +
-                    "   e.event_categories as event_categories, " +
                     "   e.initial_est_occupancy as event_initial_est_occupancy, " +
                     "   e.weekdays as event_weekdays, " +
                     "   ec.name as event_category_name, " +
@@ -99,9 +98,6 @@ public class EventModel extends AbstractModel {
                 event.start_date = stage1Result.getString("event_start_date");
                 event.end_date = stage1Result.getString("event_end_date");
                 event.description = stage1Result.getString("event_description");
-                Array event_categories = stage1Result.getArray("event_categories");
-                String[] event_categories_str = (String[]) event_categories.getArray();
-                event.event_categories = event_categories_str;
                 event.initial_est_occupancy = stage1Result.getInt("event_initial_est_occupancy");
                 Array weekdays = stage1Result.getArray("event_weekdays");
                 String[] weekdays_str = (String[]) weekdays.getArray();

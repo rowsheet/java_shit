@@ -22,7 +22,6 @@ public class VendorEventsHandler {
             @WebParam(name="end_date") String end_date,
             @WebParam(name="rsvp_required") boolean rsvp_required,
             @WebParam(name="description") String description,
-            @WebParam(name="event_categories") String[] event_categories,
             @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
             @WebParam(name="weekdays") String[] weekdays,
             @WebParam(name="event_category_id") int event_category_id
@@ -36,7 +35,6 @@ public class VendorEventsHandler {
                 end_date,
                 rsvp_required,
                 description,
-                event_categories,
                 initial_est_occupancy,
                 weekdays,
                 event_category_id
@@ -51,7 +49,6 @@ public class VendorEventsHandler {
             @WebParam(name="end_date") String end_date,
             @WebParam(name="rsvp_required") boolean rsvp_required,
             @WebParam(name="description") String description,
-            @WebParam(name="event_categories") String[] event_categories,
             @WebParam(name="initial_est_occupancy") int initial_est_occupancy,
             @WebParam(name="weekdays") String[] weekdays,
             @WebParam(name="event_category_id") int event_category_id
@@ -64,7 +61,6 @@ public class VendorEventsHandler {
             end_date,
             rsvp_required,
             description,
-            event_categories,
             initial_est_occupancy,
             weekdays,
             event_category_id

@@ -31,7 +31,6 @@ public class EventController extends AbstractController {
             String end_date,
             boolean rsvp_required,
             String description,
-            String[] event_categories,
             int initial_est_occupancy,
             String[] weekdays,
             int event_category_id
@@ -43,12 +42,6 @@ public class EventController extends AbstractController {
         this.validateDate(start_date, "start date");
         this.validateDate(end_date, "end date");
         this.validateText(description, "description");
-        if (event_categories.length == 0) {
-            throw new Exception("Must have at least one \"event category\".");
-        }
-        for (String old_event_category : event_categories) {
-            this.validateEventCategory(old_event_category);
-        }
         if (weekdays.length == 0) {
             throw new Exception("Must have at least one \"weekday\".");
         }
@@ -65,7 +58,6 @@ public class EventController extends AbstractController {
                 end_date,
                 rsvp_required,
                 description,
-                event_categories,
                 initial_est_occupancy,
                 weekdays,
                 event_category_id
@@ -79,7 +71,6 @@ public class EventController extends AbstractController {
             String end_date,
             boolean rsvp_required,
             String description,
-            String[] event_categories,
             int initial_est_occupancy,
             String[] weekdays,
             int event_category_id
@@ -90,12 +81,6 @@ public class EventController extends AbstractController {
         this.validateDate(start_date, "start date");
         this.validateDate(end_date, "end date");
         this.validateText(description, "description");
-        if (event_categories.length == 0) {
-            throw new Exception("Must have at least one \"event category\".");
-        }
-        for (String old_event_category : event_categories) {
-            this.validateEventCategory(old_event_category);
-        }
         if (weekdays.length == 0) {
             throw new Exception("Must have at least one \"weekday\".");
         }
@@ -111,7 +96,6 @@ public class EventController extends AbstractController {
                 end_date,
                 rsvp_required,
                 description,
-                event_categories,
                 initial_est_occupancy,
                 weekdays,
                 event_category_id

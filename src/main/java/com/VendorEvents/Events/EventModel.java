@@ -41,7 +41,6 @@ public class EventModel extends AbstractModel {
                     "   end_date = ?, " +
                     "   rsvp_required = ?, " + //  maybe a future feature.
                     "   description = ?, " +
-                    "   event_categories = ?::event_category[], " +
                     "   initial_est_occupancy = ?, " +
                     "   weekdays = ?::weekday[], " +
                     "   event_category_id = ? " +
@@ -59,12 +58,11 @@ public class EventModel extends AbstractModel {
                     "   end_date," +
                     "   rsvp_required," +
                     "   description," +
-                    "   event_categories," +
                     "   initial_est_occupancy," +
                     "   weekdays," +
                     "   event_category_id " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?::event_category[],?,?::weekday[],?) " +
+                    "?,?,?,?,?,?,?,?,?::weekday[],?) " +
                     "RETURNING id";
 
     public EventModel() throws Exception {}
@@ -161,7 +159,6 @@ public class EventModel extends AbstractModel {
      * @param end_date
      * @param rsvp_required
      * @param description
-     * @param event_categories
      * @param initial_est_occupancy
      * @param weekdays
      * @param event_category_id
@@ -177,7 +174,6 @@ public class EventModel extends AbstractModel {
             String end_date,
             boolean rsvp_required,
             String description,
-            String[] event_categories,
             int initial_est_occupancy,
             String[] weekdays,
             int event_category_id
@@ -223,11 +219,10 @@ public class EventModel extends AbstractModel {
             stage3.setDate(3, Date.valueOf(end_date));
             stage3.setBoolean(4, false); // maybe a future feature.
             stage3.setString(5, description);
-            stage3.setArray(6, this.DAO.createArrayOf("event_category", event_categories));
-            stage3.setInt(7, initial_est_occupancy);
-            stage3.setArray(8, this.DAO.createArrayOf("weekday", weekdays));
-            stage3.setInt(9, event_category_id);
-            stage3.setInt(10, id);
+            stage3.setInt(6, initial_est_occupancy);
+            stage3.setArray(7, this.DAO.createArrayOf("weekday", weekdays));
+            stage3.setInt(8, event_category_id);
+            stage3.setInt(9, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -276,7 +271,6 @@ public class EventModel extends AbstractModel {
             String end_date,
             boolean rsvp_required,
             String description,
-            String[] event_categories,
             int initial_est_occupancy,
             String[] weekdays,
             int event_category_id
@@ -296,10 +290,9 @@ public class EventModel extends AbstractModel {
             preparedStatement.setDate(5, Date.valueOf(end_date));
             preparedStatement.setBoolean(6, rsvp_required);
             preparedStatement.setString(7, description);
-            preparedStatement.setArray(8, this.DAO.createArrayOf("event_category", event_categories));
-            preparedStatement.setInt(9, initial_est_occupancy);
-            preparedStatement.setArray(10, this.DAO.createArrayOf("weekday", weekdays));
-            preparedStatement.setInt(11, event_category_id);
+            preparedStatement.setInt(8, initial_est_occupancy);
+            preparedStatement.setArray(9, this.DAO.createArrayOf("weekday", weekdays));
+            preparedStatement.setInt(10, event_category_id);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int event_id = 0;
