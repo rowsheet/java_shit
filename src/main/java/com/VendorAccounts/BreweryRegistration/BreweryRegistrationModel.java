@@ -121,6 +121,8 @@ public class BreweryRegistrationModel extends AbstractModel {
                     "(?,?,?::feature_status), " +
                     "(?,?,?::feature_status), " +
                     "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
+                    "(?,?,?::feature_status), " +
                     "(?,?,?::feature_status)";
 
     public BreweryRegistrationModel() throws Exception {
@@ -420,6 +422,14 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage3.setInt(34, vendor_id);
             stage3.setInt(35, 14);
             stage3.setString(36, "enabled");
+            // drink_menu
+            stage3.setInt(37, vendor_id);
+            stage3.setInt(38, 15);
+            stage3.setString(39, "enabled");
+            // vendor_drink_images
+            stage3.setInt(40, vendor_id);
+            stage3.setInt(41, 16);
+            stage3.setString(42, "enabled");
             stage3.execute();
             /*
             Commit and return)

@@ -107,6 +107,7 @@ public class NativeAuthModel extends AbstractModel {
                     "(?,?::account_type,?), " +
                     "(?,?::account_type,?), " +
                     "(?,?::account_type,?), " +
+                    "(?,?::account_type,?), " +
                     "(?,?::account_type,?) " +
                     // Although we already check the login count, still do nothing here.
                     "ON CONFLICT (account_id, user_permission_id) " +
@@ -651,6 +652,10 @@ public class NativeAuthModel extends AbstractModel {
             stage2.setInt(46, account_id);
             stage2.setString(47, "user");
             stage2.setInt(48, 16);
+            // vendor_drink_review
+            stage2.setInt(49, account_id);
+            stage2.setString(50, "user");
+            stage2.setInt(51, 17);
             stage2.execute();
             /*
             Done. Commit.

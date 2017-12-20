@@ -28,7 +28,7 @@ public class VendorFood {
     public float review_average;
 
     /**
-     * Veched from other resources.
+     * Fetched from other resources.
      */
     public ArrayList<VendorFoodReview> reviews;
 
