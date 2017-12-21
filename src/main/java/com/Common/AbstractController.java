@@ -412,6 +412,62 @@ public class AbstractController {
         }
     }
 
+    protected void validateDrinkIconEnum(String icon_enum)
+            throws Exception {
+        if (!icon_enum.equals("a1") &&
+            !icon_enum.equals("a2") &&
+            !icon_enum.equals("a3") &&
+            !icon_enum.equals("a4") &&
+            !icon_enum.equals("a5") &&
+            !icon_enum.equals("a6") &&
+            !icon_enum.equals("a7") &&
+            !icon_enum.equals("a8") &&
+            !icon_enum.equals("a9") &&
+            !icon_enum.equals("a10") &&
+            !icon_enum.equals("a11") &&
+            !icon_enum.equals("a12") &&
+            !icon_enum.equals("a13") &&
+            !icon_enum.equals("a14") &&
+            !icon_enum.equals("a15") &&
+            !icon_enum.equals("a16") &&
+            !icon_enum.equals("a17") &&
+            !icon_enum.equals("a18") &&
+            !icon_enum.equals("a19") &&
+            !icon_enum.equals("a20") &&
+            !icon_enum.equals("na1") &&
+            !icon_enum.equals("na2") &&
+            !icon_enum.equals("na3") &&
+            !icon_enum.equals("na4") &&
+            !icon_enum.equals("na5") &&
+            !icon_enum.equals("na6") &&
+            !icon_enum.equals("na7") &&
+            !icon_enum.equals("na8") &&
+            !icon_enum.equals("na9") &&
+            !icon_enum.equals("na10") &&
+            !icon_enum.equals("na11") &&
+            !icon_enum.equals("na12") &&
+            !icon_enum.equals("na13") &&
+            !icon_enum.equals("na14") &&
+            !icon_enum.equals("na15") &&
+            !icon_enum.equals("na16") &&
+            !icon_enum.equals("na17") &&
+            !icon_enum.equals("na18") &&
+            !icon_enum.equals("na19") &&
+            !icon_enum.equals("na20") &&
+            !icon_enum.equals("na21") &&
+            !icon_enum.equals("na22") &&
+            !icon_enum.equals("na23") &&
+            !icon_enum.equals("na24") &&
+            !icon_enum.equals("na25") &&
+            !icon_enum.equals("na26") &&
+            !icon_enum.equals("na27") &&
+            !icon_enum.equals("na28") &&
+            !icon_enum.equals("na29") &&
+            !icon_enum.equals("na30")) {
+            throw new Exception("Invalid drink icon.");
+        }
+    }
+
     protected void validateFoodMenuOrderBy(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {

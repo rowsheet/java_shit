@@ -202,13 +202,15 @@ public class BreweryModel extends AbstractModel {
             // We're going to use the public brewery model (sorry...).
             int review_limit = 20; // Just limit loading top 20 reviews for brewery search.
             int image_limit = 30; // Just limit loading top 30 images for now.
+            int drink_limit = 30; // Just limit loading 30 images for now.
             for (int brewery_id: brewery_ids) {
                 Brewery brewery = new Brewery();
                 com.PublicBrewery.Brewery.BreweryModel publicBreweryModel = new com.PublicBrewery.Brewery.BreweryModel();
                 brewery = publicBreweryModel.loadBreweryInfoForSearch(
                         brewery_id,
                         review_limit,
-                        image_limit
+                        image_limit,
+                        drink_limit
                 );
                 brewerySearchResult.breweries.put(brewery_id, brewery);
             }

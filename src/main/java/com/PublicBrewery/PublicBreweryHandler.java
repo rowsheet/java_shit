@@ -39,7 +39,8 @@ public class PublicBreweryHandler {
             @WebParam(name="food_limit") int food_limit,
             @WebParam(name="image_limit") int image_limit,
             @WebParam(name="event_limit") int event_limit,
-            @WebParam(name="review_limit") int review_limit
+            @WebParam(name="review_limit") int review_limit,
+            @WebParam(name="drink_limit") int drink_limit
     ) throws Exception {
         /*
         It just so happens that client-side, if int parameters are not set, they
@@ -68,6 +69,9 @@ public class PublicBreweryHandler {
         if (review_limit == 0) {
             review_limit = 7; // because
         }
+        if (drink_limit == 0) {
+            drink_limit = 10; // because
+        }
         BreweryController breweryController = new BreweryController();
         return breweryController.loadBreweryInfo(
                 brewery_id,
@@ -75,7 +79,8 @@ public class PublicBreweryHandler {
                 food_limit,
                 image_limit,
                 event_limit,
-                review_limit
+                review_limit,
+                drink_limit
         );
     }
 

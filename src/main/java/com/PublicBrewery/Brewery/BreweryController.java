@@ -15,7 +15,8 @@ public class BreweryController extends AbstractController {
             int food_limit,
             int image_limit,
             int event_limit,
-            int review_limit
+            int review_limit,
+            int drink_limit
     ) throws Exception {
         // Validate input parameters.
         this.validateID(brewery_id, "vendor_id");
@@ -30,7 +31,8 @@ public class BreweryController extends AbstractController {
                 food_limit,
                 image_limit,
                 event_limit,
-                review_limit
+                review_limit,
+                drink_limit
         );
         // Return JSON or data structure returned by model.
         // Don't

@@ -526,16 +526,18 @@ soap.createClient(vendormenu_url, function(err, client) {
 /*
 call_api(vendormenu_url, "createDrinkCategory",{
 	"cookie": temp_cookie,
-	"category_name": "UNIT TEST AGAIN",
-	"hex_color": "#eeeeee"
+	"category_name": "NEW CATEGORY",
+	"hex_color": "#eeeeee",
+	"icon_enum": "na27"
 });
 */
 /*
 call_api(vendormenu_url, "updateDrinkCategory",{
 	"cookie": temp_cookie,
-	"id": 3,
-	"new_category_name": "NEW UNIT TEST AGAIN",
-	"new_hex_color": "#eee"
+	"id": 4,
+	"new_category_name": "ICON CHANGE",
+	"new_hex_color": "#aaa",
+	"new_icon_enum": "a18"
 });
 */
 /*
@@ -588,6 +590,11 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 */
 /*
 call_api(publicbrewery_url, "loadDrinkMenu",{
+	"brewery_id": 21
+});
+*/
+/*
+call_api(publicbrewery_url, "loadBreweryInfo",{
 	"brewery_id": 21
 });
 */

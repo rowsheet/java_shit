@@ -391,13 +391,15 @@ public class VendorMenuHandler {
     public int createDrinkCategory (
             @WebParam(name="cookie") String cookie,
             @WebParam(name="category_name") String category_name,
-            @WebParam(name="hex_color") String hex_color
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="icon_enum") String icon_enum
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrinkCategory(
                 cookie,
                 category_name,
-                hex_color);
+                hex_color,
+                icon_enum);
     }
 
     @WebMethod
@@ -405,14 +407,16 @@ public class VendorMenuHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="id") int id,
             @WebParam(name="new_category_name") String new_category_name,
-            @WebParam(name="new_hex_color") String new_hex_color
+            @WebParam(name="new_hex_color") String new_hex_color,
+            @WebParam(name="new_icon_enum") String new_icon_enum
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrinkCategory(
                 cookie,
                 id,
                 new_category_name,
-                new_hex_color);
+                new_hex_color,
+                new_icon_enum);
     }
 
     @WebMethod

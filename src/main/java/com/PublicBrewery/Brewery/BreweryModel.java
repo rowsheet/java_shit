@@ -8,12 +8,11 @@ import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Events.EventModel;
 import com.PublicBrewery.Reviews.ReviewModel;
-import org.apache.commons.io.input.BOMInputStream;
+import com.PublicBrewery.Drink.DrinkModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
-import java.util.ArrayList;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.
@@ -97,15 +96,17 @@ public class BreweryModel extends AbstractModel {
             int food_limit, //@TODO implement
             int image_limit, //@TODO implement
             int event_limit,
-            int review_limit
+            int review_limit,
+            int drink_limit //@TODO implement
     ) throws Exception {
         // Don't skip anything (beers, foods or events).
-        // By setting these to false, it's an affirmative flog to load them.
+        // By setting these to false, it's an affirmative flag to load them.
         // This is used in an overloading function for search to load a
         // "lighter" version of the data.
         boolean skip_beers = false;
         boolean skip_foods = false;
         boolean skip_events = false;
+        boolean skip_drinks = false;
         return this.loadBreweryInfo(
             brewry_id,
             beer_limit,
@@ -113,9 +114,11 @@ public class BreweryModel extends AbstractModel {
             image_limit,
             event_limit,
             review_limit,
+            drink_limit,
             skip_beers,
             skip_foods,
-            skip_events
+            skip_events,
+            skip_drinks
         );
     }
 
@@ -130,7 +133,8 @@ public class BreweryModel extends AbstractModel {
     public Brewery loadBreweryInfoForSearch(
             int brewery_id,
             int review_limit,
-            int image_limit
+            int image_limit,
+            int drink_limit
     ) throws Exception {
         int beer_limit = 0; // Doesn't matter.
         int food_limit = 0; // Doesn't matter.
@@ -138,6 +142,7 @@ public class BreweryModel extends AbstractModel {
         boolean skip_beers = true;
         boolean skip_foods = true;
         boolean skip_events = true;
+        boolean skip_drinks = true;
         return this.loadBreweryInfo(
                 brewery_id,
                 beer_limit,
@@ -145,9 +150,11 @@ public class BreweryModel extends AbstractModel {
                 image_limit,
                 event_limit,
                 review_limit,
+                drink_limit,
                 skip_beers,
                 skip_foods,
-                skip_events
+                skip_events,
+                skip_drinks
         );
     }
 
@@ -177,9 +184,11 @@ public class BreweryModel extends AbstractModel {
             int image_limit, //@TODO implement
             int event_limit,
             int review_limit,
+            int drink_limit,
             boolean skip_beers,
             boolean skip_foods,
-            boolean skip_events
+            boolean skip_events,
+            boolean skip_drinks
     ) throws Exception {
         // Create statments.
         PreparedStatement stage1 = null;
@@ -275,7 +284,7 @@ public class BreweryModel extends AbstractModel {
             /*
             Stage 5
              */
-            if (! skip_events) {
+            if (!skip_events) {
                 EventModel eventModel = new EventModel();
                 brewery.events = eventModel.loadEvents(brewry_id, event_limit, 0);
             }
@@ -284,6 +293,13 @@ public class BreweryModel extends AbstractModel {
              */
             ReviewModel reviewModel = new ReviewModel();
             brewery.reviews = reviewModel.loadBreweryReviews(brewry_id, review_limit, 0);
+            /*
+            Stage 7
+             */
+            if (!skip_drinks) {
+                DrinkModel drinkModel = new DrinkModel();
+                brewery.drinkMenu = drinkModel.loadDrinkMenu(brewry_id); // No limits on drinks yet.
+            }
             return brewery;
         } catch (Exception ex) {
             System.out.println(ex);

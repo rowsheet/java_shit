@@ -449,8 +449,9 @@ public class DrinkModel extends AbstractModel {
                     "vendor_drink_categories (" +
                     "   vendor_id, " +
                     "   name, " +
-                    "   hex_color" +
-                    ") VALUES (?,?,?) " +
+                    "   hex_color," +
+                    "   icon_enum" +
+                    ") VALUES (?,?,?,?::vendor_drink_icon) " +
                     "RETURNING id";
 
     private String confirmDrinkCategoryOwnershipSQL =
@@ -465,7 +466,8 @@ public class DrinkModel extends AbstractModel {
             "UPDATE vendor_drink_categories " +
                     "SET " +
                     "   name = ?, " +
-                    "   hex_color = ? " +
+                    "   hex_color = ?, " +
+                    "   icon_enum = ?::vendor_drink_icon " +
                     "WHERE " +
                     "   id = ?";
 
@@ -477,7 +479,8 @@ public class DrinkModel extends AbstractModel {
     public int createDrinkCategory(
             String cookie,
             String category_name,
-            String hex_color
+            String hex_color,
+            String icon_enum
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -490,6 +493,7 @@ public class DrinkModel extends AbstractModel {
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
             preparedStatement.setString(2, category_name);
             preparedStatement.setString(3, hex_color);
+            preparedStatement.setString(4, icon_enum);
             resultSet = preparedStatement.executeQuery();
             // Get the new id of the new category.
             int drink_category_id = 0;
@@ -531,7 +535,8 @@ public class DrinkModel extends AbstractModel {
             String cookie,
             int id,
             String new_category_name,
-            String new_hex_color
+            String new_hex_color,
+            String new_icon_enum
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -568,7 +573,8 @@ public class DrinkModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.updateDrinkCategorySQL);
             stage3.setString(1, new_category_name);
             stage3.setString(2, new_hex_color);
-            stage3.setInt(3, id);
+            stage3.setString(3, new_icon_enum);
+            stage3.setInt(4, id);
             stage3.execute();
             /*
             Done. Commit.
