@@ -21,13 +21,14 @@ public class DrinkModel extends AbstractModel {
                     "   vd.hex_background AS vendor_drink_hex_background, " +
                     "   vdc.id AS vendor_drink_category_id, " +
                     "   vdc.name AS vendor_drink_category_name, " +
-                    "   vdc.hex_color AS vendor_drink_category_hex_color " +
+                    "   vdc.hex_color AS vendor_drink_category_hex_color, " +
+                    "   vdc.icon_enum AS vendor_drink_icon_enum " +
                     "FROM " +
                     "   vendor_drinks vd " +
                     "LEFT JOIN " +
                     "   vendor_drink_categories vdc " +
                     "ON " +
-                    "   vd.id = vdc.vendor_id " +
+                    "   vd.vendor_drink_category_id = vdc.id " +
                     "WHERE" +
                     "   vd.vendor_id = ?";
 
@@ -192,6 +193,7 @@ public class DrinkModel extends AbstractModel {
                 vendorDrink.vendor_drink_category.name = stage1Result.getString("vendor_drink_category_name");
                 vendorDrink.vendor_drink_category.hex_color = stage1Result.getString("vendor_drink_category_hex_color");
                 vendorDrink.vendor_drink_category.vendor_drink_category_id = stage1Result.getInt("vendor_drink_category_id");
+                vendorDrink.vendor_drink_category.icon_enum = stage1Result.getString("vendor_drink_icon_enum");
                 vendorDrinkHashMap.put(vendorDrink.vendor_drink_id, vendorDrink);
             }
             /*

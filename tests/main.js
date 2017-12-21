@@ -588,11 +588,9 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 	"filename": "testfile.png"
 });
 */
-/*
 call_api(publicbrewery_url, "loadDrinkMenu",{
 	"brewery_id": 21
 });
-*/
 /*
 call_api(publicbrewery_url, "loadBreweryInfo",{
 	"brewery_id": 21
