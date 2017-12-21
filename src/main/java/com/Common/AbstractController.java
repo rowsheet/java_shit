@@ -405,6 +405,13 @@ public class AbstractController {
             }
     }
 
+    protected void validateSpiritIDs(int[] spirit_ids)
+            throws Exception {
+        if (spirit_ids.length > 30) {
+            throw new Exception("Too many spirits for drink.");
+        }
+    }
+
     protected void validateFoodMenuOrderBy(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {

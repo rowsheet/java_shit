@@ -4,6 +4,7 @@ import com.Common.AbstractModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class DrinkModel extends AbstractModel {
 
@@ -60,6 +61,20 @@ public class DrinkModel extends AbstractModel {
                     ") VALUES (" +
                     "?,?,?,?,?,?,?,?,?,?)" +
                     "RETURNING id";
+
+    private String deleteSpiritDrinkAssociationSQL =
+            "DELETE FROM " +
+                    "   spirit_drink_associations " +
+                    "WHERE " +
+                    "   vendor_drink_id = ?";
+
+    private String insertSpiritDrinkAssociationSQL =
+            "INSERT INTO " +
+                    "   spirit_drink_associations" +
+                    "(" +
+                    "   spirit_id, " +
+                    "   vendor_drink_id" +
+                    ") VALUES (?,?)";
 
     public DrinkModel() throws Exception {}
 
@@ -152,11 +167,16 @@ public class DrinkModel extends AbstractModel {
     }
 
     /**
+     * NOTE: Updating drinks is as much of a bitch as creating them. Again (go to notes for "create" function),
+     * there will have to be an array of prepared statements for all spirit-drink associations.
+     *
      * Updates drink item per request as long as sesion and user valid.
      *
      *      1) Validates session and permission.
      *      2) Ensures resource ownership.
-     *      3) Updates data.
+     *      3) Updates data in drink table.
+     *      4) Delete all drink-spirit associations.
+     *      5) Re-insert all drink-spirit associations.
      *
      * Do all in a transaction or roll back.
      *
@@ -178,11 +198,19 @@ public class DrinkModel extends AbstractModel {
             String hex_one,
             String hex_two,
             String hex_three,
-            String hex_background
+            String hex_background,
+            int[] spirit_ids
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
+        PreparedStatement stage4 = null;
+        // Create an array of prepared statements for each spirit_id association insert.
+        ArrayList<PreparedStatement> spirit_id_statements = new ArrayList<PreparedStatement>();
+        for (int i = 0; i < spirit_ids.length; i++) {
+            PreparedStatement preparedStatement = null;
+            spirit_id_statements.add(preparedStatement);
+        }
         try {
             /*
             Disable auto-commit.
@@ -227,6 +255,24 @@ public class DrinkModel extends AbstractModel {
             stage3.setInt(9, id);
             stage3.execute();
             /*
+            Stage 4
+            Remove old spirit-drink associations.
+             */
+            stage4 = this.DAO.prepareStatement(this.deleteSpiritDrinkAssociationSQL);
+            stage4.setInt(1, drink_id);
+            stage4.execute();
+            /*
+            Stage 5
+            Update table spirit associations for each spirit-id specified.
+            */
+            for (int i = 0; i < spirit_ids.length; i++) {
+                PreparedStatement preparedStatement = spirit_id_statements.get(i);
+                preparedStatement = this.DAO.prepareStatement(this.insertSpiritDrinkAssociationSQL);
+                preparedStatement.setInt(1, spirit_ids[i]);
+                preparedStatement.setInt(2, drink_id);
+                preparedStatement.execute();
+            }
+            /*
             Done. Commit.
              */
             this.DAO.commit();
@@ -252,11 +298,42 @@ public class DrinkModel extends AbstractModel {
             if (stage3 != null) {
                 stage3.close();
             }
+            if (stage4 != null) {
+                stage4.close();
+            }
+            for (int i = 0; i < spirit_id_statements.size(); i++) {
+                if (spirit_id_statements.get(i) != null) {
+                    spirit_id_statements.get(i).close();
+                }
+            }
             if (this.DAO != null) {
                 this.DAO.close();
             }
         }
     }
+
+    /**
+     * Creating and updating drinks are a bitch because alcoholic drinks have
+     * a one-to-many relationship with spirits which are all stored on the
+     * spirits-drinks association table.
+     *
+     * For every sprit_id that exists, a seperate query has to be made, so there
+     * will also be an ARRAY of prepared statments made before the try-catch block
+     * depending on this for that reason. Buckle up.
+     *
+     * @param cookie
+     * @param name
+     * @param description
+     * @param price
+     * @param drink_category_id
+     * @param hex_one
+     * @param hex_two
+     * @param hex_three
+     * @param hex_background
+     * @param spirit_ids
+     * @return
+     * @throws Exception
+     */
 
     public int createDrink(
             String cookie,
@@ -267,35 +344,67 @@ public class DrinkModel extends AbstractModel {
             String hex_one,
             String hex_two,
             String hex_three,
-            String hex_background
+            String hex_background,
+            int[] spirit_ids
     ) throws Exception {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        // Create an array of prepared statements for each spirit_id association insert.
+        ArrayList<PreparedStatement> spirit_id_statements = new ArrayList<PreparedStatement>();
+        for (int i = 0; i < spirit_ids.length; i++) {
+            PreparedStatement preparedStatement = null;
+            spirit_id_statements.add(preparedStatement);
+        }
         try {
+            /*
+            Disable auto-commit.
+             */
+            this.DAO.setAutoCommit(false);
             // We need to validate the vendor request and make sure "drink_menu" is one of the vendor features
             // and is in the cookie before we insert a new record.
             this.validateCookieVendorFeature(cookie, "drink_menu");
             // After we insert the record, we need to get the ID of the record back.
-            preparedStatement = this.DAO.prepareStatement(this.createDrinkSQL);
-            preparedStatement.setInt(1, this.vendorCookie.vendorID);
-            preparedStatement.setInt(2, this.vendorCookie.requestFeatureID);
-            preparedStatement.setString(3, name);
-            preparedStatement.setString(4, description);
-            preparedStatement.setFloat(5, price);
-            preparedStatement.setInt(6, drink_category_id);
-            preparedStatement.setString(7, hex_one);
-            preparedStatement.setString(8, hex_two);
-            preparedStatement.setString(9, hex_three);
-            preparedStatement.setString(10, hex_background);
-            resultSet = preparedStatement.executeQuery();
+            /*
+            Stage 1
+            Update drink table.
+             */
+            stage1 = this.DAO.prepareStatement(this.createDrinkSQL);
+            stage1.setInt(1, this.vendorCookie.vendorID);
+            stage1.setInt(2, this.vendorCookie.requestFeatureID);
+            stage1.setString(3, name);
+            stage1.setString(4, description);
+            stage1.setFloat(5, price);
+            stage1.setInt(6, drink_category_id);
+            stage1.setString(7, hex_one);
+            stage1.setString(8, hex_two);
+            stage1.setString(9, hex_three);
+            stage1.setString(10, hex_background);
+            stage1Result = stage1.executeQuery();
             // Get the id of the new entry.
             int drink_id = 0;
-            while (resultSet.next()) {
-                drink_id = resultSet.getInt("id");
+            while (stage1Result.next()) {
+                drink_id = stage1Result.getInt("id");
             }
             if (drink_id == 0) {
                 throw new DrinkException("Unable to create drink."); // Unknown reason.
             }
+            /*
+            Stage 2
+            Update table spirit associations for each spirit-id specified.
+             */
+            for (int i = 0; i < spirit_ids.length; i++) {
+                PreparedStatement preparedStatement = spirit_id_statements.get(i);
+                preparedStatement = this.DAO.prepareStatement(this.insertSpiritDrinkAssociationSQL);
+                preparedStatement.setInt(1, spirit_ids[i]);
+                preparedStatement.setInt(2, drink_id);
+                preparedStatement.execute();
+            }
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
             return drink_id;
         } catch (DrinkException ex) {
             System.out.print(ex.getMessage());
@@ -310,15 +419,24 @@ public class DrinkModel extends AbstractModel {
                 throw new Exception("This brewery already has a drink item with that name!");
             }
             */
+            if (ex.getMessage().contains("spirit_drink_associations_spirit_id_fkey")) {
+                throw new Exception("Invalid alcohol type id.");
+            }
             // Unknown reason.
             throw new Exception("Unable to create drink.");
         } finally {
             // Clean up and return.
-            if (preparedStatement != null) {
-                preparedStatement = null;
+            if (stage1 != null) {
+                stage1 = null;
             }
-            if (resultSet != null) {
-                resultSet = null;
+            if (stage1Result != null) {
+                stage1Result = null;
+            }
+            // Close all the prepared statements made from spirit_ids.
+            for (int i = 0; i < spirit_id_statements.size(); i++) {
+                if (spirit_id_statements.get(i) != null) {
+                    spirit_id_statements.get(i).close();
+                }
             }
             if (this.DAO != null) {
                 this.DAO.close();

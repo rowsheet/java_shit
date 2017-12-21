@@ -2,6 +2,8 @@ package com.PublicBrewery;
 
 import com.PublicBrewery.Brewery.BreweryController;
 import com.PublicBrewery.Beer.BeerController;
+import com.PublicBrewery.Drink.DrinkController;
+import com.PublicBrewery.Drink.DrinkModel;
 import com.PublicBrewery.Food.FoodController;
 import com.PublicBrewery.Events.EventController;
 import com.PublicBrewery.Reviews.ReviewController;
@@ -107,6 +109,32 @@ public class PublicBreweryHandler {
                 limit,
                 offset,
                 order_by,
+                descending
+        );
+    }
+
+    @WebMethod
+    public String loadDrinkMenu(
+            @WebParam(name="brewery_id") int brewery_id
+    ) throws Exception {
+        DrinkController drinkController = new DrinkController();
+        return drinkController.loadDrinkMenu(
+                brewery_id
+        );
+    }
+
+    @WebMethod
+    public String loadDrinkMenuPaginated(
+            @WebParam(name="brewery_id") int brewery_id,
+            @WebParam(name="limit") int limit,
+            @WebParam(name="offset") int offset,
+            @WebParam(name="descending") boolean descending
+    ) throws Exception {
+        DrinkController drinkController = new DrinkController();
+        return drinkController.loadDrinkMenuPaginated(
+                brewery_id,
+                limit,
+                offset,
                 descending
         );
     }

@@ -28,7 +28,8 @@ public class DrinkController extends AbstractController {
             String hex_one,
             String hex_two,
             String hex_three,
-            String hex_background
+            String hex_background,
+            int[] spirit_ids
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -42,6 +43,7 @@ public class DrinkController extends AbstractController {
         this.validateHexColor(hex_two);
         this.validateHexColor(hex_three);
         this.validateHexColor(hex_background);
+        this.validateSpiritIDs(spirit_ids);
         // Initialize model and create the data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.updateDrink(
@@ -54,7 +56,8 @@ public class DrinkController extends AbstractController {
                 hex_one,
                 hex_two,
                 hex_three,
-                hex_background);
+                hex_background,
+                spirit_ids);
     }
 
     public int createDrink(
@@ -66,7 +69,8 @@ public class DrinkController extends AbstractController {
             String hex_one,
             String hex_two,
             String hex_three,
-            String hex_background
+            String hex_background,
+            int[] spirit_ids
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -78,6 +82,7 @@ public class DrinkController extends AbstractController {
         this.validateHexColor(hex_two);
         this.validateHexColor(hex_three);
         this.validateHexColor(hex_background);
+        this.validateSpiritIDs(spirit_ids);
         // Initialize model and create data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.createDrink(
@@ -89,7 +94,8 @@ public class DrinkController extends AbstractController {
                 hex_one,
                 hex_two,
                 hex_three,
-                hex_background);
+                hex_background,
+                spirit_ids);
     }
 
     public int createDrinkCategory(

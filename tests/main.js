@@ -547,28 +547,30 @@ call_api(vendormenu_url, "deleteDrinkCategory",{
 /*
 call_api(vendormenu_url, "createDrink",{
 	"cookie": temp_cookie,
-	"name": "DELETE ME UNIT TEST DRINK",
+	"name": "UNIT TEST two",
 	"description": "This drink is dank.",
 	"price": 99.99,
 	"drink_category_id": 2,
 	"hex_one": "#aaa",
 	"hex_two": "#bbb",
 	"hex_three": "#ccc",
-	"hex_background": "#fff"
+	"hex_background": "#fff",
+	"spirit_ids": [5,6,7,8]
 });
 */
 /*
 call_api(vendormenu_url, "updateDrink",{
 	"cookie": temp_cookie,
 	"id": 1,
-	"name": "UPDATE UNIT TEST DRINK",
-	"description": "This drink is dank yo.",
+	"name": "NEW UPDATE",
+	"description": "This drink is updated and dank yo.",
 	"price": 99.99,
 	"drink_category_id": 2,
-	"hex_one": "#000",
-	"hex_two": "#000",
-	"hex_three": "#000",
-	"hex_background": "#fff"
+	"hex_one": "#eee",
+	"hex_two": "#eee",
+	"hex_three": "#aaa",
+	"hex_background": "#bbb",
+	"spirit_ids": [1,2,6,8,13,14,15]
 });
 */
 /*
@@ -582,5 +584,10 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 	"cookie": temp_cookie,
 	"vendor_drink_id": 1,
 	"filename": "testfile.png"
+});
+*/
+/*
+call_api(publicbrewery_url, "loadDrinkMenu",{
+	"brewery_id": 21
 });
 */
