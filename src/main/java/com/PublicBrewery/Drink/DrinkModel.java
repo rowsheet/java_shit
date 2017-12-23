@@ -21,7 +21,7 @@ public class DrinkModel extends AbstractModel {
                     "   vd.hex_background AS vendor_drink_hex_background, " +
                     "   vd.drink_serve_temp AS vendor_drink_serve_temp, " +
                     "   vd.servings AS vendor_drink_servings," +
-                    "   vd.icon_enum AS vendor_drink_icon_enum " +
+                    "   vd.icon_enum AS vendor_drink_icon_enum, " +
                     "   vdc.id AS vendor_drink_category_id, " +
                     "   vdc.name AS vendor_drink_category_name, " +
                     "   vdc.hex_color AS vendor_drink_category_hex_color, " +
