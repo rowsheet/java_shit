@@ -406,24 +406,30 @@ public class AbstractController {
     }
 
     protected void validateSpiritIDs(int[] spirit_ids)
-            throws Exception {
+            throws InvalidParameterException {
         if (spirit_ids.length > 30) {
-            throw new Exception("Too many spirits for drink.");
+            throw new InvalidParameterException("Too many spirits for drink.");
         }
     }
 
     protected void validateDrinkServeTemp(String drink_serve_temp)
-        throws Exception {
+        throws InvalidParameterException{
+        if (drink_serve_temp == null || drink_serve_temp == "") {
+            throw new InvalidParameterException("Invalid drink serving temperature.");
+        }
         if (!drink_serve_temp.equals("hot") &&
                 !drink_serve_temp.equals("cold") &&
                 !drink_serve_temp.equals("warm") &&
                 !drink_serve_temp.equals("on-the-rocks")) {
-            throw new Exception("Invalid drink serving temperature.");
+            throw new InvalidParameterException("Invalid drink serving temperature.");
         }
     }
 
     protected void validateDrinkServingSize(String drink_serving_size)
-        throws Exception {
+        throws InvalidParameterException {
+        if (drink_serving_size == null || drink_serving_size == "") {
+            throw new InvalidParameterException("Invalid drink serving size.");
+        }
         if (!drink_serving_size.equals("1") &&
                 !drink_serving_size.equals("2") &&
                 !drink_serving_size.equals("3") &&
@@ -433,12 +439,16 @@ public class AbstractController {
                 !drink_serving_size.equals("3+") &&
                 !drink_serving_size.equals("4+") &&
                 !drink_serving_size.equals("5+")) {
-            throw new Exception("Invalid drink serving size.");
+            throw new InvalidParameterException("Invalid drink serving size.");
         }
     }
 
     protected void validateDrinkIconEnum(String icon_enum)
-            throws Exception {
+            throws InvalidParameterException {
+        //@TODO Use a regex.
+        if (icon_enum == null || icon_enum == "") {
+            throw new InvalidParameterException("Invalid drink icon.");
+        }
         if (!icon_enum.equals("a1") &&
             !icon_enum.equals("a2") &&
             !icon_enum.equals("a3") &&
@@ -489,7 +499,7 @@ public class AbstractController {
             !icon_enum.equals("na28") &&
             !icon_enum.equals("na29") &&
             !icon_enum.equals("na30")) {
-            throw new Exception("Invalid drink icon.");
+            throw new InvalidParameterException("Invalid drink icon.");
         }
     }
 

@@ -1,9 +1,6 @@
 package com.VendorMenu.Beers;
 
 import com.Common.AbstractController;
-import com.Common.Beer;
-
-import java.awt.peer.SystemTrayPeer;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -33,7 +30,8 @@ public class BeerController extends AbstractController {
             String description,
             float price,
             String[] beer_sizes,
-            String hop_score
+            String hop_score,
+            int beer_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -43,6 +41,7 @@ public class BeerController extends AbstractController {
         this.validateBitterness(bitterness);
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
+        this.validateID(beer_category_id, "beer_category_id");
         if (beer_tastes.length == 0) {
             throw new Exception("Must have at least one \"beer taste\".");
         }
@@ -72,7 +71,8 @@ public class BeerController extends AbstractController {
                 description,
                 price,
                 beer_sizes,
-                hop_score
+                hop_score,
+                beer_category_id
         );
     }
 
@@ -87,7 +87,8 @@ public class BeerController extends AbstractController {
             String description,
             float price,
             String[] beer_sizes,
-            String hop_score
+            String hop_score,
+            int beer_category_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -96,6 +97,7 @@ public class BeerController extends AbstractController {
         this.validateBitterness(bitterness);
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
+        this.validateID(beer_category_id, "beer_category_id");
         if (beer_tastes.length == 0) {
             throw new Exception("Must have at least one \"beer taste\".");
         }
@@ -124,7 +126,60 @@ public class BeerController extends AbstractController {
                 description,
                 price,
                 beer_sizes,
-                hop_score
+                hop_score,
+                beer_category_id
+        );
+    }
+
+    public int createBeerCategory(
+            String cookie,
+            String category_name,
+            String hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateHexColor(hex_color);
+        // Initialize model and create data.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.createBeerCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    public boolean updateBeerCategory(
+            String cookie,
+            int id,
+            String new_category_name,
+            String new_hex_color
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(new_category_name, "new_category_name.");
+        this.validateHexColor(new_hex_color);
+        // Initialize model and create data.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.updateBeerCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    public boolean deleteBeerCategory(
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "beer_category_id");
+        // Initialize mode and create data.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.deleteBeerCategory(
+                cookie,
+                id
         );
     }
 

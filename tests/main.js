@@ -594,11 +594,71 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 	"filename": "testfile.png"
 });
 */
+/*
 call_api(publicbrewery_url, "loadDrinkMenu",{
 	"brewery_id": 21
 });
+*/
 /*
 call_api(publicbrewery_url, "loadBreweryInfo",{
 	"brewery_id": 21
 });
 */
+/*
+call_api(vendormenu_url, "createBeerCategory",{
+	"cookie": temp_cookie,
+	"category_name": "Dark Beers",
+	"hex_color": "#333"
+});
+*/
+/*
+call_api(vendormenu_url, "updateBeerCategory",{
+	"cookie": temp_cookie,
+	"id": 7,
+	"new_category_name": "Lager Beers",
+	"new_hex_color": "#ccc"
+});
+*/
+/*
+call_api(vendormenu_url, "deleteBeerCategory",{
+	"cookie": temp_cookie,
+	"id": 3 
+});
+*/
+/*
+call_api(vendormenu_url, "createBeer",{
+	"cookie": temp_cookie,
+	"name": "New Unite Test Beer",
+	"color": "23",
+	"bitterness": "13",
+	"abv": "17",
+	"beer_style": "Brown Ales",
+	"beer_tastes": ["Malty","Hoppy"],
+	"description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+	"price": "3.23",
+	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled Mug"],
+	"hop_score": "tripple",
+	"beer_category_id": "6"
+});
+*/
+/*
+call_api(vendormenu_url, "updateBeer",{
+	"cookie": temp_cookie,
+	"id": 82,
+	"name": "UPDATED Unite Test Beer",
+	"color": "23",
+	"bitterness": "13",
+	"abv": "17",
+	"beer_style": "Brown Ales",
+	"beer_tastes": ["Malty","Hoppy"],
+	"description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+	"price": "3.23",
+	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled Mug"],
+	"hop_score": "tripple",
+	"beer_category_id": "6"
+});
+*/
+call_api(vendormenu_url, "deleteBeer", {
+	"cookie": temp_cookie,
+	"id": 82
+});

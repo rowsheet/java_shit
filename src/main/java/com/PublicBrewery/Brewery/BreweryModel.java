@@ -1,3 +1,15 @@
+/*
+NOTE:
+1) @TODO THIS NEEDS TO BE MIGRATED TO "VENDOR" AND NOT "BREWERY".
+
+2) I AM THROWING AWAY LIMITS AND OFFSETS FOR PUBLIC FETCHING OF INDIVIDUAL
+VENDORS. IF A VENDORS PUBLIC PROFILE IS LOADED, THE ENTIRE THING WILL
+BE LOADED (at least for beer, food, and drink menus).
+
+IF THIS BECOMES A LONG-TERM PERFORMANCE ISSUE, EXTRA PUBLIC MODELS WILL
+HIT MATERIALIZED, DISTRIBUTED DATA-STORES WHEN THE TIME COMES. (reviews will probably
+be ported to a seperate service).
+ */
 package com.PublicBrewery.Brewery;
 
 import com.Common.AbstractModel;
@@ -272,14 +284,18 @@ public class BreweryModel extends AbstractModel {
              */
             if (!skip_beers) {
                 BeerModel beerModel = new BeerModel();
-                brewery.beerMenu = beerModel.loadBeerMenuPaginated(brewry_id, beer_limit, 0, "creation_timestamp", true);
+                // brewery.beerMenu = beerModel.loadBeerMenuPaginated(brewry_id, beer_limit, 0, "creation_timestamp", true);
+                // No more "limit" "offset" for vendor-specific individual public fetches.
+                brewery.beerMenu = beerModel.loadBeerMenu(brewry_id);
             }
             /*
             Stage 4
              */
             if (!skip_foods) {
                 FoodModel foodModel = new FoodModel();
-                brewery.foodMenu = foodModel.loadFoodMenuPaginated(brewry_id, food_limit, 0, "creation_timestamp", true);
+                // brewery.foodMenu = foodModel.loadFoodMenuPaginated(brewry_id, food_limit, 0, "creation_timestamp", true);
+                // No more "limit" "offset" for vendor-specific individual public fetches.
+                brewery.foodMenu = foodModel.loadFoodMenu(brewry_id);
             }
             /*
             Stage 5

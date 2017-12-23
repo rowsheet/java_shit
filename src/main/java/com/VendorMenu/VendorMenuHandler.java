@@ -39,7 +39,8 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
             @WebParam(name = "beer_sizes") String[] beer_sizes,
-            @WebParam(name = "hop_score") String hop_score
+            @WebParam(name = "hop_score") String hop_score,
+            @WebParam(name = "beer_category_id") int beer_category_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.createBeer(
@@ -53,7 +54,8 @@ public class VendorMenuHandler {
                 description,
                 price,
                 beer_sizes,
-                hop_score
+                hop_score,
+                beer_category_id
         );
     }
 
@@ -70,7 +72,8 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
             @WebParam(name = "beer_sizes") String[] beer_sizes,
-            @WebParam(name = "hop_score") String hop_score
+            @WebParam(name = "hop_score") String hop_score,
+            @WebParam(name = "beer_category_id") int beer_category_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.updateBeer(
@@ -85,7 +88,8 @@ public class VendorMenuHandler {
                 description,
                 price,
                 beer_sizes,
-                hop_score
+                hop_score,
+                beer_category_id
         );
     }
 
@@ -96,6 +100,52 @@ public class VendorMenuHandler {
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.deleteBeer(
+                cookie,
+                id
+        );
+    }
+
+    /*------------------------------------------------------------
+    BEER CATEGORIES
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public int createBeerCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="category_name") String category_name,
+            @WebParam(name="hex_color") String hex_color
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.createBeerCategory(
+                cookie,
+                category_name,
+                hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean updateBeerCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id,
+            @WebParam(name="new_category_name") String new_category_name,
+            @WebParam(name="new_hex_color") String new_hex_color
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.updateBeerCategory(
+                cookie,
+                id,
+                new_category_name,
+                new_hex_color
+        );
+    }
+
+    @WebMethod
+    public boolean deleteBeerCategory (
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="id") int id
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.deleteBeerCategory(
                 cookie,
                 id
         );
