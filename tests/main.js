@@ -658,7 +658,12 @@ call_api(vendormenu_url, "updateBeer",{
 	"beer_category_id": "6"
 });
 */
+/*
 call_api(vendormenu_url, "deleteBeer", {
 	"cookie": temp_cookie,
 	"id": 82
+});
+*/
+call_api(publicbrewery_url, "loadBeerMenu", {
+	"brewery_id": 21
 });

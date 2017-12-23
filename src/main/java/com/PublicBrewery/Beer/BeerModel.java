@@ -17,22 +17,29 @@ public class BeerModel extends AbstractModel {
 
     private String loadBeerMenuSQL_stage1 =
             "SELECT" +
-                    "   id AS beer_id," +
-                    "   vendor_id," +
-                    "   name," +
-                    "   color," +
-                    "   bitterness," +
-                    "   abv," +
-                    "   beer_style," +
-                    "   beer_tastes," +
-                    "   description," +
-                    "   price," +
-                    "   beer_sizes, " +
-                    "   hop_score " +
+                    "   b.id AS beer_id," +
+                    "   b.vendor_id AS beer_vendor_id," +
+                    "   b.name AS beer_name," +
+                    "   b.color AS beer_color," +
+                    "   b.bitterness AS beer_bitterness," +
+                    "   b.abv AS beer_abv," +
+                    "   b.beer_style AS beer_style," +
+                    "   b.beer_tastes AS beer_tastes," +
+                    "   b.description AS beer_description," +
+                    "   b.price AS beer_price," +
+                    "   b.beer_sizes AS beer_sizes, " +
+                    "   b.hop_score AS beer_hop_score, " +
+                    "   bc.name AS beer_category_name, " +
+                    "   bc.hex_color AS beer_category_hex_color, " +
+                    "   bc.id AS beer_category_id " +
                     "FROM" +
-                    "   beers " +
+                    "   beers b " +
+                    "LEFT JOIN" +
+                    "   beer_categories bc " +
+                    "ON " +
+                    "   b.beer_category_id = bc.id " +
                     "WHERE" +
-                    "   vendor_id = ?";
+                    "   b.vendor_id = ?";
 
     /**
      * Bottom line, we need all the reviews for all the beers for this vendor where they exist.
@@ -162,23 +169,27 @@ public class BeerModel extends AbstractModel {
             while (stage1Result.next()) {
                 Beer beer = new Beer();
                 beer.beer_id = stage1Result.getInt("beer_id");
-                beer.vendor_id = stage1Result.getInt("vendor_id");
-                beer.name = stage1Result.getString("name");
-                beer.color = stage1Result.getInt("color");
-                beer.bitterness = stage1Result.getInt("bitterness");
-                beer.abv = stage1Result.getInt("abv");
+                beer.vendor_id = stage1Result.getInt("beer_vendor_id");
+                beer.name = stage1Result.getString("beer_name");
+                beer.color = stage1Result.getInt("beer_color");
+                beer.bitterness = stage1Result.getInt("beer_bitterness");
+                beer.abv = stage1Result.getInt("beer_abv");
                 beer.beer_style = stage1Result.getString("beer_style");
                 // Beer tastes are an array of enums in postgres.
                 Array beer_tastes = stage1Result.getArray("beer_tastes");
                 String[] str_beer_tastes = (String[]) beer_tastes.getArray();
                 beer.beer_tastes = str_beer_tastes;
-                beer.description = stage1Result.getString("description");
-                beer.price = stage1Result.getFloat("price");
+                beer.description = stage1Result.getString("beer_description");
+                beer.price = stage1Result.getFloat("beer_price");
                 // Beer sizes are an array of enums in postgres.
                 Array beer_sizes = stage1Result.getArray("beer_sizes");
                 String[] str_beer_sizes = (String[]) beer_sizes.getArray();
                 beer.beer_sizes = str_beer_sizes;
-                beer.hop_score = stage1Result.getString("hop_score");
+                beer.hop_score = stage1Result.getString("beer_hop_score");
+                beer.beer_category.name = stage1Result.getString("beer_category_name");
+                beer.beer_category.hex_color = stage1Result.getString("beer_category_hex_color");
+                beer.beer_category.vendor_id = beer.vendor_id;
+                beer.beer_category.beer_category_id = stage1Result.getInt("beer_category_id");
                 beerHashMap.put(beer.beer_id, beer);
             }
             /*
@@ -306,6 +317,7 @@ public class BeerModel extends AbstractModel {
                     "   beer_id in (";
 
     /**
+     * @TODO STOP USING THIS!
      * Returns limit-offset beers for a given brewery_id ordered by a column (of possible options).
      *
      *      1) Fetch beers where vendor_id matches with limit-offset, ordered by column (generating
@@ -321,6 +333,7 @@ public class BeerModel extends AbstractModel {
      * @return
      * @throws Exception
      */
+    // @TODO STOP USING THIS!
     public HashMap<Integer, Beer> loadBeerMenuPaginated(
             int brewery_id,
             int limit,

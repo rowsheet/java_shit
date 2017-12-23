@@ -26,6 +26,7 @@ public class BeerController extends AbstractController {
         return this.returnJSON(beerHashMap);
     }
 
+    // @TODO STOP USING THIS!
     public String loadBeerMenuPaginated(
         int brewery_id,
         int limit,

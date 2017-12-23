@@ -23,6 +23,8 @@ public class Beer {
     public float price;
     public String[] beer_sizes;
     public String hop_score;
+    // From a join, but almost straight from DB (one-to-one) relationship.
+    public BeerCategory beer_category;
 
     /**
      * These have to be calculated.
@@ -54,6 +56,7 @@ public class Beer {
         this.price = (float) 0.0;
         this.beer_sizes = null;
         this.hop_score = null;
+        this.beer_category = new BeerCategory();
 
         this.review_count = 0;
         this.review_average = (float) 0.0;
