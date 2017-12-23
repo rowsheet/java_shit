@@ -17,6 +17,9 @@ public class VendorDrink {
     public String hex_two;
     public String hex_three;
     public String hex_background;
+    public String drink_serve_temp; // db::enum ('warm', 'hot', 'cold', 'on-the-rocks')
+    public String servings; // not int because db::enum, some that look like '5+';
+    public String icon_enum;
     // Comes from other table but almost straight from DB.
     public VendorDrinkCategory vendor_drink_category;
     public ArrayList<Spirit> spirits;
@@ -53,6 +56,8 @@ public class VendorDrink {
         this.vendor_drink_category = new VendorDrinkCategory();
         this.spirits = new ArrayList<Spirit>();
         this.is_alcoholic = false;
+        this.drink_serve_temp = "";
+        this.servings = "";
 
         this.review_count = 0;
         this.review_average = (float)0.0;

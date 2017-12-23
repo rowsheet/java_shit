@@ -40,7 +40,10 @@ public class DrinkModel extends AbstractModel {
                     "   hex_one = ?," +
                     "   hex_two = ?," +
                     "   hex_three = ?," +
-                    "   hex_background = ? " +
+                    "   hex_background = ?," +
+                    "   drink_serve_temp = ?::drink_serve_temp," +
+                    "   servings = ?::drink_servings," +
+                    "   icon_enum = ?::vendor_drink_icon " +
                     "WHERE " +
                     "   id = ?";
 
@@ -57,9 +60,12 @@ public class DrinkModel extends AbstractModel {
                     "   hex_one, " +
                     "   hex_two, " +
                     "   hex_three, " +
-                    "   hex_background" +
+                    "   hex_background," +
+                    "   drink_serve_temp, " +
+                    "   servings," +
+                    "   icon_enum " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?,?,?)" +
+                    "?,?,?,?,?,?,?,?,?,?,?::drink_serve_temp,?::drink_servings,?::vendor_drink_icon)" +
                     "RETURNING id";
 
     private String deleteSpiritDrinkAssociationSQL =
@@ -199,7 +205,10 @@ public class DrinkModel extends AbstractModel {
             String hex_two,
             String hex_three,
             String hex_background,
-            int[] spirit_ids
+            int[] spirit_ids,
+            String drink_serve_temp,
+            String servings,
+            String icon_enum
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -252,7 +261,10 @@ public class DrinkModel extends AbstractModel {
             stage3.setString(6, hex_two);
             stage3.setString(7, hex_three);
             stage3.setString(8, hex_background);
-            stage3.setInt(9, id);
+            stage3.setString(9, drink_serve_temp);
+            stage3.setString(10, servings);
+            stage3.setString(11, icon_enum);
+            stage3.setInt(12, id);
             stage3.execute();
             /*
             Stage 4
@@ -345,7 +357,10 @@ public class DrinkModel extends AbstractModel {
             String hex_two,
             String hex_three,
             String hex_background,
-            int[] spirit_ids
+            int[] spirit_ids,
+            String drink_serve_temp,
+            String servings,
+            String icon_enum
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -381,6 +396,9 @@ public class DrinkModel extends AbstractModel {
             stage1.setString(8, hex_two);
             stage1.setString(9, hex_three);
             stage1.setString(10, hex_background);
+            stage1.setString(11, drink_serve_temp);
+            stage1.setString(12, servings);
+            stage1.setString(13, icon_enum);
             stage1Result = stage1.executeQuery();
             // Get the id of the new entry.
             int drink_id = 0;

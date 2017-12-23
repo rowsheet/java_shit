@@ -549,22 +549,25 @@ call_api(vendormenu_url, "deleteDrinkCategory",{
 /*
 call_api(vendormenu_url, "createDrink",{
 	"cookie": temp_cookie,
-	"name": "UNIT TEST two",
-	"description": "This drink is dank.",
-	"price": 99.99,
+	"name": "Drink With Icon",
+	"description": "This drink has an icon.",
+	"price": 87.99,
 	"drink_category_id": 2,
-	"hex_one": "#aaa",
-	"hex_two": "#bbb",
-	"hex_three": "#ccc",
-	"hex_background": "#fff",
-	"spirit_ids": [5,6,7,8]
+	"hex_one": "#123",
+	"hex_two": "#234",
+	"hex_three": "#345",
+	"hex_background": "#eee",
+	"spirit_ids": [5,6,7,8],
+	"drink_serve_temp": "warm",
+	"servings": "5+",
+	"icon_enum": "na20"
 });
 */
 /*
 call_api(vendormenu_url, "updateDrink",{
 	"cookie": temp_cookie,
 	"id": 1,
-	"name": "NEW UPDATE",
+	"name": "The Expensive Juice",
 	"description": "This drink is updated and dank yo.",
 	"price": 99.99,
 	"drink_category_id": 2,
@@ -572,7 +575,10 @@ call_api(vendormenu_url, "updateDrink",{
 	"hex_two": "#eee",
 	"hex_three": "#aaa",
 	"hex_background": "#bbb",
-	"spirit_ids": [1,2,6,8,13,14,15]
+	"spirit_ids": [1,2,6,8,13,14,15],
+	"drink_serve_temp": "on-the-rocks",
+	"servings": "2",
+	"icon_enum": "a1"
 });
 */
 /*
@@ -588,9 +594,11 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 	"filename": "testfile.png"
 });
 */
+/*
 call_api(publicbrewery_url, "loadDrinkMenu",{
 	"brewery_id": 21
 });
+*/
 /*
 call_api(publicbrewery_url, "loadBreweryInfo",{
 	"brewery_id": 21

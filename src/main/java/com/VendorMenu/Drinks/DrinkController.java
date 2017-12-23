@@ -29,7 +29,10 @@ public class DrinkController extends AbstractController {
             String hex_two,
             String hex_three,
             String hex_background,
-            int[] spirit_ids
+            int[] spirit_ids,
+            String drink_serve_temp,
+            String servings,
+            String icon_enum
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -44,6 +47,9 @@ public class DrinkController extends AbstractController {
         this.validateHexColor(hex_three);
         this.validateHexColor(hex_background);
         this.validateSpiritIDs(spirit_ids);
+        this.validateDrinkServeTemp(drink_serve_temp);
+        this.validateDrinkServingSize(servings);
+        this.validateDrinkIconEnum(icon_enum);
         // Initialize model and create the data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.updateDrink(
@@ -57,7 +63,10 @@ public class DrinkController extends AbstractController {
                 hex_two,
                 hex_three,
                 hex_background,
-                spirit_ids);
+                spirit_ids,
+                drink_serve_temp,
+                servings,
+                icon_enum);
     }
 
     public int createDrink(
@@ -70,7 +79,10 @@ public class DrinkController extends AbstractController {
             String hex_two,
             String hex_three,
             String hex_background,
-            int[] spirit_ids
+            int[] spirit_ids,
+            String drink_serve_temp,
+            String servings,
+            String icon_enum
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -83,6 +95,9 @@ public class DrinkController extends AbstractController {
         this.validateHexColor(hex_three);
         this.validateHexColor(hex_background);
         this.validateSpiritIDs(spirit_ids);
+        this.validateDrinkServeTemp(drink_serve_temp);
+        this.validateDrinkServingSize(servings);
+        this.validateDrinkIconEnum(icon_enum);
         // Initialize model and create data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.createDrink(
@@ -95,7 +110,10 @@ public class DrinkController extends AbstractController {
                 hex_two,
                 hex_three,
                 hex_background,
-                spirit_ids);
+                spirit_ids,
+                drink_serve_temp,
+                servings,
+                icon_enum);
     }
 
     public int createDrinkCategory(

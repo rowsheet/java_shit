@@ -19,10 +19,13 @@ public class DrinkModel extends AbstractModel {
                     "   vd.hex_two AS vendor_drink_hex_two, " +
                     "   vd.hex_three AS vendor_drink_hex_three, " +
                     "   vd.hex_background AS vendor_drink_hex_background, " +
+                    "   vd.drink_serve_temp AS vendor_drink_serve_temp, " +
+                    "   vd.servings AS vendor_drink_servings," +
+                    "   vd.icon_enum AS vendor_drink_icon_enum " +
                     "   vdc.id AS vendor_drink_category_id, " +
                     "   vdc.name AS vendor_drink_category_name, " +
                     "   vdc.hex_color AS vendor_drink_category_hex_color, " +
-                    "   vdc.icon_enum AS vendor_drink_icon_enum " +
+                    "   vdc.icon_enum AS vendor_drink_category_icon_enum " +
                     "FROM " +
                     "   vendor_drinks vd " +
                     "LEFT JOIN " +
@@ -123,7 +126,8 @@ public class DrinkModel extends AbstractModel {
                     "   vd.id AS vendor_drink_id, " +
                     "   s.spirit_type AS spirit_type, " +
                     "   s.company_name AS spirit_company_name, " +
-                    "   s.brand_name AS spirit_brand_name " +
+                    "   s.brand_name AS spirit_brand_name, " +
+                    "   s.id AS spirit_id " +
                     "FROM " +
                     "   vendor_drinks vd " +
                     "LEFT JOIN " +
@@ -182,6 +186,7 @@ public class DrinkModel extends AbstractModel {
             while (stage1Result.next()) {
                 VendorDrink vendorDrink = new VendorDrink();
                 vendorDrink.vendor_drink_id = stage1Result.getInt("vendor_drink_id");
+                vendorDrink.name = stage1Result.getString("vendor_drink_name");
                 vendorDrink.vendor_id = stage1Result.getInt("vendor_id");
                 vendorDrink.description = stage1Result.getString("vendor_drink_description");
                 vendorDrink.price = stage1Result.getFloat("vendor_drink_price");
@@ -189,11 +194,14 @@ public class DrinkModel extends AbstractModel {
                 vendorDrink.hex_two = stage1Result.getString("vendor_drink_hex_two");
                 vendorDrink.hex_three = stage1Result.getString("vendor_drink_hex_three");
                 vendorDrink.hex_background = stage1Result.getString("vendor_drink_hex_background");
+                vendorDrink.drink_serve_temp = stage1Result.getString("vendor_drink_serve_temp");
+                vendorDrink.servings = stage1Result.getString("vendor_drink_servings");
+                vendorDrink.icon_enum = stage1Result.getString("vendor_drink_icon_enum");
                 vendorDrink.vendor_drink_category.vendor_id = vendorDrink.vendor_id;
                 vendorDrink.vendor_drink_category.name = stage1Result.getString("vendor_drink_category_name");
                 vendorDrink.vendor_drink_category.hex_color = stage1Result.getString("vendor_drink_category_hex_color");
                 vendorDrink.vendor_drink_category.vendor_drink_category_id = stage1Result.getInt("vendor_drink_category_id");
-                vendorDrink.vendor_drink_category.icon_enum = stage1Result.getString("vendor_drink_icon_enum");
+                vendorDrink.vendor_drink_category.icon_enum = stage1Result.getString("vendor_drink_category_icon_enum");
                 vendorDrinkHashMap.put(vendorDrink.vendor_drink_id, vendorDrink);
             }
             /*
@@ -234,10 +242,15 @@ public class DrinkModel extends AbstractModel {
                 stage4Result = stage4.executeQuery();
                 while (stage4Result.next()) {
                     Spirit spirit = new Spirit();
+                    spirit.spirit_id = stage4Result.getInt("spirit_id");
                     spirit.brand_name = stage4Result.getString("spirit_brand_name");
                     spirit.company_name = stage4Result.getString("spirit_company_name");
                     spirit.spirit_type = stage4Result.getString("spirit_type");
-                    vendorDrinkHashMap.get(vendor_drink_id).spirits.add(spirit);
+                    // Mark the drink as alcoholic and add the spirits.
+                    if (spirit.spirit_id != 0) {
+                        vendorDrinkHashMap.get(vendor_drink_id).is_alcoholic = true;
+                        vendorDrinkHashMap.get(vendor_drink_id).spirits.add(spirit);
+                    }
                 }
             }
             /*

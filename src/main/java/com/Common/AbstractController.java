@@ -412,6 +412,31 @@ public class AbstractController {
         }
     }
 
+    protected void validateDrinkServeTemp(String drink_serve_temp)
+        throws Exception {
+        if (!drink_serve_temp.equals("hot") &&
+                !drink_serve_temp.equals("cold") &&
+                !drink_serve_temp.equals("warm") &&
+                !drink_serve_temp.equals("on-the-rocks")) {
+            throw new Exception("Invalid drink serving temperature.");
+        }
+    }
+
+    protected void validateDrinkServingSize(String drink_serving_size)
+        throws Exception {
+        if (!drink_serving_size.equals("1") &&
+                !drink_serving_size.equals("2") &&
+                !drink_serving_size.equals("3") &&
+                !drink_serving_size.equals("4") &&
+                !drink_serving_size.equals("5") &&
+                !drink_serving_size.equals("2+") &&
+                !drink_serving_size.equals("3+") &&
+                !drink_serving_size.equals("4+") &&
+                !drink_serving_size.equals("5+")) {
+            throw new Exception("Invalid drink serving size.");
+        }
+    }
+
     protected void validateDrinkIconEnum(String icon_enum)
             throws Exception {
         if (!icon_enum.equals("a1") &&

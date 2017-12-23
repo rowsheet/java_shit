@@ -327,7 +327,10 @@ public class VendorMenuHandler {
             @WebParam(name = "hex_two") String hex_two,
             @WebParam(name = "hex_three") String hex_three,
             @WebParam(name = "hex_background") String hex_background,
-            @WebParam(name = "spirit_ids") int[] spirit_ids
+            @WebParam(name = "spirit_ids") int[] spirit_ids,
+            @WebParam(name="drink_serve_temp") String drink_serve_temp,
+            @WebParam(name="servings") String servings,
+            @WebParam(name="icon_enum") String icon_enum
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrink(
@@ -340,7 +343,10 @@ public class VendorMenuHandler {
                 hex_two,
                 hex_three,
                 hex_background,
-                spirit_ids);
+                spirit_ids,
+                drink_serve_temp,
+                servings,
+                icon_enum);
     }
 
     @WebMethod
@@ -355,7 +361,10 @@ public class VendorMenuHandler {
             @WebParam(name = "hex_two") String hex_two,
             @WebParam(name = "hex_three") String hex_three,
             @WebParam(name = "hex_background") String hex_background,
-            @WebParam(name = "spirit_ids") int[] spirit_ids
+            @WebParam(name = "spirit_ids") int[] spirit_ids,
+            @WebParam(name="drink_serve_temp") String drink_serve_temp,
+            @WebParam(name="servings") String servings,
+            @WebParam(name="icon_enum") String icon_enum
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrink(
@@ -369,7 +378,10 @@ public class VendorMenuHandler {
                 hex_two,
                 hex_three,
                 hex_background,
-                spirit_ids);
+                spirit_ids,
+                drink_serve_temp,
+                servings,
+                icon_enum);
     }
 
     @WebMethod
