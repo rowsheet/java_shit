@@ -3,6 +3,8 @@ package com.VendorMenu;
 import com.VendorMenu.Beers.BeerController;
 import com.VendorMenu.Drinks.DrinkController;
 import com.VendorMenu.Foods.FoodController;
+import com.VendorMenu.Ingredients.IngredientsController;
+import jnr.ffi.annotations.In;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -531,5 +533,255 @@ public class VendorMenuHandler {
         return drinkController.deleteVendorDrinkImage(
             cookie,
             drink_image_id);
+    }
+
+    /* BEER SECTION ------------------------------------------------------------
+    ██╗███╗   ██╗ ██████╗ ██████╗ ███████╗██████╗ ██╗███████╗███╗   ██╗████████╗███████╗
+    ██║████╗  ██║██╔════╝ ██╔══██╗██╔════╝██╔══██╗██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+    ██║██╔██╗ ██║██║  ███╗██████╔╝█████╗  ██║  ██║██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+    ██║██║╚██╗██║██║   ██║██╔══██╗██╔══╝  ██║  ██║██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+    ██║██║ ╚████║╚██████╔╝██║  ██║███████╗██████╔╝██║███████╗██║ ╚████║   ██║   ███████║
+    ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+    ------------------------------------------------------------*/
+
+    /*------------------------------------------------------------
+    FOOD INGREDIENTS
+    ------------------------------------------------------------*/
+    @WebMethod
+    public int createFoodIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.createFoodIngredient(
+                cookie,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean updateFoodIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.updateFoodIngredient(
+                cookie,
+                food_ingredient_id,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFoodIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "food_ingredient_id") String food_ingredient_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteFoodIngredient(
+                cookie,
+                food_ingredient_id
+        );
+    }
+
+    @WebMethod
+    public boolean createFoodIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.createFoodIngredientAssociation(
+                cookie,
+                food_ingredient_id,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFoodIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteFoodIngredientAssociation(
+                cookie,
+                food_ingredient_id,
+                vendor_food_id
+        );
+    }
+    /*------------------------------------------------------------
+    DRINK INGREDIENTS
+    ------------------------------------------------------------*/
+    @WebMethod
+    public int createDrinkIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.createDrinkIngredient(
+                cookie,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean updateDrinkIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.updateDrinkIngredient(
+                cookie,
+                drink_ingredient_id,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean deleteDrinkIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteDrinkIngredient(
+                cookie,
+                drink_ingredient_id
+        );
+    }
+
+    @WebMethod
+    public boolean createDrinkIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return  ingredientsController.createFoodIngredientAssociation(
+                cookie,
+                drink_ingredient_id,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean deleteDrinkIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteDrinkIngredientAssociation(
+                cookie,
+                drink_ingredient_id,
+                vendor_food_id
+        );
+    }
+    /*------------------------------------------------------------
+    BEER INGREDIENTS
+    ------------------------------------------------------------*/
+    @WebMethod
+    public int createBeerIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.createBeerIngredient(
+                cookie,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean updateBeerIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "description") String description,
+            @WebParam(name = "source") String source,
+            @WebParam(name = "key_words") String[] keywords
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.updateBeerIngredient(
+                cookie,
+                beer_ingredient_id,
+                name,
+                description,
+                source,
+                keywords
+        );
+    }
+
+    @WebMethod
+    public boolean deleteBeerIngredient(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteBeerIngredient(
+                cookie,
+                beer_ingredient_id
+        );
+    }
+
+    @WebMethod
+    public boolean createBeerIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.createBeerIngredientAssociation(
+                cookie,
+                beer_ingredient_id,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean deleteBeerIngredientAssociation(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
+            @WebParam(name = "vendor_food_id") String vendor_food_id
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.deleteBeerIngredientAssociation(
+                cookie,
+                beer_ingredient_id,
+                vendor_food_id
+        );
     }
 }
