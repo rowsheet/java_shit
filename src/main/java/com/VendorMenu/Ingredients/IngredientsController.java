@@ -14,6 +14,11 @@ public class IngredientsController extends AbstractController {
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createFoodIngredient(
                 cookie,
@@ -26,12 +31,18 @@ public class IngredientsController extends AbstractController {
 
     public boolean updateFoodIngredient(
             String cookie,
-            String food_ingredient_id,
+            int food_ingredient_id,
             String name,
             String description,
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateID(food_ingredient_id, "food_ingredient_id");
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.updateFoodIngredient(
                 cookie,
@@ -45,8 +56,10 @@ public class IngredientsController extends AbstractController {
 
     public boolean deleteFoodIngredient(
             String cookie,
-            String food_ingredient_id
+            int food_ingredient_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(food_ingredient_id, "food_ingredient_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteFoodIngredient(
                 cookie,
@@ -56,9 +69,12 @@ public class IngredientsController extends AbstractController {
 
     public boolean createFoodIngredientAssociation(
             String cookie,
-            String food_ingredient_id,
-            String vendor_food_id
+            int food_ingredient_id,
+            int vendor_food_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(food_ingredient_id, "food_ingredient_id");
+        this.validateID(vendor_food_id, "vendor_food_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createFoodIngredientAssociation(
                 cookie,
@@ -69,9 +85,12 @@ public class IngredientsController extends AbstractController {
 
     public boolean deleteFoodIngredientAssociation(
             String cookie,
-            String food_ingredient_id,
-            String vendor_food_id
+            int food_ingredient_id,
+            int vendor_food_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(food_ingredient_id, "food_ingredient_id");
+        this.validateID(vendor_food_id, "vendor_food_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteFoodIngredientAssociation(
                 cookie,
@@ -89,6 +108,11 @@ public class IngredientsController extends AbstractController {
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createDrinkIngredient(
                 cookie,
@@ -101,12 +125,18 @@ public class IngredientsController extends AbstractController {
 
     public boolean updateDrinkIngredient(
             String cookie,
-            String drink_ingredient_id,
+            int drink_ingredient_id,
             String name,
             String description,
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateID(drink_ingredient_id, "drink_ingredient_id");
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.updateDrinkIngredient(
                 cookie,
@@ -120,8 +150,10 @@ public class IngredientsController extends AbstractController {
 
     public boolean deleteDrinkIngredient(
             String cookie,
-            String drink_ingredient_id
+            int drink_ingredient_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(drink_ingredient_id, "drink_ingredient_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteDrinkIngredient(
                 cookie,
@@ -131,9 +163,12 @@ public class IngredientsController extends AbstractController {
 
     public boolean createDrinkIngredientAssociation(
             String cookie,
-            String drink_ingredient_id,
-            String vendor_food_id
+            int drink_ingredient_id,
+            int vendor_food_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(drink_ingredient_id, "drink_ingredient_id");
+        this.validateID(vendor_food_id, "vendor_food_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return  ingredientsModel.createFoodIngredientAssociation(
                 cookie,
@@ -144,9 +179,12 @@ public class IngredientsController extends AbstractController {
 
     public boolean deleteDrinkIngredientAssociation(
             String cookie,
-            String drink_ingredient_id,
-            String vendor_food_id
+            int drink_ingredient_id,
+            int vendor_food_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(drink_ingredient_id, "drink_ingredient_id");
+        this.validateID(vendor_food_id, "vendor_food_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteDrinkIngredientAssociation(
                 cookie,
@@ -164,6 +202,11 @@ public class IngredientsController extends AbstractController {
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createBeerIngredient(
                 cookie,
@@ -176,12 +219,18 @@ public class IngredientsController extends AbstractController {
 
     public boolean updateBeerIngredient(
             String cookie,
-            String beer_ingredient_id,
+            int beer_ingredient_id,
             String name,
             String description,
             String source,
             String[] keywords
     ) throws Exception {
+        this.validateID(beer_ingredient_id, "beer_ingredient_id");
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateString(description, "description");
+        this.validateString(source, "source");
+        this.validateKeywordString(keywords);
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.updateBeerIngredient(
                 cookie,
@@ -195,8 +244,10 @@ public class IngredientsController extends AbstractController {
 
     public boolean deleteBeerIngredient(
             String cookie,
-            String beer_ingredient_id
+            int beer_ingredient_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(beer_ingredient_id, "beer_ingredient_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteBeerIngredient(
                 cookie,
@@ -206,27 +257,33 @@ public class IngredientsController extends AbstractController {
 
     public boolean createBeerIngredientAssociation(
             String cookie,
-            String beer_ingredient_id,
-            String vendor_food_id
+            int beer_ingredient_id,
+            int beer_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(beer_ingredient_id, "beer_ingredient_id");
+        this.validateID(beer_id, "beer_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createBeerIngredientAssociation(
                 cookie,
                 beer_ingredient_id,
-                vendor_food_id
+                beer_id
         );
     }
 
     public boolean deleteBeerIngredientAssociation(
             String cookie,
-            String beer_ingredient_id,
-            String vendor_food_id
+            int beer_ingredient_id,
+            int beer_id
     ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(beer_ingredient_id, "beer_ingredient_id");
+        this.validateID(beer_id, "beer_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteBeerIngredientAssociation(
                 cookie,
                 beer_ingredient_id,
-                vendor_food_id
+                beer_id
         );
     }
 }

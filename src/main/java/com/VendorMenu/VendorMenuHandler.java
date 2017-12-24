@@ -568,7 +568,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean updateFoodIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
+            @WebParam(name = "food_ingredient_id") int food_ingredient_id,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
@@ -588,7 +588,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteFoodIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") String food_ingredient_id
+            @WebParam(name = "food_ingredient_id") int food_ingredient_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteFoodIngredient(
@@ -600,8 +600,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean createFoodIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "food_ingredient_id") int food_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createFoodIngredientAssociation(
@@ -614,8 +614,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteFoodIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") String food_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "food_ingredient_id") int food_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteFoodIngredientAssociation(
@@ -648,7 +648,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean updateDrinkIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
+            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
@@ -668,7 +668,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteDrinkIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id
+            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredient(
@@ -680,8 +680,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean createDrinkIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return  ingredientsController.createFoodIngredientAssociation(
@@ -694,8 +694,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteDrinkIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") String drink_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredientAssociation(
@@ -728,7 +728,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean updateBeerIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
+            @WebParam(name = "beer_ingredient_id") int beer_ingredient_id,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
@@ -748,7 +748,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteBeerIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id
+            @WebParam(name = "beer_ingredient_id") int beer_ingredient_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteBeerIngredient(
@@ -760,8 +760,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean createBeerIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "beer_ingredient_id") int beer_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createBeerIngredientAssociation(
@@ -774,8 +774,8 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteBeerIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_ingredient_id") String beer_ingredient_id,
-            @WebParam(name = "vendor_food_id") String vendor_food_id
+            @WebParam(name = "beer_ingredient_id") int beer_ingredient_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteBeerIngredientAssociation(

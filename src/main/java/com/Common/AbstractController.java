@@ -37,6 +37,17 @@ public class AbstractController {
         return this.gson.toJson(object);
     }
 
+    protected void validateKeywordString(String[] keyword_array)
+        throws InvalidParameterException {
+        if (keyword_array.length > 0) {
+            for (int i = 0; i < keyword_array.length; i++) {
+                if (keyword_array[i] == null || keyword_array[i] == "") {
+                    throw new InvalidParameterException("Invalid keyword");
+                }
+            }
+        }
+    }
+
     protected void validateString(String input, String input_name)
         throws InvalidParameterException {
         if (input == null || input == "") {
