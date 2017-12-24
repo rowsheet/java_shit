@@ -681,13 +681,13 @@ public class VendorMenuHandler {
     public boolean createDrinkIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
-            @WebParam(name = "vendor_food_id") int vendor_food_id
+            @WebParam(name = "vendor_drink_id") int vendor_drink_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
-        return  ingredientsController.createFoodIngredientAssociation(
+        return  ingredientsController.createDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
-                vendor_food_id
+                vendor_drink_id
         );
     }
 
@@ -695,13 +695,13 @@ public class VendorMenuHandler {
     public boolean deleteDrinkIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
-            @WebParam(name = "vendor_food_id") int vendor_food_id
+            @WebParam(name = "vendor_drink_id") int vendor_drink_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
-                vendor_food_id
+                vendor_drink_id
         );
     }
     /*------------------------------------------------------------
@@ -761,13 +761,13 @@ public class VendorMenuHandler {
     public boolean createBeerIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "beer_ingredient_id") int beer_ingredient_id,
-            @WebParam(name = "vendor_food_id") int vendor_food_id
+            @WebParam(name = "beer_id") int beer_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createBeerIngredientAssociation(
                 cookie,
                 beer_ingredient_id,
-                vendor_food_id
+                beer_id
         );
     }
 
@@ -775,13 +775,13 @@ public class VendorMenuHandler {
     public boolean deleteBeerIngredientAssociation(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "beer_ingredient_id") int beer_ingredient_id,
-            @WebParam(name = "vendor_food_id") int vendor_food_id
+            @WebParam(name = "beer_id") int beer_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteBeerIngredientAssociation(
                 cookie,
                 beer_ingredient_id,
-                vendor_food_id
+                beer_id
         );
     }
 }

@@ -16,7 +16,7 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
-temp_cookie = '{"sessionKey":"gWaHS6U9iBlcc/ErfzrewlbaiYm8nSrs4ivD5HIgmys+fonN+kstCPU0LPfuaj8FX1M=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+temp_cookie = '{"sessionKey":"gWaHS6U9iBlcc/ErfzrewlbaiYm8nSrs4ivD5HIgmys+fonN+kstCPU0LPfuaj8FX1M=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
 	soap.createClient(url, function(err, client) {
@@ -708,3 +708,79 @@ call_api(vendormenu_url, "deleteFoodIngredientAssociation", {
 	"vendor_food_id": 56
 });
 */
+/*
+call_api(vendormenu_url, "createDrinkIngredient", {
+	"cookie": temp_cookie,
+	"name": "Boxed Expensive Water",
+	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a nisi tortor.",
+	"source": "The Expensive Company, LLC.",
+	"key_words": ["Organic", "Gluten-Free", "Free-Range", "Expensive"]
+});
+*/
+/*
+call_api(vendormenu_url, "updateDrinkIngredient", {
+	"cookie": temp_cookie,
+	"drink_ingredient_id": 5,
+	"name": "Expensive Water",
+	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a nisi tortor.",
+	"source": "Organic Farms, LLC.",
+	"key_words": ["The Expensive Company"]
+});
+*/
+/*
+call_api(vendormenu_url, "deleteDrinkIngredient", {
+	"cookie": temp_cookie,
+	"drink_ingredient_id": 6
+});
+*/
+/*
+call_api(vendormenu_url, "createDrinkIngredientAssociation", {
+	"cookie": temp_cookie,
+	"drink_ingredient_id": 5,
+	"vendor_drink_id": 12 
+});
+*/
+/*
+call_api(vendormenu_url, "deleteDrinkIngredientAssociation", {
+	"cookie": temp_cookie,
+	"drink_ingredient_id": 5,
+	"vendor_drink_id": 12 
+});
+*/
+/*
+call_api(vendormenu_url, "createBeerIngredient", {
+	"cookie": temp_cookie,
+	"name": "Delete Me",
+	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a nisi tortor.",
+	"source": "Milk Stout Prep Company.",
+	"key_words": []
+});
+*/
+/*
+call_api(vendormenu_url, "updateBeerIngredient", {
+	"cookie": temp_cookie,
+	"beer_ingredient_id": 6,
+	"name": "Something Organic",
+	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a nisi tortor.",
+	"source": "Organic Farms, LLC.",
+	"key_words": ["The Expensive Company"]
+});
+*/
+/*
+call_api(vendormenu_url, "deleteBeerIngredient", {
+	"cookie": temp_cookie,
+	"beer_ingredient_id": 6
+});
+*/
+/*
+call_api(vendormenu_url, "createBeerIngredientAssociation", {
+	"cookie": temp_cookie,
+	"beer_ingredient_id": 2,
+	"beer_id": 45
+});
+*/
+call_api(vendormenu_url, "deleteBeerIngredientAssociation", {
+	"cookie": temp_cookie,
+	"beer_ingredient_id": 2,
+	"beer_id": 45
+});

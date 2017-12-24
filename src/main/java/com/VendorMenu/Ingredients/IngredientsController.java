@@ -164,32 +164,32 @@ public class IngredientsController extends AbstractController {
     public boolean createDrinkIngredientAssociation(
             String cookie,
             int drink_ingredient_id,
-            int vendor_food_id
+            int vendor_drink_id
     ) throws Exception {
         this.validateString(cookie, "cookie");
         this.validateID(drink_ingredient_id, "drink_ingredient_id");
-        this.validateID(vendor_food_id, "vendor_food_id");
+        this.validateID(vendor_drink_id, "vendor_drink_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
-        return  ingredientsModel.createFoodIngredientAssociation(
+        return  ingredientsModel.createDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
-                vendor_food_id
+                vendor_drink_id
         );
     }
 
     public boolean deleteDrinkIngredientAssociation(
             String cookie,
             int drink_ingredient_id,
-            int vendor_food_id
+            int vendor_drink_id
     ) throws Exception {
         this.validateString(cookie, "cookie");
         this.validateID(drink_ingredient_id, "drink_ingredient_id");
-        this.validateID(vendor_food_id, "vendor_food_id");
+        this.validateID(vendor_drink_id, "vendor_drink_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.deleteDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
-                vendor_food_id
+                vendor_drink_id
         );
     }
     /*------------------------------------------------------------
