@@ -2,6 +2,8 @@ package com.VendorMenu;
 
 import com.VendorMenu.Beers.BeerController;
 import com.VendorMenu.Drinks.DrinkController;
+import com.VendorMenu.Extras.ExtrasController;
+import com.VendorMenu.Extras.ExtrasModel;
 import com.VendorMenu.Foods.FoodController;
 import com.VendorMenu.Ingredients.IngredientsController;
 import jnr.ffi.annotations.In;
@@ -42,7 +44,8 @@ public class VendorMenuHandler {
             @WebParam(name = "price") float price,
             @WebParam(name = "beer_sizes") String[] beer_sizes,
             @WebParam(name = "hop_score") String hop_score,
-            @WebParam(name = "beer_category_id") int beer_category_id
+            @WebParam(name = "beer_category_id") int beer_category_id,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.createBeer(
@@ -57,7 +60,8 @@ public class VendorMenuHandler {
                 price,
                 beer_sizes,
                 hop_score,
-                beer_category_id
+                beer_category_id,
+                nutritional_fact_id
         );
     }
 
@@ -75,7 +79,8 @@ public class VendorMenuHandler {
             @WebParam(name = "price") float price,
             @WebParam(name = "beer_sizes") String[] beer_sizes,
             @WebParam(name = "hop_score") String hop_score,
-            @WebParam(name = "beer_category_id") int beer_category_id
+            @WebParam(name = "beer_category_id") int beer_category_id,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.updateBeer(
@@ -91,7 +96,8 @@ public class VendorMenuHandler {
                 price,
                 beer_sizes,
                 hop_score,
-                beer_category_id
+                beer_category_id,
+                nutritional_fact_id
         );
     }
 
@@ -217,7 +223,8 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
             @WebParam(name = "food_sizes") String[] food_sizes,
-            @WebParam(name = "food_category_id") int food_category_id
+            @WebParam(name = "food_category_id") int food_category_id,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.createFood(
@@ -238,7 +245,8 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "price") float price,
             @WebParam(name = "food_sizes") String[] food_sizes,
-            @WebParam(name = "food_category_id") int food_category_id
+            @WebParam(name = "food_category_id") int food_category_id,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.updateFood(
@@ -382,7 +390,8 @@ public class VendorMenuHandler {
             @WebParam(name = "spirit_ids") int[] spirit_ids,
             @WebParam(name="drink_serve_temp") String drink_serve_temp,
             @WebParam(name="servings") String servings,
-            @WebParam(name="icon_enum") String icon_enum
+            @WebParam(name="icon_enum") String icon_enum,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrink(
@@ -416,7 +425,8 @@ public class VendorMenuHandler {
             @WebParam(name = "spirit_ids") int[] spirit_ids,
             @WebParam(name="drink_serve_temp") String drink_serve_temp,
             @WebParam(name="servings") String servings,
-            @WebParam(name="icon_enum") String icon_enum
+            @WebParam(name="icon_enum") String icon_enum,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrink(
@@ -535,7 +545,7 @@ public class VendorMenuHandler {
             drink_image_id);
     }
 
-    /* BEER SECTION ------------------------------------------------------------
+    /* INGREDIENTS SECTION ------------------------------------------------------------
     ██╗███╗   ██╗ ██████╗ ██████╗ ███████╗██████╗ ██╗███████╗███╗   ██╗████████╗███████╗
     ██║████╗  ██║██╔════╝ ██╔══██╗██╔════╝██╔══██╗██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
     ██║██╔██╗ ██║██║  ███╗██████╔╝█████╗  ██║  ██║██║█████╗  ██╔██╗ ██║   ██║   ███████╗
@@ -553,7 +563,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createFoodIngredient(
@@ -572,7 +583,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.updateFoodIngredient(
@@ -633,7 +645,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createDrinkIngredient(
@@ -652,7 +665,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.updateDrinkIngredient(
@@ -713,7 +727,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createBeerIngredient(
@@ -732,7 +747,8 @@ public class VendorMenuHandler {
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
-            @WebParam(name = "key_words") String[] keywords
+            @WebParam(name = "key_words") String[] keywords,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.updateBeerIngredient(
@@ -781,6 +797,207 @@ public class VendorMenuHandler {
         return ingredientsController.deleteBeerIngredientAssociation(
                 cookie,
                 beer_ingredient_id,
+                beer_id
+        );
+    }
+
+    /* EXTRAS SECTION ------------------------------------------------------------
+    ███████╗██╗  ██╗████████╗██████╗  █████╗ ███████╗
+    ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝
+    █████╗   ╚███╔╝    ██║   ██████╔╝███████║███████╗
+    ██╔══╝   ██╔██╗    ██║   ██╔══██╗██╔══██║╚════██║
+    ███████╗██╔╝ ██╗   ██║   ██║  ██║██║  ██║███████║
+    ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+    ------------------------------------------------------------*/
+
+    /*------------------------------------------------------------
+    NUTRITIONAL FACTS
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public int createNutritionalFact(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="profile_name") String profile_name,
+            @WebParam(name="serving_size") int serving_size,
+            @WebParam(name="calories") int calories,
+            @WebParam(name="calories_from_fat") int calories_from_fat,
+            @WebParam(name="total_fat") int total_fat,
+            @WebParam(name="saturated_fat") int saturated_fat,
+            @WebParam(name="trans_fat") int trans_fat,
+            @WebParam(name="cholesterol") int cholesterol,
+            @WebParam(name="sodium") int sodium,
+            @WebParam(name="total_carbs") int total_carbs,
+            @WebParam(name="dietary_fiber") int dietary_fiber,
+            @WebParam(name="sugar") int sugar,
+            @WebParam(name="protein") int protein,
+            @WebParam(name="vitamin_a") int vitamin_a,
+            @WebParam(name="vitamin_b") int vitamin_b,
+            @WebParam(name="vitamin_c") int vitamin_c,
+            @WebParam(name="vitamin_d") int vitamin_d,
+            @WebParam(name="calcium") int calcium,
+            @WebParam(name="iron") int iron
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.createNutritionalFact(
+                cookie,
+                profile_name,
+                serving_size,
+                calories,
+                calories_from_fat,
+                total_fat,
+                saturated_fat,
+                trans_fat,
+                cholesterol,
+                sodium,
+                total_carbs,
+                dietary_fiber,
+                sugar,
+                protein,
+                vitamin_a,
+                vitamin_b,
+                vitamin_c,
+                vitamin_d,
+                calcium,
+                iron
+        );
+    }
+
+    @WebMethod
+    public boolean updateNutritionalFact(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name="profile_name") String profile_name,
+            @WebParam(name="serving_size") int serving_size,
+            @WebParam(name="calories") int calories,
+            @WebParam(name="calories_from_fat") int calories_from_fat,
+            @WebParam(name="total_fat") int total_fat,
+            @WebParam(name="saturated_fat") int saturated_fat,
+            @WebParam(name="trans_fat") int trans_fat,
+            @WebParam(name="cholesterol") int cholesterol,
+            @WebParam(name="sodium") int sodium,
+            @WebParam(name="total_carbs") int total_carbs,
+            @WebParam(name="dietary_fiber") int dietary_fiber,
+            @WebParam(name="sugar") int sugar,
+            @WebParam(name="protein") int protein,
+            @WebParam(name="vitamin_a") int vitamin_a,
+            @WebParam(name="vitamin_b") int vitamin_b,
+            @WebParam(name="vitamin_c") int vitamin_c,
+            @WebParam(name="vitamin_d") int vitamin_d,
+            @WebParam(name="calcium") int calcium,
+            @WebParam(name="iron") int iron
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.updateNutritionalFact(
+                cookie,
+                nutritional_fact_id,
+                profile_name,
+                serving_size,
+                calories,
+                calories_from_fat,
+                total_fat,
+                saturated_fat,
+                trans_fat,
+                cholesterol,
+                sodium,
+                total_carbs,
+                dietary_fiber,
+                sugar,
+                protein,
+                vitamin_a,
+                vitamin_b,
+                vitamin_c,
+                vitamin_d,
+                calcium,
+                iron
+        );
+    }
+
+    @WebMethod
+    public boolean deleteNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.deleteNutritionalFact(
+                cookie,
+                nutritional_fact_id
+        );
+    }
+
+    @WebMethod
+    public boolean associateFoodNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.associateFoodNutritionalFact(
+                cookie,
+                nutritional_fact_id,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean disassociateFoodNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "vendor_food_id") int vendor_food_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return  extrasController.disassociateFoodNutritionalFact(
+                cookie,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean associateDrinkNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "vendor_drink_id") int vendor_drink_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.associateDrinkNutritionalFact(
+                cookie,
+                nutritional_fact_id,
+                vendor_drink_id
+        );
+    }
+
+    @WebMethod
+    public boolean disassociateDrinkNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "vendor_drink_id") int vendor_drink_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.disassociateDrinkNutritionalFact(
+                cookie,
+                vendor_drink_id
+        );
+    }
+
+    @WebMethod
+    public boolean associateBeerNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "beer_id") int beer_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return  extrasController.associateBeerNutritionalFact(
+                cookie,
+                nutritional_fact_id,
+                beer_id
+        );
+    }
+
+    @WebMethod
+    public boolean disassociateBeerNutritionalFact(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "beer_id") int beer_id
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.disassociateBeerNutritionalFact(
+                cookie,
                 beer_id
         );
     }

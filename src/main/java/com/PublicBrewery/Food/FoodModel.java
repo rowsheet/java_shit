@@ -57,6 +57,11 @@ public class FoodModel extends AbstractModel {
                     "   vfr.content," +
                     "   vfr.stars," +
                     "   a.id as account_id," +
+                    "   vfr.review_image_one, " +
+                    "   vfr.review_image_two, " +
+                    "   vfr.review_image_three, " +
+                    "   vfr.review_image_four, " +
+                    "   vfr.review_image_five, " +
                     // Create the username where it's null.
                     "   COALESCE(a.username, concat('user'::text, TRIM(LEADING FROM to_char(a.id, '999999999'))::text)) as username," +
                     // Calculate how many days ago the post was posted.
@@ -188,6 +193,11 @@ public class FoodModel extends AbstractModel {
                 vendorFoodReview.content = stage2Result.getString("content");
                 vendorFoodReview.days_ago = stage2Result.getInt("days_ago");
                 vendorFoodReview.username = stage2Result.getString("username");
+                vendorFoodReview.review_image_one = stage2Result.getString("review_image_one");
+                vendorFoodReview.review_image_two = stage2Result.getString("review_image_two");
+                vendorFoodReview.review_image_three = stage2Result.getString("review_image_three");
+                vendorFoodReview.review_image_four = stage2Result.getString("review_image_four");
+                vendorFoodReview.review_image_five = stage2Result.getString("review_image_five");
                 // Add the beer review to the appropriate beer.
                 vendorFoodHashMap.get(vendorFoodReview.vendor_food_id).reviews.add(vendorFoodReview);
             }

@@ -16,7 +16,7 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
-temp_cookie = '{"sessionKey":"gWaHS6U9iBlcc/ErfzrewlbaiYm8nSrs4ivD5HIgmys+fonN+kstCPU0LPfuaj8FX1M=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+temp_cookie = '{"sessionKey":"gWaHS6U9iBlcc/ErfzrewlbaiYm8nSrs4ivD5HIgmys+fonN+kstCPU0LPfuaj8FX1M=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
 	soap.createClient(url, function(err, client) {
@@ -779,8 +779,102 @@ call_api(vendormenu_url, "createBeerIngredientAssociation", {
 	"beer_id": 45
 });
 */
+/*
 call_api(vendormenu_url, "deleteBeerIngredientAssociation", {
 	"cookie": temp_cookie,
 	"beer_ingredient_id": 2,
 	"beer_id": 45
+});
+*/
+/*
+call_api(vendormenu_url, "createNutritionalFact", {
+	"cookie": temp_cookie,
+	"profile_name": "Unit Test Profile",
+	"serving_size": 10,
+	"calories": 10, 
+	"calories_from_fat": 10,
+	"total_fat": 10,
+	"saturated_fat": 10,
+	"trans_fat": 10,
+	"cholesterol": 10,
+	"sodium": 10,
+	"total_carbs": 10,
+	"dietary_fiber": 10,
+	"sugar": 10,
+	"protein": 10,
+	"vitamin_a": 10,
+	"vitamin_b": 10,
+	"vitamin_c": 10,
+	"vitamin_d": 10,
+	"calcium": 10,
+	"iron": 10
+});
+*/
+/*
+call_api(vendormenu_url, "updateNutritionalFact", {
+	"cookie": temp_cookie,
+	"nutritional_fact_id": 3,
+	"profile_name": "Change TEst",
+	"serving_size": 9,
+	"calories": 9, 
+	"calories_from_fat": 9,
+	"total_fat": 9,
+	"saturated_fat": 9,
+	"trans_fat": 9,
+	"cholesterol": 9,
+	"sodium": 9,
+	"total_carbs": 9,
+	"dietary_fiber": 9,
+	"sugar": 9,
+	"protein": 9,
+	"vitamin_a": 9,
+	"vitamin_b": 9,
+	"vitamin_c": 9,
+	"vitamin_d": 9,
+	"calcium": 9,
+	"iron":9 
+});
+*/
+/*
+call_api(vendormenu_url, "deleteNutritionalFact", {
+	"cookie": temp_cookie,
+	"nutritional_fact_id": 3
+});
+*/
+/*
+call_api(vendormenu_url, "associateFoodNutritionalFact", {
+	"cookie": temp_cookie,
+	"vendor_food_id": 41,
+	"nutritional_fact_id": 2
+});
+*/
+/*
+call_api(vendormenu_url, "disassociateFoodNutritionalFact", {
+	"cookie": temp_cookie,
+	"vendor_food_id": 41
+});
+*/
+/*
+call_api(vendormenu_url, "associateDrinkNutritionalFact", {
+	"cookie": temp_cookie,
+	"vendor_drink_id": 11,
+	"nutritional_fact_id": 2
+});
+*/
+/*
+call_api(vendormenu_url, "disassociateDrinkNutritionalFact", {
+	"cookie": temp_cookie,
+	"vendor_drink_id": 11
+});
+*/
+/*
+call_api(vendormenu_url, "associateBeerNutritionalFact", {
+	"cookie": temp_cookie,
+	"beer_id": 46,
+	"nutritional_fact_id": 2
+});
+*/
+call_api(vendormenu_url, "disassociateBeerNutritionalFact", {
+	"cookie": temp_cookie,
+	"beer_id": 46
 });

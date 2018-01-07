@@ -31,7 +31,8 @@ public class BeerController extends AbstractController {
             float price,
             String[] beer_sizes,
             String hop_score,
-            int beer_category_id
+            int beer_category_id,
+            int nutritional_fact_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -42,6 +43,7 @@ public class BeerController extends AbstractController {
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
         this.validateID(beer_category_id, "beer_category_id");
+        this.validateID(nutritional_fact_id, "nutritional_fact_id");
         if (beer_tastes.length == 0) {
             throw new Exception("Must have at least one \"beer taste\".");
         }
@@ -72,7 +74,8 @@ public class BeerController extends AbstractController {
                 price,
                 beer_sizes,
                 hop_score,
-                beer_category_id
+                beer_category_id,
+                nutritional_fact_id
         );
     }
 
@@ -88,7 +91,8 @@ public class BeerController extends AbstractController {
             float price,
             String[] beer_sizes,
             String hop_score,
-            int beer_category_id
+            int beer_category_id,
+            int nutritional_fact_id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -127,7 +131,8 @@ public class BeerController extends AbstractController {
                 price,
                 beer_sizes,
                 hop_score,
-                beer_category_id
+                beer_category_id,
+                nutritional_fact_id
         );
     }
 

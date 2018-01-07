@@ -48,7 +48,8 @@ public class BeerModel extends AbstractModel {
                     "   price = ?, " +
                     "   beer_sizes = ?::beer_size[], " +
                     "   hop_score = ?::hop_score," +
-                    "   beer_category_id = ? " +
+                    "   beer_category_id = ?," +
+                    "   nutrition_fact_id = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -68,9 +69,10 @@ public class BeerModel extends AbstractModel {
                     "   price," +
                     "   beer_sizes," +
                     "   hop_score, " +
-                    "   beer_category_id " +
+                    "   beer_category_id," +
+                    "   nutritional_fact_id " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?::beer_style,?::beer_taste[],?,?,?::beer_size[],?::hop_score,?)" +
+                    "?,?,?,?,?,?,?::beer_style,?::beer_taste[],?,?,?::beer_size[],?::hop_score,?,?)" +
                     "RETURNING id";
 
     public BeerModel() throws Exception {}
@@ -209,7 +211,8 @@ public class BeerModel extends AbstractModel {
         float price,
         String[] beer_sizes,
         String hop_score,
-        int beer_category_id
+        int beer_category_id,
+        int nutritional_fact_id
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -258,7 +261,8 @@ public class BeerModel extends AbstractModel {
             stage3.setArray(9, this.DAO.createArrayOf("beer_size", beer_sizes));
             stage3.setString(10, hop_score);
             stage3.setInt(11, beer_category_id);
-            stage3.setInt(12, id);
+            stage3.setInt(12, nutritional_fact_id);
+            stage3.setInt(13, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -316,7 +320,8 @@ public class BeerModel extends AbstractModel {
             float price,
             String[] beer_sizes,
             String hop_score,
-            int beer_category_id
+            int beer_category_id,
+            int nutritional_fact_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -339,6 +344,7 @@ public class BeerModel extends AbstractModel {
             preparedStatement.setArray(11, this.DAO.createArrayOf("beer_size", beer_sizes));
             preparedStatement.setString(12, hop_score);
             preparedStatement.setInt(13, beer_category_id);
+            preparedStatement.setInt(14, nutritional_fact_id);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int beer_id = 0;

@@ -66,7 +66,12 @@ public class BeerModel extends AbstractModel {
                     // Create the username where it's null.
                     "   COALESCE(a.username, concat('user'::text, TRIM(LEADING FROM to_char(a.id, '999999999'))::text)) as username," +
                     // Calculate how many days ago the post was posted.
-                    "   DATE_PART('day', now()::date) - DATE_PART('day', br.creation_timestamp::date) as days_ago " +
+                    "   DATE_PART('day', now()::date) - DATE_PART('day', br.creation_timestamp::date) as days_ago," +
+                    "   br.review_image_one, " +
+                    "   br.review_image_two, " +
+                    "   br.review_image_three, " +
+                    "   br.review_image_four, " +
+                    "   br.review_image_five " +
                     "FROM " +
                     "   beers b " +
                     "LEFT JOIN " +
@@ -206,6 +211,11 @@ public class BeerModel extends AbstractModel {
                 beerReview.content = stage2Result.getString("content");
                 beerReview.days_ago = stage2Result.getInt("days_ago");
                 beerReview.username = stage2Result.getString("username");
+                beerReview.review_image_one = stage2Result.getString("review_image_one");
+                beerReview.review_image_two = stage2Result.getString("review_image_two");
+                beerReview.review_image_three = stage2Result.getString("review_image_three");
+                beerReview.review_image_four = stage2Result.getString("review_image_four");
+                beerReview.review_image_five = stage2Result.getString("review_image_five");
                 // Add the beer review to the appropriate beer.
                 beerHashMap.get(beerReview.beer_id).reviews.add(beerReview);
             }

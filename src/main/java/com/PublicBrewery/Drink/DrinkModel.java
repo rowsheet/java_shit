@@ -57,6 +57,11 @@ public class DrinkModel extends AbstractModel {
                     "   vdr.content AS vendor_drink_review_content," +
                     "   vdr.stars AS vendor_drink_review_stars," +
                     "   a.id AS account_id," +
+                    "   vdr.review_image_one, " +
+                    "   vdr.review_image_two, " +
+                    "   vdr.review_image_three, " +
+                    "   vdr.review_image_four, " +
+                    "   vdr.review_image_five, " +
                     // Create the username where it's null.
                     "   COALESCE(a.username, concat('user'::text, TRIM(LEADING FROM to_char(a.id, '999999999'))::text)) as username," +
                     // Calculate how many days ago the post was posted.
@@ -218,6 +223,11 @@ public class DrinkModel extends AbstractModel {
                 vendorDrinkReview.content = stage2Result.getString("vendor_drink_review_content");
                 vendorDrinkReview.days_ago = stage2Result.getInt("days_ago");
                 vendorDrinkReview.username = stage2Result.getString("username");
+                vendorDrinkReview.review_image_one = stage2Result.getString("review_image_one");
+                vendorDrinkReview.review_image_two = stage2Result.getString("review_image_two");
+                vendorDrinkReview.review_image_three = stage2Result.getString("review_image_three");
+                vendorDrinkReview.review_image_four = stage2Result.getString("review_image_four");
+                vendorDrinkReview.review_image_five = stage2Result.getString("review_image_five");
                 // Add the drink review to the appropriate drink.
                 vendorDrinkHashMap.get(vendorDrinkReview.vendor_drink_id).reviews.add(vendorDrinkReview);
             }
