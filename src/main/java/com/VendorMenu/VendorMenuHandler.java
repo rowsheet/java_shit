@@ -45,7 +45,12 @@ public class VendorMenuHandler {
             @WebParam(name = "beer_sizes") String[] beer_sizes,
             @WebParam(name = "hop_score") String hop_score,
             @WebParam(name = "beer_category_id") int beer_category_id,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "beer_tag_id_one") int beer_tag_id_one,
+            @WebParam(name = "beer_tag_id_two") int beer_tag_id_two,
+            @WebParam(name = "beer_tag_id_three") int beer_tag_id_three,
+            @WebParam(name = "beer_tag_id_four") int beer_tag_id_four,
+            @WebParam(name = "beer_tag_id_five") int beer_tag_id_five
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.createBeer(
@@ -61,7 +66,12 @@ public class VendorMenuHandler {
                 beer_sizes,
                 hop_score,
                 beer_category_id,
-                nutritional_fact_id
+                nutritional_fact_id,
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
         );
     }
 
@@ -80,7 +90,12 @@ public class VendorMenuHandler {
             @WebParam(name = "beer_sizes") String[] beer_sizes,
             @WebParam(name = "hop_score") String hop_score,
             @WebParam(name = "beer_category_id") int beer_category_id,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "beer_tag_id_one") int beer_tag_id_one,
+            @WebParam(name = "beer_tag_id_two") int beer_tag_id_two,
+            @WebParam(name = "beer_tag_id_three") int beer_tag_id_three,
+            @WebParam(name = "beer_tag_id_four") int beer_tag_id_four,
+            @WebParam(name = "beer_tag_id_five") int beer_tag_id_five
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.updateBeer(
@@ -97,7 +112,12 @@ public class VendorMenuHandler {
                 beer_sizes,
                 hop_score,
                 beer_category_id,
-                nutritional_fact_id
+                nutritional_fact_id,
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
         );
     }
 
@@ -276,7 +296,12 @@ public class VendorMenuHandler {
             @WebParam(name = "price") float price,
             @WebParam(name = "food_sizes") String[] food_sizes,
             @WebParam(name = "food_category_id") int food_category_id,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "food_tag_id_one") int food_tag_id_one,
+            @WebParam(name = "food_tag_id_two") int food_tag_id_two,
+            @WebParam(name = "food_tag_id_three") int food_tag_id_three,
+            @WebParam(name = "food_tag_id_four") int food_tag_id_four,
+            @WebParam(name = "food_tag_id_five") int food_tag_id_five
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.createFood(
@@ -285,7 +310,13 @@ public class VendorMenuHandler {
                 description,
                 price,
                 food_sizes,
-                food_category_id
+                food_category_id,
+                nutritional_fact_id,
+                food_tag_id_one,
+                food_tag_id_two,
+                food_tag_id_three,
+                food_tag_id_four,
+                food_tag_id_five
         );
     }
 
@@ -298,7 +329,12 @@ public class VendorMenuHandler {
             @WebParam(name = "price") float price,
             @WebParam(name = "food_sizes") String[] food_sizes,
             @WebParam(name = "food_category_id") int food_category_id,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "food_tag_id_one") int food_tag_id_one,
+            @WebParam(name = "food_tag_id_two") int food_tag_id_two,
+            @WebParam(name = "food_tag_id_three") int food_tag_id_three,
+            @WebParam(name = "food_tag_id_four") int food_tag_id_four,
+            @WebParam(name = "food_tag_id_five") int food_tag_id_five
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.updateFood(
@@ -308,7 +344,13 @@ public class VendorMenuHandler {
                 description,
                 price,
                 food_sizes,
-                food_category_id
+                food_category_id,
+                nutritional_fact_id,
+                food_tag_id_one,
+                food_tag_id_two,
+                food_tag_id_three,
+                food_tag_id_four,
+                food_tag_id_five
         );
     }
 
@@ -476,7 +518,6 @@ public class VendorMenuHandler {
     /*------------------------------------------------------------
     DRINK MENU
     ------------------------------------------------------------*/
-
     @WebMethod
     public int createDrink(
             @WebParam(name = "cookie") String cookie,
@@ -489,10 +530,15 @@ public class VendorMenuHandler {
             @WebParam(name = "hex_three") String hex_three,
             @WebParam(name = "hex_background") String hex_background,
             @WebParam(name = "spirit_ids") int[] spirit_ids,
-            @WebParam(name="drink_serve_temp") String drink_serve_temp,
-            @WebParam(name="servings") String servings,
-            @WebParam(name="icon_enum") String icon_enum,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "drink_serve_temp") String drink_serve_temp,
+            @WebParam(name = "servings") String servings,
+            @WebParam(name = "icon_enum") String icon_enum,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "drink_tag_id_one") int drink_tag_id_one,
+            @WebParam(name = "drink_tag_id_two") int drink_tag_id_two,
+            @WebParam(name = "drink_tag_id_three") int drink_tag_id_three,
+            @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
+            @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrink(
@@ -508,7 +554,14 @@ public class VendorMenuHandler {
                 spirit_ids,
                 drink_serve_temp,
                 servings,
-                icon_enum);
+                icon_enum,
+                nutritional_fact_id,
+                drink_tag_id_one,
+                drink_tag_id_two,
+                drink_tag_id_three,
+                drink_tag_id_four,
+                drink_tag_id_five
+        );
     }
 
     @WebMethod
@@ -524,10 +577,15 @@ public class VendorMenuHandler {
             @WebParam(name = "hex_three") String hex_three,
             @WebParam(name = "hex_background") String hex_background,
             @WebParam(name = "spirit_ids") int[] spirit_ids,
-            @WebParam(name="drink_serve_temp") String drink_serve_temp,
-            @WebParam(name="servings") String servings,
-            @WebParam(name="icon_enum") String icon_enum,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "drink_serve_temp") String drink_serve_temp,
+            @WebParam(name = "servings") String servings,
+            @WebParam(name = "icon_enum") String icon_enum,
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "drink_tag_id_one") int drink_tag_id_one,
+            @WebParam(name = "drink_tag_id_two") int drink_tag_id_two,
+            @WebParam(name = "drink_tag_id_three") int drink_tag_id_three,
+            @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
+            @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrink(
@@ -544,7 +602,14 @@ public class VendorMenuHandler {
                 spirit_ids,
                 drink_serve_temp,
                 servings,
-                icon_enum);
+                icon_enum,
+                nutritional_fact_id,
+                drink_tag_id_one,
+                drink_tag_id_two,
+                drink_tag_id_three,
+                drink_tag_id_four,
+                drink_tag_id_five
+        );
     }
 
     @WebMethod

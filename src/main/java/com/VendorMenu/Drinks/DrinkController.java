@@ -32,7 +32,13 @@ public class DrinkController extends AbstractController {
             int[] spirit_ids,
             String drink_serve_temp,
             String servings,
-            String icon_enum
+            String icon_enum,
+            int nutritional_fact_id,
+            int drink_tag_id_one,
+            int drink_tag_id_two,
+            int drink_tag_id_three,
+            int drink_tag_id_four,
+            int drink_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -50,6 +56,13 @@ public class DrinkController extends AbstractController {
         this.validateDrinkServeTemp(drink_serve_temp);
         this.validateDrinkServingSize(servings);
         this.validateDrinkIconEnum(icon_enum);
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(drink_tag_id_one, "drink_tag_id_one");
+        this.validateNullID(drink_tag_id_two, "drink_tag_id_two");
+        this.validateNullID(drink_tag_id_three, "drink_tag_id_three");
+        this.validateNullID(drink_tag_id_four, "drink_tag_id_four");
+        this.validateNullID(drink_tag_id_five, "drink_tag_id_five");
         // Initialize model and create the data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.updateDrink(
@@ -66,7 +79,13 @@ public class DrinkController extends AbstractController {
                 spirit_ids,
                 drink_serve_temp,
                 servings,
-                icon_enum);
+                icon_enum,
+                nutritional_fact_id,
+                drink_tag_id_one,
+                drink_tag_id_two,
+                drink_tag_id_three,
+                drink_tag_id_four,
+                drink_tag_id_five);
     }
 
     public int createDrink(
@@ -82,7 +101,13 @@ public class DrinkController extends AbstractController {
             int[] spirit_ids,
             String drink_serve_temp,
             String servings,
-            String icon_enum
+            String icon_enum,
+            int nutritional_fact_id,
+            int drink_tag_id_one,
+            int drink_tag_id_two,
+            int drink_tag_id_three,
+            int drink_tag_id_four,
+            int drink_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -98,6 +123,13 @@ public class DrinkController extends AbstractController {
         this.validateDrinkServeTemp(drink_serve_temp);
         this.validateDrinkServingSize(servings);
         this.validateDrinkIconEnum(icon_enum);
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(drink_tag_id_one, "drink_tag_id_one");
+        this.validateNullID(drink_tag_id_two, "drink_tag_id_two");
+        this.validateNullID(drink_tag_id_three, "drink_tag_id_three");
+        this.validateNullID(drink_tag_id_four, "drink_tag_id_four");
+        this.validateNullID(drink_tag_id_five, "drink_tag_id_five");
         // Initialize model and create data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.createDrink(
@@ -113,7 +145,13 @@ public class DrinkController extends AbstractController {
                 spirit_ids,
                 drink_serve_temp,
                 servings,
-                icon_enum);
+                icon_enum,
+                nutritional_fact_id,
+                drink_tag_id_one,
+                drink_tag_id_two,
+                drink_tag_id_three,
+                drink_tag_id_four,
+                drink_tag_id_five);
     }
 
     public int createDrinkCategory(

@@ -2,8 +2,9 @@ package com.VendorMenu.Beers;
 
 import com.Common.AbstractModel;
 
-import javax.print.DocFlavor;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -50,7 +51,12 @@ public class BeerModel extends AbstractModel {
                     "   beer_sizes = ?::beer_size[], " +
                     "   hop_score = ?::hop_score," +
                     "   beer_category_id = ?," +
-                    "   nutrition_fact_id = ? " +
+                    "   nutritional_facts_id = ?," +
+                    "   tag_one = ?, " +
+                    "   tag_two = ?, " +
+                    "   tag_three = ?, " +
+                    "   tag_four = ?, " +
+                    "   tag_five = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -71,9 +77,14 @@ public class BeerModel extends AbstractModel {
                     "   beer_sizes," +
                     "   hop_score, " +
                     "   beer_category_id," +
-                    "   nutritional_fact_id " +
+                    "   nutritional_facts_id, " +
+                    "   tag_one, " +
+                    "   tag_two, " +
+                    "   tag_three, " +
+                    "   tag_four, " +
+                    "   tag_five " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?::beer_style,?::beer_taste[],?,?,?::beer_size[],?::hop_score,?,?)" +
+                    "?,?,?,?,?,?,?::beer_style,?::beer_taste[],?,?,?::beer_size[],?::hop_score,?,?,?,?,?,?,?)" +
                     "RETURNING id";
 
     public BeerModel() throws Exception {}
@@ -213,7 +224,12 @@ public class BeerModel extends AbstractModel {
         String[] beer_sizes,
         String hop_score,
         int beer_category_id,
-        int nutritional_fact_id
+        int nutritional_fact_id,
+        int beer_tag_id_one,
+        int beer_tag_id_two,
+        int beer_tag_id_three,
+        int beer_tag_id_four,
+        int beer_tag_id_five
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -262,8 +278,39 @@ public class BeerModel extends AbstractModel {
             stage3.setArray(9, this.DAO.createArrayOf("beer_size", beer_sizes));
             stage3.setString(10, hop_score);
             stage3.setInt(11, beer_category_id);
-            stage3.setInt(12, nutritional_fact_id);
-            stage3.setInt(13, id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                stage3.setNull(12, Types.INTEGER);
+            } else {
+                stage3.setInt(12, nutritional_fact_id);
+            }
+            if (beer_tag_id_one == 0) {
+                stage3.setNull(13, Types.INTEGER);
+            } else {
+                stage3.setInt(13, beer_tag_id_one);
+            }
+            if (beer_tag_id_two == 0) {
+                stage3.setNull(14, Types.INTEGER);
+            } else {
+                stage3.setInt(14, beer_tag_id_two);
+            }
+            if (beer_tag_id_three == 0) {
+                stage3.setNull(15, Types.INTEGER);
+            } else {
+                stage3.setInt(15, beer_tag_id_three);
+            }
+            if (beer_tag_id_four == 0) {
+                stage3.setNull(16, Types.INTEGER);
+            } else {
+                stage3.setInt(16, beer_tag_id_four);
+            }
+            if (beer_tag_id_five == 0) {
+                stage3.setNull(17, Types.INTEGER);
+            } else {
+                stage3.setInt(17, beer_tag_id_five);
+            }
+            stage3.setInt(18, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -322,7 +369,12 @@ public class BeerModel extends AbstractModel {
             String[] beer_sizes,
             String hop_score,
             int beer_category_id,
-            int nutritional_fact_id
+            int nutritional_fact_id,
+            int beer_tag_id_one,
+            int beer_tag_id_two,
+            int beer_tag_id_three,
+            int beer_tag_id_four,
+            int beer_tag_id_five
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -345,7 +397,38 @@ public class BeerModel extends AbstractModel {
             preparedStatement.setArray(11, this.DAO.createArrayOf("beer_size", beer_sizes));
             preparedStatement.setString(12, hop_score);
             preparedStatement.setInt(13, beer_category_id);
-            preparedStatement.setInt(14, nutritional_fact_id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                preparedStatement.setNull(14, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(14, nutritional_fact_id);
+            }
+            if (beer_tag_id_one == 0) {
+                preparedStatement.setNull(15, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(15, beer_tag_id_one);
+            }
+            if (beer_tag_id_two == 0) {
+                preparedStatement.setNull(16, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(16, beer_tag_id_two);
+            }
+            if (beer_tag_id_three == 0) {
+                preparedStatement.setNull(17, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(17, beer_tag_id_three);
+            }
+            if (beer_tag_id_four == 0) {
+                preparedStatement.setNull(18, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(18, beer_tag_id_four);
+            }
+            if (beer_tag_id_five == 0) {
+                preparedStatement.setNull(19, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(19, beer_tag_id_five);
+            }
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int beer_id = 0;

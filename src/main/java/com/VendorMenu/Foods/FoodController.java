@@ -29,13 +29,26 @@ public class FoodController extends AbstractController {
             String description,
             float price,
             String[] food_sizes,
-            int food_category_id
+            int food_category_id,
+            int nutritional_fact_id,
+            int food_tag_id_one,
+            int food_tag_id_two,
+            int food_tag_id_three,
+            int food_tag_id_four,
+            int food_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
         this.validateText(description, "description");
         this.validatePrice(price);
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(food_tag_id_one, "food_tag_id_one");
+        this.validateNullID(food_tag_id_two, "food_tag_id_two");
+        this.validateNullID(food_tag_id_three, "food_tag_id_three");
+        this.validateNullID(food_tag_id_four, "food_tag_id_four");
+        this.validateNullID(food_tag_id_five, "food_tag_id_five");
         if (food_sizes.length == 0) {
             throw new Exception("Must have at least one \"food size\".");
         }
@@ -53,7 +66,13 @@ public class FoodController extends AbstractController {
                 description,
                 price,
                 food_sizes,
-                food_category_id
+                food_category_id,
+                nutritional_fact_id,
+                food_tag_id_one,
+                food_tag_id_two,
+                food_tag_id_three,
+                food_tag_id_four,
+                food_tag_id_five
         );
     }
 
@@ -63,13 +82,26 @@ public class FoodController extends AbstractController {
             String description,
             float price,
             String[] food_sizes,
-            int food_category_id
+            int food_category_id,
+            int nutritional_fact_id,
+            int food_tag_id_one,
+            int food_tag_id_two,
+            int food_tag_id_three,
+            int food_tag_id_four,
+            int food_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
         this.validateText(description, "description");
         this.validatePrice(price);
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(food_tag_id_one, "food_tag_id_one");
+        this.validateNullID(food_tag_id_two, "food_tag_id_two");
+        this.validateNullID(food_tag_id_three, "food_tag_id_three");
+        this.validateNullID(food_tag_id_four, "food_tag_id_four");
+        this.validateNullID(food_tag_id_five, "food_tag_id_five");
         if (food_sizes.length == 0) {
             throw new Exception("Must have at least one \"food size\".");
         }
@@ -85,7 +117,13 @@ public class FoodController extends AbstractController {
                 description,
                 price,
                 food_sizes,
-                food_category_id
+                food_category_id,
+                nutritional_fact_id,
+                food_tag_id_one,
+                food_tag_id_two,
+                food_tag_id_three,
+                food_tag_id_four,
+                food_tag_id_five
         );
     }
 
@@ -201,7 +239,7 @@ public class FoodController extends AbstractController {
         this.validateString(name, "name");
         this.validateHexColor(hex_color);
         this.validateMenuItemTagType(tag_type);
-        // Initialize model and create beer tag.
+        // Initialize model and create food tag.
         FoodModel foodModel = new FoodModel();
         return foodModel.createVendorFoodTag(
                 cookie,

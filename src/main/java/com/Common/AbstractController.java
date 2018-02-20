@@ -133,6 +133,12 @@ public class AbstractController {
         }
     }
 
+    // Possible null, made as zero through JAVA SOAP.
+    protected void validateNullID(int input, String id_name)
+            throws InvalidParameterException {
+        // @TODO I might do something with this like put a max_size or something.
+    }
+
     protected void validateBeerColor(int input)
         throws InvalidParameterException {
         if (input < 1 || input > 40) {

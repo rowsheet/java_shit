@@ -526,7 +526,7 @@ call_api(vendormenu_url, "deleteDrinkCategory",{
 /*
 call_api(vendormenu_url, "createDrink",{
 	"cookie": temp_cookie,
-	"name": "Drink With Icon",
+	"name": "FOR DELETE",
 	"description": "This drink has an icon.",
 	"price": 87.99,
 	"drink_category_id": 2,
@@ -543,8 +543,8 @@ call_api(vendormenu_url, "createDrink",{
 /*
 call_api(vendormenu_url, "updateDrink",{
 	"cookie": temp_cookie,
-	"id": 1,
-	"name": "The Expensive Juice",
+	"id": 15,
+	"name": "TEST UPDATE",
 	"description": "This drink is updated and dank yo.",
 	"price": 99.99,
 	"drink_category_id": 2,
@@ -555,13 +555,15 @@ call_api(vendormenu_url, "updateDrink",{
 	"spirit_ids": [1,2,6,8,13,14,15],
 	"drink_serve_temp": "on-the-rocks",
 	"servings": "2",
-	"icon_enum": "a1"
+	"icon_enum": "a1",
+	"nutritional_fact_id": 2,
+	"drink_tag_id_one": 1
 });
 */
 /*
 call_api(vendormenu_url, "deleteDrink",{
 	"cookie": temp_cookie,
-	"id": 2
+	"id": 15
 });
 */
 /*
@@ -605,40 +607,44 @@ call_api(vendormenu_url, "deleteBeerCategory",{
 /*
 call_api(vendormenu_url, "createBeer",{
 	"cookie": temp_cookie,
-	"name": "New Unite Test Beer",
+	"name": "Test With Tags",
 	"color": "23",
 	"bitterness": "13",
 	"abv": "17",
-	"beer_style": "Brown Ales",
+	"beer_style": "Brown-Ales",
 	"beer_tastes": ["Malty","Hoppy"],
 	"description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
 	"price": "3.23",
-	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled Mug"],
+	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled-Mug"],
 	"hop_score": "tripple",
-	"beer_category_id": "6"
+	"beer_category_id": 6,
+	"beer_tag_id_one": 4,
+	"nutritional_fact_id": 2
 });
 */
 /*
 call_api(vendormenu_url, "updateBeer",{
 	"cookie": temp_cookie,
-	"id": 82,
-	"name": "UPDATED Unite Test Beer",
+	"id": 92, // new id for test with tags.
+	"name": "UPDATED Beer With Tags",
 	"color": "23",
 	"bitterness": "13",
 	"abv": "17",
-	"beer_style": "Brown Ales",
+	"beer_style": "Brown-Ales",
 	"beer_tastes": ["Malty","Hoppy"],
 	"description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
 	"price": "3.23",
-	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled Mug"],
+	"beer_sizes": ["Pilsner","Wine","Flute","Dimpled-Mug"],
 	"hop_score": "tripple",
-	"beer_category_id": "6"
+	"beer_category_id": 6,
+	"beer_tag_id_one": 4,
+	"nutritional_fact_id": 2
 });
 */
 /*
 call_api(vendormenu_url, "deleteBeer", {
 	"cookie": temp_cookie,
-	"id": 82
+	"id": 93 
 });
 */
 /*
@@ -865,11 +871,32 @@ call_api(publicbrewery_url, "loadBreweryInfo",{
 /*
 call_api(vendormenu_url, "createFood", {
 	"cookie": temp_cookie,
-	"name": "Sup",
+	"name": "FOR DELETE",
 	"description": "Temp Test",
 	"price": 99.99,
 	"food_sizes": ["Small"],
-	"food_category_id": 4
+	"food_category_id": 4,
+	"nutritional_fact_id": 2,
+	"food_tag_id_one": 1	
+});
+*/
+/*
+call_api(vendormenu_url, "updateFood", {
+	"cookie": temp_cookie,
+	"id": 68,
+	"name": "UPDATE FOR DELETE",
+	"description": "Temp Test",
+	"price": 99.99,
+	"food_sizes": ["Small"],
+	"food_category_id": 4,
+	"nutritional_fact_id": 2,
+	"food_tag_id_one": 1	
+});
+*/
+/*
+call_api(vendormenu_url, "deleteFood", {
+	"cookie": temp_cookie,
+	"id": 68	
 });
 */
 /*
@@ -935,7 +962,9 @@ call_api(vendormenu_url, "updateDrinkTag", {
 	"new_tag_type": "ingredient"
 });
 */
+/*
 call_api(vendormenu_url, "deleteDrinkTag", {
 	"cookie": temp_cookie,
 	"id": 2
 });
+*/

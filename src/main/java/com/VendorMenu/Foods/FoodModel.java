@@ -4,6 +4,7 @@ import com.Common.AbstractModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -39,7 +40,13 @@ public class FoodModel extends AbstractModel {
                     "   price = ?, " +
                     "   description = ?, " +
                     "   food_sizes = ?::food_size[], " +
-                    "   vendor_food_category_id = ? " +
+                    "   vendor_food_category_id = ?, " +
+                    "   nutritional_facts_id = ?," +
+                    "   tag_one = ?, " +
+                    "   tag_two = ?, " +
+                    "   tag_three = ?, " +
+                    "   tag_four = ?, " +
+                    "   tag_five = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -53,9 +60,15 @@ public class FoodModel extends AbstractModel {
                     "   description," +
                     "   price," +
                     "   food_sizes, " +
-                    "   vendor_food_category_id " +
+                    "   vendor_food_category_id, " +
+                    "   nutritional_facts_id," +
+                    "   tag_one, " +
+                    "   tag_two, " +
+                    "   tag_three, " +
+                    "   tag_four, " +
+                    "   tag_five " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?::food_size[],?)" +
+                    "?,?,?,?,?,?::food_size[],?,?,?,?,?,?,?)" +
                     "RETURNING id";
 
     public FoodModel() throws Exception {}
@@ -173,7 +186,13 @@ public class FoodModel extends AbstractModel {
             String description,
             float price,
             String[] food_sizes,
-            int food_category_id
+            int food_category_id,
+            int nutritional_fact_id,
+            int food_tag_id_one,
+            int food_tag_id_two,
+            int food_tag_id_three,
+            int food_tag_id_four,
+            int food_tag_id_five
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -216,7 +235,39 @@ public class FoodModel extends AbstractModel {
             stage3.setString(3, description);
             stage3.setArray(4, this.DAO.createArrayOf("food_size", food_sizes));
             stage3.setInt(5, food_category_id);
-            stage3.setInt(6, id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                stage3.setNull(6, Types.INTEGER);
+            } else {
+                stage3.setInt(6, nutritional_fact_id);
+            }
+            if (food_tag_id_one == 0) {
+                stage3.setNull( 7, Types.INTEGER);
+            } else {
+                stage3.setInt( 7, food_tag_id_one);
+            }
+            if (food_tag_id_two == 0) {
+                stage3.setNull(8, Types.INTEGER);
+            } else {
+                stage3.setInt(8, food_tag_id_two);
+            }
+            if (food_tag_id_three == 0) {
+                stage3.setNull(9, Types.INTEGER);
+            } else {
+                stage3.setInt(9, food_tag_id_three);
+            }
+            if (food_tag_id_four == 0) {
+                stage3.setNull(10, Types.INTEGER);
+            } else {
+                stage3.setInt(10, food_tag_id_four);
+            }
+            if (food_tag_id_five == 0) {
+                stage3.setNull(11, Types.INTEGER);
+            } else {
+                stage3.setInt(11, food_tag_id_five);
+            }
+            stage3.setInt(12, id);
             stage3.execute();
             /*
             Done. Commit.
@@ -256,7 +307,13 @@ public class FoodModel extends AbstractModel {
             String description,
             float price,
             String[] food_sizes,
-            int food_category_id
+            int food_category_id,
+            int nutritional_fact_id,
+            int food_tag_id_one,
+            int food_tag_id_two,
+            int food_tag_id_three,
+            int food_tag_id_four,
+            int food_tag_id_five
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -273,6 +330,38 @@ public class FoodModel extends AbstractModel {
             preparedStatement.setFloat(5, price);
             preparedStatement.setArray(6, this.DAO.createArrayOf("food_size", food_sizes));
             preparedStatement.setInt(7, food_category_id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                preparedStatement.setNull(8, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(8, nutritional_fact_id);
+            }
+            if (food_tag_id_one == 0) {
+                preparedStatement.setNull(9, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(9, food_tag_id_one);
+            }
+            if (food_tag_id_two == 0) {
+                preparedStatement.setNull(10, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(10, food_tag_id_two);
+            }
+            if (food_tag_id_three == 0) {
+                preparedStatement.setNull(11, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(11, food_tag_id_three);
+            }
+            if (food_tag_id_four == 0) {
+                preparedStatement.setNull(12, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(12, food_tag_id_four);
+            }
+            if (food_tag_id_five == 0) {
+                preparedStatement.setNull(13, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(13, food_tag_id_five);
+            }
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int food_id = 0;

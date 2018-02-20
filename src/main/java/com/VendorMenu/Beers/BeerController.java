@@ -33,7 +33,12 @@ public class BeerController extends AbstractController {
             String[] beer_sizes,
             String hop_score,
             int beer_category_id,
-            int nutritional_fact_id
+            int nutritional_fact_id,
+            int beer_tag_id_one,
+            int beer_tag_id_two,
+            int beer_tag_id_three,
+            int beer_tag_id_four,
+            int beer_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -44,7 +49,13 @@ public class BeerController extends AbstractController {
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
         this.validateID(beer_category_id, "beer_category_id");
-        this.validateID(nutritional_fact_id, "nutritional_fact_id");
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(beer_tag_id_one, "beer_tag_id_one");
+        this.validateNullID(beer_tag_id_two, "beer_tag_id_two");
+        this.validateNullID(beer_tag_id_three, "beer_tag_id_three");
+        this.validateNullID(beer_tag_id_four, "beer_tag_id_four");
+        this.validateNullID(beer_tag_id_five, "beer_tag_id_five");
         if (beer_tastes.length == 0) {
             throw new Exception("Must have at least one \"beer taste\".");
         }
@@ -76,7 +87,12 @@ public class BeerController extends AbstractController {
                 beer_sizes,
                 hop_score,
                 beer_category_id,
-                nutritional_fact_id
+                nutritional_fact_id,
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
         );
     }
 
@@ -93,7 +109,12 @@ public class BeerController extends AbstractController {
             String[] beer_sizes,
             String hop_score,
             int beer_category_id,
-            int nutritional_fact_id
+            int nutritional_fact_id,
+            int beer_tag_id_one,
+            int beer_tag_id_two,
+            int beer_tag_id_three,
+            int beer_tag_id_four,
+            int beer_tag_id_five
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -103,6 +124,13 @@ public class BeerController extends AbstractController {
         this.validateAbv(abv);
         this.validateBeerStyle(beer_style);
         this.validateID(beer_category_id, "beer_category_id");
+        // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
+        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(beer_tag_id_one, "beer_tag_id_one");
+        this.validateNullID(beer_tag_id_two, "beer_tag_id_two");
+        this.validateNullID(beer_tag_id_three, "beer_tag_id_three");
+        this.validateNullID(beer_tag_id_four, "beer_tag_id_four");
+        this.validateNullID(beer_tag_id_five, "beer_tag_id_five");
         if (beer_tastes.length == 0) {
             throw new Exception("Must have at least one \"beer taste\".");
         }
@@ -133,7 +161,12 @@ public class BeerController extends AbstractController {
                 beer_sizes,
                 hop_score,
                 beer_category_id,
-                nutritional_fact_id
+                nutritional_fact_id,
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
         );
     }
 

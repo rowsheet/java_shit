@@ -5,6 +5,7 @@ import com.Common.AbstractModel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.sql.Types;
 
 public class DrinkModel extends AbstractModel {
 
@@ -43,7 +44,13 @@ public class DrinkModel extends AbstractModel {
                     "   hex_background = ?," +
                     "   drink_serve_temp = ?::drink_serve_temp," +
                     "   servings = ?::drink_servings," +
-                    "   icon_enum = ?::vendor_drink_icon " +
+                    "   icon_enum = ?::vendor_drink_icon," +
+                    "   nutritional_facts_id = ?," +
+                    "   tag_one = ?, " +
+                    "   tag_two = ?, " +
+                    "   tag_three = ?, " +
+                    "   tag_four = ?, " +
+                    "   tag_five = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -63,9 +70,15 @@ public class DrinkModel extends AbstractModel {
                     "   hex_background," +
                     "   drink_serve_temp, " +
                     "   servings," +
-                    "   icon_enum " +
+                    "   icon_enum," +
+                    "   nutritional_facts_id, " +
+                    "   tag_one, " +
+                    "   tag_two, " +
+                    "   tag_three, " +
+                    "   tag_four, " +
+                    "   tag_five " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?,?,?,?::drink_serve_temp,?::drink_servings,?::vendor_drink_icon)" +
+                    "?,?,?,?,?,?,?,?,?,?,?::drink_serve_temp,?::drink_servings,?::vendor_drink_icon,?,?,?,?,?,?)" +
                     "RETURNING id";
 
     private String deleteSpiritDrinkAssociationSQL =
@@ -208,7 +221,13 @@ public class DrinkModel extends AbstractModel {
             int[] spirit_ids,
             String drink_serve_temp,
             String servings,
-            String icon_enum
+            String icon_enum,
+            int nutritional_fact_id,
+            int drink_tag_id_one,
+            int drink_tag_id_two,
+            int drink_tag_id_three,
+            int drink_tag_id_four,
+            int drink_tag_id_five
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -264,7 +283,39 @@ public class DrinkModel extends AbstractModel {
             stage3.setString(9, drink_serve_temp);
             stage3.setString(10, servings);
             stage3.setString(11, icon_enum);
-            stage3.setInt(12, id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                stage3.setNull(12, Types.INTEGER);
+            } else {
+                stage3.setInt(12, nutritional_fact_id);
+            }
+            if (drink_tag_id_one == 0) {
+                stage3.setNull(13, Types.INTEGER);
+            } else {
+                stage3.setInt(13, drink_tag_id_one);
+            }
+            if (drink_tag_id_two == 0) {
+                stage3.setNull(14, Types.INTEGER);
+            } else {
+                stage3.setInt(14, drink_tag_id_two);
+            }
+            if (drink_tag_id_three == 0) {
+                stage3.setNull(15, Types.INTEGER);
+            } else {
+                stage3.setInt(15, drink_tag_id_three);
+            }
+            if (drink_tag_id_four == 0) {
+                stage3.setNull(16, Types.INTEGER);
+            } else {
+                stage3.setInt(16, drink_tag_id_four);
+            }
+            if (drink_tag_id_five == 0) {
+                stage3.setNull(17, Types.INTEGER);
+            } else {
+                stage3.setInt(17, drink_tag_id_five);
+            }
+            stage3.setInt(18, id);
             stage3.execute();
             /*
             Stage 4
@@ -360,7 +411,13 @@ public class DrinkModel extends AbstractModel {
             int[] spirit_ids,
             String drink_serve_temp,
             String servings,
-            String icon_enum
+            String icon_enum,
+            int nutritional_fact_id,
+            int drink_tag_id_one,
+            int drink_tag_id_two,
+            int drink_tag_id_three,
+            int drink_tag_id_four,
+            int drink_tag_id_five
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -399,6 +456,38 @@ public class DrinkModel extends AbstractModel {
             stage1.setString(11, drink_serve_temp);
             stage1.setString(12, servings);
             stage1.setString(13, icon_enum);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (nutritional_fact_id == 0) {
+                stage1.setNull(14, Types.INTEGER);
+            } else {
+                stage1.setInt(14, nutritional_fact_id);
+            }
+            if (drink_tag_id_one == 0) {
+                stage1.setNull(15, Types.INTEGER);
+            } else {
+                stage1.setInt(15, drink_tag_id_one);
+            }
+            if (drink_tag_id_two == 0) {
+                stage1.setNull(16, Types.INTEGER);
+            } else {
+                stage1.setInt(16, drink_tag_id_two);
+            }
+            if (drink_tag_id_three == 0) {
+                stage1.setNull(17, Types.INTEGER);
+            } else {
+                stage1.setInt(17, drink_tag_id_three);
+            }
+            if (drink_tag_id_four == 0) {
+                stage1.setNull(18, Types.INTEGER);
+            } else {
+                stage1.setInt(18, drink_tag_id_four);
+            }
+            if (drink_tag_id_five == 0) {
+                stage1.setNull(19, Types.INTEGER);
+            } else {
+                stage1.setInt(19, drink_tag_id_five);
+            }
             stage1Result = stage1.executeQuery();
             // Get the id of the new entry.
             int drink_id = 0;
