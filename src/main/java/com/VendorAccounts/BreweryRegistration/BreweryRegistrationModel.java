@@ -66,6 +66,45 @@ public class BreweryRegistrationModel extends AbstractModel {
                     ") VALUES (" +
                     "?,?::account_type,?)";
 
+    private String registerBreweryAccountSQL_stage4_A =
+            "INSERT INTO " +
+                    "   beer_categories " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color " +
+                    ") VALUES (?,'default','#ffffff') " +
+                    "RETURNING id";
+
+    private String registerBreweryAccountSQL_stage4_B =
+            "INSERT INTO " +
+                    "   food_categories " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color " +
+                    ") VALUES (?,'default','#ffffff') " +
+                    "RETURNING id";
+
+    private String registerBreweryAccountSQL_stage4_C =
+            "INSERT INTO " +
+                    "   drink_categories " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color " +
+                    ") VALUES (?,'default','#ffffff') " +
+                    "RETURNING id";
+
+    private String registerBreweryAccountSQL_stage4_D =
+            "INSERT INTO " +
+                    "   event_categories " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color " +
+                    ") VALUES (?,'default','#ffffff') " +
+                    "RETURNING id";
 
     /*
      Set the vendor status to "preview" returning the account_id
@@ -159,7 +198,9 @@ public class BreweryRegistrationModel extends AbstractModel {
      *          vendor because the account would have to exist before this procedure
      *          started and the vendor would have to exist before this procedure started.
      *
-     * 4)   Send confirmation email.
+     * 4)   Insert default categories into three major resources (Beer, Food, Drinks).
+     *
+     * 5)   Send confirmation email.
      *
      * @param official_business_name
      * @param primary_contact_first_name
@@ -201,6 +242,15 @@ public class BreweryRegistrationModel extends AbstractModel {
         PreparedStatement stage1 = null;
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
+        // Insert default categories.
+        PreparedStatement stage4_A = null;
+        ResultSet stage4_A_result_set = null;
+        PreparedStatement stage4_B = null;
+        ResultSet stage4_B_result_set = null;
+        PreparedStatement stage4_C = null;
+        ResultSet stage4_C_result_set = null;
+        PreparedStatement stage4_D = null;
+        ResultSet stage4_D_result_set = null;
         try {
             /*
             Four things need to happen in a transaction, otherwise the entire
@@ -216,6 +266,10 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage1 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage3);
+            stage4_A = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_A);
+            stage4_B = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_B);
+            stage4_C = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_C);
+            stage4_D = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_D);
             /*
             Stage 1)
              */
@@ -258,7 +312,52 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage3.setInt(3, vendor_id);
             stage3.execute();
             /*
-             Send email.
+            Stage 4)
+             */
+            // Insert default categories into major resources (Beers, Foods, Events, Drinks).
+            // Default beer category.
+            int beer_category_id = 0;
+            stage4_A.setInt(1, vendor_id);
+            stage4_A_result_set = stage4_A.executeQuery();
+            while(stage4_A_result_set.next()) {
+                beer_category_id = stage4_A_result_set.getInt("id");
+            }
+            if (beer_category_id == 0) {
+                throw new BreweryRegistrationException("Registration failure: Unable to create default beer category. Aborting.");
+            }
+            // Default food category.
+            int food_category_id = 0;
+            stage4_B.setInt(1, vendor_id);
+            stage4_B_result_set = stage4_B.executeQuery();
+            while(stage4_B_result_set.next()) {
+                food_category_id = stage4_B_result_set.getInt("id");
+            }
+            if (food_category_id == 0) {
+                throw new BreweryRegistrationException("Registration failure: Unable to create default food category. Aborting.");
+            }
+            // Default drink category.
+            int drink_category_id = 0;
+            stage4_C.setInt(1, vendor_id);
+            stage4_C_result_set = stage4_C.executeQuery();
+            while(stage4_C_result_set.next()) {
+                drink_category_id = stage4_C_result_set.getInt("id");
+            }
+            if (drink_category_id == 0) {
+                throw new BreweryRegistrationException("Registration failure: Unable to create default drink category. Aborting.");
+            }
+            // Default event category.
+            int event_category_id = 0;
+            stage4_D.setInt(1, vendor_id);
+            stage4_D_result_set = stage4_D.executeQuery();
+            while(stage4_D_result_set.next()) {
+                event_category_id = stage4_D_result_set.getInt("id");
+            }
+            if (event_category_id == 0) {
+                throw new BreweryRegistrationException("Registration failure: Unable to create default event category. Aborting.");
+            }
+            /*
+            Stage 5)
+            Send email.
              */
 /*
             EmailTemplates emailTemplates = new EmailTemplates();
@@ -300,13 +399,40 @@ public class BreweryRegistrationModel extends AbstractModel {
             }
         } finally {
             if (stage1 != null) {
-                stage1 = null;
+                stage1.close();
             }
             if (stage2 != null) {
-                stage2 = null;
+                stage2.close();
             }
             if (stage3 != null) {
-                stage3 = null;
+                stage3.close();
+            }
+            if (stage4_A != null) {
+                stage4_A.close();
+            }
+            if (stage4_A_result_set != null) {
+                stage4_A_result_set.close();
+            }
+            if (stage4_B != null) {
+                stage4_B.close();
+            }
+            if (stage4_B_result_set != null) {
+                stage4_B_result_set.close();
+            }
+            if (stage4_C != null) {
+                stage4_C.close();
+            }
+            if (stage4_C_result_set != null) {
+                stage4_C_result_set.close();
+            }
+            if (stage4_D != null) {
+                stage4_D.close();
+            }
+            if (stage4_D_result_set != null) {
+                stage4_D_result_set.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
             }
             this.DAO.setAutoCommit(true);
         }
@@ -481,10 +607,16 @@ public class BreweryRegistrationModel extends AbstractModel {
             throw new Exception("Unable to confirm brewery account.");
         } finally {
             if (stage1 != null) {
-                stage1 = null;
+                stage1.close();
             }
             if (stage2 != null) {
-                stage2 = null;
+                stage2.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
             }
             this.DAO.setAutoCommit(true);
         }

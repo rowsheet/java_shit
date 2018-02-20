@@ -5,6 +5,7 @@ import sun.security.provider.ConfigFile;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DrinkModel extends AbstractModel {
@@ -146,10 +147,14 @@ public class DrinkModel extends AbstractModel {
                     "WHERE " +
                     "   vd.id = ?";
 
+    private String loadDrinkMenuSQL_stage6 =
+            "";
+
     public DrinkModel() throws Exception {
     }
 
     /**
+     * @TODO Move this to materialized views (or distributed data stores).
      * Loads all drinks + reviews + images for a given vendor_id (brewery_id).
      *
      * Does this in three stages:
@@ -159,6 +164,7 @@ public class DrinkModel extends AbstractModel {
      * 3) Load all image urls (has map by display order).
      * 4) Get all spirits-associations for drink.
      * 5) Calculate review averages for all the drinks.
+     * 6) Load all ingredients.
      *
      * @param brewery_id
      * @return HashMap<vendor_drink_id, vendor_drink_data_structure>
@@ -277,6 +283,32 @@ public class DrinkModel extends AbstractModel {
                     vendorDrink.review_count = vendorDrink.reviews.size();
                 }
             }
+            /*
+            Stage 6
+             */
+            // YOU LEFT OFF HERE
+            // Load all ingredients for all drinks.
+/*
+            for (VendorDrink vendorDrink: vendorDrinkHashMap.values()) {
+                PreparedStatement preparedStatement = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage6);
+                preparedStatement.setInt(1, vendorDrink.vendor_id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                ArrayList drink_ingredients = new ArrayList<VendorDrinkIngredient>();
+                while (resultSet.next()) {
+                    // Initialize drink ingredient and nutritional fact profiles.
+                    VendorDrinkIngredient vendorDrinkIngredient = new VendorDrinkIngredient();
+                    VendorNutritionalFact nutritionalFact = new VendorNutritionalFact();
+                    // Assign all ingredient values.
+                }
+                // Clean stuff up.
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            }
+*/
             return vendorDrinkHashMap;
         } catch (Exception ex) {
             System.out.print(ex);

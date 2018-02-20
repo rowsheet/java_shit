@@ -128,6 +128,7 @@ public class FoodModel extends AbstractModel {
     public FoodModel() throws Exception {}
 
     /**
+     * @TODO Move this to materialized views (or distributed data stores).
      * Loads all foods + reviews + images for a given vendor_id (brewery_id).
      *
      * Does this in three stages:
@@ -136,6 +137,7 @@ public class FoodModel extends AbstractModel {
      * 2) Load all review for all foods.
      * 3) Load all image urls (has map by display order).
      * 4) Calculate review averages for all the beers.
+     * 5) Load all ingredients.
      *
      * @param brewery_id
      * @return HashMap<beer_id, beer_data_structure>

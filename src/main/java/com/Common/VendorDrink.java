@@ -24,6 +24,13 @@ public class VendorDrink {
     public VendorDrinkCategory vendor_drink_category;
     public ArrayList<Spirit> spirits;
     public boolean is_alcoholic;
+    // Ingredients and tags.
+    public ArrayList<VendorDrinkIngredient> vendor_drink_ingredients;
+    public String tag_one;
+    public String tag_two;
+    public String tag_three;
+    public String tag_four;
+    public String tag_five;
 
     /**
      * These have to be calculated.
@@ -65,5 +72,12 @@ public class VendorDrink {
         this.reviews = new ArrayList<VendorDrinkReview>();
 
         this.images = new HashMap<Integer, VendorDrinkImage>();
+
+        this.vendor_drink_ingredients = new ArrayList<VendorDrinkIngredient>();
+        this.tag_one = "";
+        this.tag_two = "";
+        this.tag_three = "";
+        this.tag_four = "";
+        this.tag_five = "";
     }
 }

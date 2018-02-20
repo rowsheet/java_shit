@@ -177,6 +177,7 @@ public class VendorMenuHandler {
         );
     }
 
+    // @TODO Implement in model.
     @WebMethod
     public boolean updateBeerImage(
             @WebParam(name = "cookie") String cookie,
@@ -191,6 +192,7 @@ public class VendorMenuHandler {
         );
     }
 
+    // @TODO Implement in model.
     @WebMethod
     public String deleteBeerImage (
             @WebParam(name = "cookie") String cookie,
@@ -200,6 +202,56 @@ public class VendorMenuHandler {
         return beerController.deleteBeerImage(
                 cookie,
                 beer_image_id
+        );
+    }
+
+    /*------------------------------------------------------------
+    BEER TAGS
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public int createBeerTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.createBeerTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean updateBeerTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id,
+            @WebParam(name = "new_name") String new_name,
+            @WebParam(name = "new_hex_color") String new_hex_color,
+            @WebParam(name = "new_tag_type") String new_tag_type
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.updateBeerTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean deleteBeerTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id
+    ) throws Exception {
+        BeerController beerController = new BeerController();
+        return beerController.deleteBeerTag(
+                cookie,
+                id
         );
     }
 
@@ -362,6 +414,55 @@ public class VendorMenuHandler {
         );
     }
 
+    /*------------------------------------------------------------
+    FOOD TAGS
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public int createFoodTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.createVendorFoodTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean updateFoodTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id,
+            @WebParam(name = "new_name") String new_name,
+            @WebParam(name = "new_hex_color") String new_hex_color,
+            @WebParam(name = "new_tag_type") String new_tag_type
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.updateVendorFoodTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFoodTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id
+    ) throws Exception {
+        FoodController foodController = new FoodController();
+        return foodController.deleteVendorFoodTag(
+                cookie,
+                id
+        );
+    }
 
     /* DRINK SECTION ------------------------------------------------------------
     ██████╗ ██████╗ ██╗███╗   ██╗██╗  ██╗███████╗
@@ -543,6 +644,56 @@ public class VendorMenuHandler {
         return drinkController.deleteVendorDrinkImage(
             cookie,
             drink_image_id);
+    }
+
+    /*------------------------------------------------------------
+    DRINK TAGS
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public int createDrinkTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
+    ) throws Exception {
+        DrinkController drinkController = new DrinkController();
+        return drinkController.createVendorDrinkTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean updateDrinkTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id,
+            @WebParam(name = "new_name") String new_name,
+            @WebParam(name = "new_hex_color") String new_hex_color,
+            @WebParam(name = "new_tag_type") String new_tag_type
+    ) throws Exception {
+        DrinkController drinkController = new DrinkController();
+        return drinkController.updateVendorDrinkTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    @WebMethod
+    public boolean deleteDrinkTag(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "id") int id
+    ) throws Exception {
+        DrinkController drinkController = new DrinkController();
+        return drinkController.deleteVendorDrinkTag(
+                cookie,
+                id
+        );
     }
 
     /* INGREDIENTS SECTION ------------------------------------------------------------

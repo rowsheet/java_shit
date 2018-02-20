@@ -4,10 +4,16 @@ import com.Common.AbstractModel;
 import com.Common.Beer;
 import com.Common.BeerImage;
 import com.Common.BeerReview;
+import com.Common.BeerIngredient;
+import com.Common.VendorNutritionalFact;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
+import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -132,10 +138,62 @@ public class BeerModel extends AbstractModel {
                     "AND " +
                     "   bi.filename IS NOT NULL";
 
+    private String loadBeerMenuSQL_stage5 =
+            "SELECT " +
+                    "    bi.vendor_id AS beer_vendor_id, " +
+                    "    bi.feature_id AS beer_feature_id, " +
+                    "    bi.name AS beer_name, " +
+                    "    bi.description AS beer_description, " +
+                    "    bi.source AS beer_source, " +
+                    "    bi.keywords AS beer_keywords, " +
+                    "    bi.tag_one AS beer_tag_one, " +
+                    "    bi.tag_two AS beer_tag_two, " +
+                    "    bi.tag_three AS beer_tag_three, " +
+                    "    bi.tag_four AS beer_tag_four, " +
+                    "    bi.tag_five AS beer_tag_five, " +
+                    "    vnf.id AS nf_nutritional_facts_id, " +
+                    "    vnf.vendor_id AS nf_vendor_id, " +
+                    "    vnf.serving_size AS nf_serving_size, " +
+                    "    vnf.calories AS nf_calories, " +
+                    "    vnf.calories_from_fat AS nf_calories_from_fat, " +
+                    "    vnf.total_fat AS nf_total_fat, " +
+                    "    vnf.saturated_fat AS nf_saturated_fat, " +
+                    "    vnf.trans_fat AS nf_trans_fat, " +
+                    "    vnf.cholesterol AS nf_cholesterol, " +
+                    "    vnf.sodium AS nf_sodium, " +
+                    "    vnf.total_carbs AS nf_total_carbs, " +
+                    "    vnf.dietary_fiber AS nf_dietary_fiber, " +
+                    "    vnf.sugar AS nf_sugar, " +
+                    "    vnf.vitamin_a AS nf_vitamin_a, " +
+                    "    vnf.vitamin_b AS nf_vitamin_b, " +
+                    "    vnf.vitamin_c AS nf_vitamin_c, " +
+                    "    vnf.vitamin_d AS nf_vitamin_d, " +
+                    "    vnf.calcium AS nf_calcium, " +
+                    "    vnf.iron AS nf_iron, " +
+                    "    vnf.protein AS nf_protein, " +
+                    "    vnf.profile_name AS nf_profile_name " +
+                    "FROM " +
+                    "    beers b " +
+                    "LEFT JOIN " +
+                    "    beer_ingredient_associations bia " +
+                    "ON " +
+                    "    bia.beer_id = b.id " +
+                    "LEFT JOIN " +
+                    "    beer_ingredients bi " +
+                    "ON " +
+                    "    bia.beer_ingredient_id = bi.id " +
+                    "LEFT JOIN " +
+                    "    vendor_nutritional_facts vnf " +
+                    "ON " +
+                    "    bi.nutritional_facts_id = vnf.id " +
+                    "WHERE " +
+                    "    b.id = ?";
+
     public BeerModel() throws Exception {
     }
 
     /**
+     * @TODO Move this to materialized views (or distributed data stores).
      * Loads all beers + reviews + images for a given vendor_id (brewery_id).
      *
      * Does this in three stages:
@@ -144,6 +202,7 @@ public class BeerModel extends AbstractModel {
      * 2) Load all review for all beers.
      * 3) Load all image urls (has map by display order).
      * 4) Calculate review averages for all the beers.
+     * 5) Load all ingredients (and associated nutritional facts).
      *
      * @param brewery_id
      * @return HashMap<beer_id, beer_data_structure>
@@ -243,6 +302,74 @@ public class BeerModel extends AbstractModel {
                     }
                     beer.review_average = total / (float) beer.reviews.size();
                     beer.review_count = beer.reviews.size();
+                }
+            }
+            /*
+            Stage 5
+             */
+            // Load all ingredients and associated nutritional facts.
+            // Go through the beer_hash_map. It has all the ids for the vendor_drinks.
+            for (Beer beer : beerHashMap.values()) {
+                PreparedStatement preparedStatement = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage5);
+                preparedStatement.setInt(1, beer.beer_id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                ArrayList ingredients_array = new ArrayList<BeerIngredient>();
+                while(resultSet.next()) {
+                    // Initialize for beer ingredient and nutritional fact profile.
+                    BeerIngredient beerIngredient = new BeerIngredient();
+                    VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                    // Assign all beer ingredient values.
+                    beerIngredient.vendor_id = resultSet.getInt("beer_vendor_id");
+                    beerIngredient.feature_id = resultSet.getInt("beer_feature_id");
+                    beerIngredient.name = resultSet.getString("beer_name");
+                    beerIngredient.description = resultSet.getString("beer_description");
+                    beerIngredient.source = resultSet.getString("beer_source");
+                    Array keywords_array = resultSet.getArray("beer_keywords");
+                    // This conversion will throw a null pointer if keywords_array is null,
+                    // which will occur if there are no ingredients associated with this beer.
+                    if (keywords_array != null) {
+                        beerIngredient.keywords = (String[]) keywords_array.getArray();
+                    }
+                    beerIngredient.tag_one = resultSet.getString("beer_tag_one");
+                    beerIngredient.tag_two = resultSet.getString("beer_tag_two");
+                    beerIngredient.tag_three = resultSet.getString("beer_tag_three");
+                    beerIngredient.tag_four = resultSet.getString("beer_tag_four");
+                    beerIngredient.tag_five = resultSet.getString("beer_tag_five");
+                    // Assign all nutritional fact values.
+                    vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
+                    vendorNutritionalFact.nutritional_fact_id = resultSet.getShort("nf_nutritional_facts_id");
+                    vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
+                    vendorNutritionalFact.serving_size = resultSet.getInt("nf_serving_size");
+                    vendorNutritionalFact.calories = resultSet.getInt("nf_calories");
+                    vendorNutritionalFact.calories_from_fat = resultSet.getInt("nf_calories_from_fat");
+                    vendorNutritionalFact.total_fat = resultSet.getInt("nf_total_fat");
+                    vendorNutritionalFact.saturated_fat = resultSet.getInt("nf_saturated_fat");
+                    vendorNutritionalFact.trans_fat = resultSet.getInt("nf_trans_fat");
+                    vendorNutritionalFact.cholesterol = resultSet.getInt("nf_cholesterol");
+                    vendorNutritionalFact.sodium = resultSet.getInt("nf_sodium");
+                    vendorNutritionalFact.total_carbs = resultSet.getInt("nf_total_carbs");
+                    vendorNutritionalFact.dietary_fiber = resultSet.getInt("nf_dietary_fiber");
+                    vendorNutritionalFact.sugar = resultSet.getInt("nf_sugar");
+                    vendorNutritionalFact.vitamin_a = resultSet.getInt("nf_vitamin_a");
+                    vendorNutritionalFact.vitamin_b = resultSet.getInt("nf_vitamin_b");
+                    vendorNutritionalFact.vitamin_c = resultSet.getInt("nf_vitamin_c");
+                    vendorNutritionalFact.vitamin_d = resultSet.getInt("nf_vitamin_d");
+                    vendorNutritionalFact.calcium = resultSet.getInt("nf_calcium");
+                    vendorNutritionalFact.iron = resultSet.getInt("nf_iron");
+                    vendorNutritionalFact.protein = resultSet.getInt("nf_protein");
+                    vendorNutritionalFact.profile_name = resultSet.getString("nf_profile_name");
+                    // Link the nutritional fact to the to the ingredient data-structure.
+                    System.out.println(vendorNutritionalFact);
+                    beerIngredient.nutritional_fact_profile = vendorNutritionalFact;
+                    // Finally add the ingredients to the total array list.
+                    ingredients_array.add(beerIngredient);
+                }
+                // Associate the ingredients array to the drink.
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
                 }
             }
             return beerHashMap;

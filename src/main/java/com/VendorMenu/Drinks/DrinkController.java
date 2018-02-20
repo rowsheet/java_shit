@@ -217,5 +217,65 @@ public class DrinkController extends AbstractController {
                 drink_image_id);
     }
 
+    public int createVendorDrinkTag (
+            String cookie,
+            String name,
+            String hex_color,
+            String tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateHexColor(hex_color);
+        this.validateMenuItemTagType(tag_type);
+        // Initialize model and create beer tag.
+        DrinkModel drinkModel = new DrinkModel();
+        return drinkModel.createVendorDrinkTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    public Boolean updateVendorDrinkTag (
+            String cookie,
+            int id,
+            String new_name,
+            String new_hex_color,
+            String new_tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "vendor_drink_tag_id");
+        this.validateString(new_name, "new_name");
+        this.validateHexColor(new_hex_color);
+        this.validateMenuItemTagType(new_tag_type);
+        // Initialize model and return model response.
+        DrinkModel drinkModel = new DrinkModel();
+        return drinkModel.updateVendorDrinkTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    public Boolean deleteVendorDrinkTag (
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "vendor_drink_tag_id");
+        // Initialize model and return model response.
+        DrinkModel drinkModel = new DrinkModel();
+        return drinkModel.deleteVendorDrinkTag(
+                cookie,
+                id
+        );
+    }
+
 }
 

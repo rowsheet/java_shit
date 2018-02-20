@@ -814,4 +814,248 @@ public class DrinkModel extends AbstractModel {
     ) throws Exception {
         return "something";
     }
+
+    private String validateVendorDrinkTagOwnershipSQL =
+            "SELECT " +
+                    "   id " +
+                    "FROM " +
+                    "   vendor_drink_tags " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   vendor_id = ?";
+
+    private String createVendorDrinkTagSQL =
+            "INSERT INTO " +
+                    "vendor_drink_tags ( " +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color," +
+                    "   tag_type " +
+                    ") VALUES (?,?,?,?::menu_item_tag_type) " +
+                    "RETURNING id";
+
+    private String updateVendorDrinkTagSQL =
+            "UPDATE " +
+                    "   vendor_drink_tags " +
+                    "SET " +
+                    "   name = ?, " +
+                    "   hex_color = ?, " +
+                    "   tag_type = ?::menu_item_tag_type " +
+                    "WHERE " +
+                    "   id = ? ";
+
+    private String deleteVendorDrinkTagSQL =
+            "DELETE FROM " +
+                    "   vendor_drink_tags " +
+                    "WHERE " +
+                    "   id = ?";
+
+
+    /**
+     * 1) Validate cookie (use "drink_menu" permission).
+     * 2) Create vendor_drink_tag.
+     *
+     * @param cookie
+     * @param name
+     * @param hex_color
+     * @return
+     * @throws Exception
+     */
+    public int createVendorDrinkTag (
+            String cookie,
+            String name,
+            String hex_color,
+            String tag_type
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            /*
+            Stage 1
+             */
+            this.validateCookieVendorFeature(cookie, "drink_menu");
+            /*
+            Stage 2
+             */
+            preparedStatement = this.DAO.prepareStatement(this.createVendorDrinkTagSQL);
+            preparedStatement.setInt(1, this.vendorCookie.vendorID);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, hex_color);
+            preparedStatement.setString(4, tag_type);
+            resultSet = preparedStatement.executeQuery();
+            int id = 0;
+            while (resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
+            if (id == 0) {
+                // I don't really know why, but no non-zero ID returned, so...
+                throw new Exception("Unable to create new vendor_drink_tag.");
+            }
+            return id;
+        } catch (Exception ex) {
+            // Try to parse exception.
+            if (ex.getMessage().contains("vendor_drink_tags_vendor_id_name_idx")) {
+                throw new Exception("A drink item tag with that name already exists!");
+            }
+            // Don't know why.
+            throw new Exception("Unable to create new vendor_drink_tag.");
+        } finally {
+            if (preparedStatement !=  null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    /**
+     * 1) Validate cookie (use "drink_menu" permission).
+     * 2) Update vendor_drink_tag
+     *
+     * @param cookie
+     * @param id
+     * @param new_name
+     * @param new_hex_color
+     * @param new_tag_type
+     * @return
+     * @throws Exception
+     */
+    public Boolean updateVendorDrinkTag(
+            String cookie,
+            int id,
+            String new_name,
+            String new_hex_color,
+            String new_tag_type
+    ) throws Exception {
+        PreparedStatement validationPreparedStatement = null;
+        ResultSet validationResultSet = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+             */
+            this.validateCookieVendorFeature(cookie, "drink_menu");
+            validationPreparedStatement = this.DAO.prepareStatement(this.validateVendorDrinkTagOwnershipSQL);
+            validationPreparedStatement.setInt(1, id);
+            validationPreparedStatement.setInt(2, this.vendorCookie.vendorID);
+            validationResultSet = validationPreparedStatement.executeQuery();
+            int validation_id = 0;
+            while (validationResultSet.next()) {
+                validation_id = validationResultSet.getInt("id");
+            }
+            if (validation_id == 0) {
+                throw new DrinkException("This account does not have permission to update this vendor_drink_tag");
+            }
+            /*
+            Stage 2
+             */
+            preparedStatement = this.DAO.prepareStatement(this.updateVendorDrinkTagSQL);
+            preparedStatement.setString(1, new_name);
+            preparedStatement.setString(2, new_hex_color);
+            preparedStatement.setString(3, new_tag_type);
+            preparedStatement.setInt(4, id);
+            preparedStatement.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (DrinkException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to update vendor_drink_tag.");
+        } finally {
+            if (validationPreparedStatement != null) {
+                validationPreparedStatement.close();
+            }
+            if (validationResultSet != null) {
+                validationResultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    /**
+     * 1) Validate cookie (using "drink_menu" permission).
+     * 2) Delete vendor_drink_tag.
+     *
+     * @param cookie
+     * @param id
+     * @return
+     * @throws Exception
+     */
+
+    public Boolean deleteVendorDrinkTag(
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement validationPreparedStatement = null;
+        ResultSet validationResultSet = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            this.DAO.setAutoCommit(false);
+            /*
+            Stage 1
+             */
+            this.validateCookieVendorFeature(cookie, "drink_menu");
+            validationPreparedStatement = this.DAO.prepareStatement(this.validateVendorDrinkTagOwnershipSQL);
+            validationPreparedStatement.setInt(1, id);
+            validationPreparedStatement.setInt(2, this.vendorCookie.vendorID);
+            validationResultSet = validationPreparedStatement.executeQuery();
+            int validation_id = 0;
+            while (validationResultSet.next()) {
+                validation_id = validationResultSet.getInt("id");
+            }
+            if (validation_id == 0) {
+                throw new DrinkException("This account does not have permission to delete this vendor_drink_tag");
+            }
+            /*
+            Stage 2
+             */
+            preparedStatement = this.DAO.prepareStatement(this.deleteVendorDrinkTagSQL);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            /*
+            Done. Commit.
+             */
+            this.DAO.commit();
+            return true;
+        } catch (DrinkException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to delete vendor_drink_tag.");
+        } finally {
+            if (validationPreparedStatement != null) {
+                validationPreparedStatement.close();
+            }
+            if (validationResultSet != null) {
+                validationResultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
 }

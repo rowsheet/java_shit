@@ -1,6 +1,7 @@
 package com.VendorMenu.Beers;
 
 import com.Common.AbstractController;
+import com.Common.Beer;
 
 /**
  * Created by alexanderkleinhans on 6/1/17.
@@ -234,6 +235,66 @@ public class BeerController extends AbstractController {
         return beerModel.deleteBeerImage(
                 cookie,
                 beer_image_id
+        );
+    }
+
+    public int createBeerTag (
+            String cookie,
+            String name,
+            String hex_color,
+            String tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateHexColor(hex_color);
+        this.validateMenuItemTagType(tag_type);
+        // Initialize model and create beer tag.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.createBeerTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    public Boolean updateBeerTag (
+            String cookie,
+            int id,
+            String new_name,
+            String new_hex_color,
+            String new_tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "beer_tag_id");
+        this.validateString(new_name, "new_name");
+        this.validateHexColor(new_hex_color);
+        this.validateMenuItemTagType(new_tag_type);
+        // Initialize model and return model response.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.updateBeerTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    public Boolean deleteBeerTag (
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "beer_tag_id");
+        // Initialize model and return model response.
+        BeerModel beerModel = new BeerModel();
+        return beerModel.deleteBeerTag(
+                cookie,
+                id
         );
     }
 

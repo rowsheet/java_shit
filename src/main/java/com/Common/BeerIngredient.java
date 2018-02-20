@@ -1,18 +1,18 @@
 package com.Common;
 
 public class BeerIngredient {
-    int vendor_id;
-    int feature_id;
-    String name;
-    String description;
-    String source;
-    String[] keywords;
-    String tag_one;
-    String tag_two;
-    String tag_three;
-    String tag_four;
-    String tag_five;
-    int nutritional_facts_id;
+    public int vendor_id;
+    public int feature_id;
+    public String name;
+    public String description;
+    public String source;
+    public String[] keywords;
+    public String tag_one;
+    public String tag_two;
+    public String tag_three;
+    public String tag_four;
+    public String tag_five;
+    public VendorNutritionalFact nutritional_fact_profile;
     public BeerIngredient() {
         this.vendor_id = 0;
         this.feature_id = 0;

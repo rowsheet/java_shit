@@ -190,4 +190,64 @@ public class FoodController extends AbstractController {
         );
     }
 
+    public int createVendorFoodTag (
+            String cookie,
+            String name,
+            String hex_color,
+            String tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateString(name, "name");
+        this.validateHexColor(hex_color);
+        this.validateMenuItemTagType(tag_type);
+        // Initialize model and create beer tag.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.createVendorFoodTag(
+                cookie,
+                name,
+                hex_color,
+                tag_type
+        );
+    }
+
+    public Boolean updateVendorFoodTag (
+            String cookie,
+            int id,
+            String new_name,
+            String new_hex_color,
+            String new_tag_type
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "vendor_food_tag_id");
+        this.validateString(new_name, "new_name");
+        this.validateHexColor(new_hex_color);
+        this.validateMenuItemTagType(new_tag_type);
+        // Initialize model and return model response.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.updateVendorFoodTag(
+                cookie,
+                id,
+                new_name,
+                new_hex_color,
+                new_tag_type
+        );
+    }
+
+    public Boolean deleteVendorFoodTag (
+            String cookie,
+            int id
+    ) throws Exception {
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        this.validateID(id, "vendor_food_tag_id");
+        // Initialize model and return model response.
+        FoodModel foodModel = new FoodModel();
+        return foodModel.deleteVendorFoodTag(
+                cookie,
+                id
+        );
+    }
+
 }

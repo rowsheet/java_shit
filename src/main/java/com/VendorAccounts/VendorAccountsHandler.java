@@ -313,4 +313,16 @@ public class VendorAccountsHandler {
         );
     }
 
+    /**
+     * Return all current updated drop-downs.
+     *
+     * @param cookie
+     * @throws Exception
+     */
+//    @WebMethod
+//    public String getDropDowns(
+//            @WebParam(name = "cookie") String cookie
+//    ) throws Exception {
+//    }
+
 }

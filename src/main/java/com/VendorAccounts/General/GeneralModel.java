@@ -2,6 +2,7 @@ package com.VendorAccounts.General;
 
 import com.Common.AbstractModel;
 import com.Common.VendorCookie;
+import com.Common.VendorDropdown;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
 import com.google.gson.Gson;
 
@@ -562,4 +563,46 @@ public class GeneralModel extends AbstractModel {
             }
         }
     }
+
+    public String getDropDownsSQL_stage1 =
+        "SELECT DISTINCT " +
+                "   vf.vendor_food_category, " +
+                "   vfc.name, " +
+                "   COUNT(*) " +
+                "FROM " +
+                "   vendor_foods vf " +
+                "LEFT JOIN " +
+                "   vendor_food_categories vfc " +
+                "ON " +
+                "   vf.food_category_id = vfc.id " +
+                "WHERE " +
+                "   vf.vendor_id = ? " +
+                "GROUP BY 1, 2 " +
+                "ORDER BY COUNT(*) DESC";
+
+    public String getDropDownSQL_stage2 =
+            "SELECT DISTINCT ";
+
+    /**
+     * @TODO do all this shit fucker.
+     * Validate Cookie... then...
+     * Get drop-downs for
+     * 1) Food Categories
+     * 2) Beer Categories
+     * 3) Drink Categories
+     * 4) Event Categories
+     * 5) Food Tags
+     * 6) Beer Tags
+     * 7) Drink Tags
+     * -- Will probably add these later
+     * 5) Food Ingredients
+     * 6) Beer Ingredients
+     * 7) Drink Ingredients
+     * @return
+     * @throws Exception
+     */
+//    public HashMap<String, VendorDropdown> getDropDowns()
+//        throws Exception {
+//    }
+
 }

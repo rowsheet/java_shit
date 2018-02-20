@@ -422,29 +422,6 @@ soap.createClient(vendormenu_url, function(err, client) {
 /*
 args = {
 	"cookie": temp_cookie,
-	"name": "Unit Test Food",
-	"description": "whatever",
-	"price": 99.99,
-	"food_sizes": ["Snack"],
-	"food_category_id": 4
-}
-soap.createClient(vendormenu_url, function(err, client) {
-	if (err) {
-		console.log(err);
-	} else {
-		client.createFood(args, function(err, result) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log(JSON.stringify(JSON.parse(result.return), null, 4));
-			}
-		});
-	}
-});
-*/
-/*
-args = {
-	"cookie": temp_cookie,
 	"id": 50,
 	"name": "NEW Unit Test Food",
 	"description": "whatever",
@@ -874,7 +851,91 @@ call_api(vendormenu_url, "associateBeerNutritionalFact", {
 	"nutritional_fact_id": 2
 });
 */
+/*
 call_api(vendormenu_url, "disassociateBeerNutritionalFact", {
 	"cookie": temp_cookie,
 	"beer_id": 46
+});
+*/
+/*
+call_api(publicbrewery_url, "loadBreweryInfo",{
+	"brewery_id": 21
+});
+*/
+/*
+call_api(vendormenu_url, "createFood", {
+	"cookie": temp_cookie,
+	"name": "Sup",
+	"description": "Temp Test",
+	"price": 99.99,
+	"food_sizes": ["Small"],
+	"food_category_id": 4
+});
+*/
+/*
+call_api(vendormenu_url, "createBeerTag", {
+	"cookie": temp_cookie,
+	"name": "For Delete",
+	"hex_color": "#ffffff",
+	"tag_type": "ingredient"
+});
+*/
+/*
+call_api(vendormenu_url, "updateBeerTag", {
+	"cookie": temp_cookie,
+	"id": 4,
+	"new_name": "New Name",
+	"new_hex_color": "#ccc",
+	"new_tag_type": "ingredient"
+});
+*/
+/*
+call_api(vendormenu_url, "deleteBeerTag", {
+	"cookie": temp_cookie,
+	"id": 9
+});
+*/
+/*
+call_api(vendormenu_url, "createFoodTag", {
+	"cookie": temp_cookie,
+	"name": "For Delete",
+	"hex_color": "#ffffff",
+	"tag_type": "ingredient"
+});
+*/
+/*
+call_api(vendormenu_url, "updateFoodTag", {
+	"cookie": temp_cookie,
+	"id": 1,
+	"new_name": "New Name",
+	"new_hex_color": "#ccc",
+	"new_tag_type": "ingredient"
+});
+*/
+/*
+call_api(vendormenu_url, "deleteFoodTag", {
+	"cookie": temp_cookie,
+	"id": 2
+});
+*/
+/*
+call_api(vendormenu_url, "createDrinkTag", {
+	"cookie": temp_cookie,
+	"name": "For Delete",
+	"hex_color": "#ffffff",
+	"tag_type": "ingredient"
+});
+*/
+/*
+call_api(vendormenu_url, "updateDrinkTag", {
+	"cookie": temp_cookie,
+	"id": 1,
+	"new_name": "New Name",
+	"new_hex_color": "#ccc",
+	"new_tag_type": "ingredient"
+});
+*/
+call_api(vendormenu_url, "deleteDrinkTag", {
+	"cookie": temp_cookie,
+	"id": 2
 });

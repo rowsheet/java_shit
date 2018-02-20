@@ -25,6 +25,13 @@ public class Beer {
     public String hop_score;
     // From a join, but almost straight from DB (one-to-one) relationship.
     public BeerCategory beer_category;
+    // Ingredients and tags.
+    public ArrayList<BeerIngredient> beer_ingredients;
+    public String tag_one;
+    public String tag_two;
+    public String tag_three;
+    public String tag_four;
+    public String tag_five;
 
     /**
      * These have to be calculated.
@@ -64,5 +71,12 @@ public class Beer {
         this.reviews = new ArrayList<BeerReview>();
 
         this.images = new HashMap<Integer, BeerImage>();
+
+        this.beer_ingredients = new ArrayList<BeerIngredient>();
+        this.tag_one = "";
+        this.tag_two = "";
+        this.tag_three = "";
+        this.tag_four = "";
+        this.tag_five = "";
     }
 }

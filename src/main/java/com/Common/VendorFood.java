@@ -20,6 +20,13 @@ public class VendorFood {
     public String creation_timestamp;
     // Comes from other table but basically straight from the DB.
     public VendorFoodCategory vendor_food_category;
+    // Ingredients and tags.
+    public ArrayList<VendorFoodIngredient> vendor_food_ingredients;
+    public String tag_one;
+    public String tag_two;
+    public String tag_three;
+    public String tag_four;
+    public String tag_five;
 
     /**
      * These have to be calculated.
@@ -54,6 +61,13 @@ public class VendorFood {
         this.reviews = new ArrayList<VendorFoodReview>();
 
         this.images = new HashMap<Integer, VendorFoodImage>();
+
+        this.vendor_food_ingredients = new ArrayList<VendorFoodIngredient>();
+        this.tag_one = "";
+        this.tag_two = "";
+        this.tag_three = "";
+        this.tag_four = "";
+        this.tag_five = "";
     }
 
 }

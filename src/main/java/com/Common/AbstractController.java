@@ -600,20 +600,20 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid beer style.");
         } else if (
-                "Belgian Styles" != input.intern() &&
+                "Belgian-Styles" != input.intern() &&
                 "Bocks" != input.intern() &&
-                "Brown Ales" != input.intern() &&
-                "Dark Lagers" != input.intern() &&
-                "Hybrid Beers" != input.intern() &&
-                "India Pale Ales" != input.intern() &&
-                "Pale Ales" != input.intern() &&
-                "Pilseners and Pale Lagers" != input.intern() &&
+                "Brown-Ales" != input.intern() &&
+                "Dark-Lagers" != input.intern() &&
+                "Hybrid-Beers" != input.intern() &&
+                "India-Pale-Ales" != input.intern() &&
+                "Pale-Ales" != input.intern() &&
+                "Pilseners-and-Pale-Lagers" != input.intern() &&
                 "Porters" != input.intern() &&
-                "Scottish-Style Ales" != input.intern() &&
-                "Specialty Beers" != input.intern() &&
+                "Scottish-Style-Ales" != input.intern() &&
+                "Specialty-Beers" != input.intern() &&
                 "Stouts" != input.intern() &&
-                "Strong Ales" != input.intern() &&
-                "Wheat Beers" != input.intern()
+                "Strong-Ales" != input.intern() &&
+                "Wheat-Beers" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid beer style.");
         }
@@ -642,10 +642,10 @@ public class AbstractController {
         } else if (
                 "Weizen" != input.intern() &&
                 "Pilsner" != input.intern() &&
-                "Nonic Pint" != input.intern() &&
-                "Shaker Pint" != input.intern() &&
-                "Tupip Pint" != input.intern() &&
-                "Willi Becher" != input.intern() &&
+                "Nonic-Pint" != input.intern() &&
+                "Shaker-Pint" != input.intern() &&
+                "Tupip-Pint" != input.intern() &&
+                "Willi-Becher" != input.intern() &&
                 "Stange" != input.intern() &&
                 "Tumbler" != input.intern() &&
                 "Tuplip" != input.intern() &&
@@ -656,11 +656,11 @@ public class AbstractController {
                 "Flute" != input.intern() &&
                 "Goblet" != input.intern() &&
                 "Mug" != input.intern() &&
-                "Dimpled Mug" != input.intern() &&
-                "Takard Mug" != input.intern() &&
+                "Dimpled-Mug" != input.intern() &&
+                "Takard-Mug" != input.intern() &&
                 "Stein" != input.intern() &&
-                "Oktoberfest Mug" != input.intern() &&
-                "Hopside Down" != input.intern() &&
+                "Oktoberfest-Mug" != input.intern() &&
+                "Hopside-Down" != input.intern() &&
                 "Boot" != input.intern() &&
                 "Yard" != input.intern()
                 ) {
@@ -673,12 +673,13 @@ public class AbstractController {
         if (input == null || input == "") {
             throw new InvalidParameterException("Invalid food size.");
         } else if (
-                "Bite" != input.intern() &&
-                "Snack" != input.intern() &&
-                "Lunchable" != input.intern() &&
+                "Kids" != input.intern() &&
+                "Small" != input.intern() &&
+                "Medium" != input.intern() &&
+                "Large" != input.intern() &&
+                "Extra-Large" != input.intern() &&
                 "Shareable" != input.intern() &&
-                "Drunk" != input.intern() &&
-                "Gourmet" != input.intern()
+                "Normal" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid food size.");
         }
@@ -828,6 +829,19 @@ public class AbstractController {
                         "Kids" != input.intern()
                 ) {
             throw new InvalidParameterException("Invalid brewery \"Friendly\" item.");
+        }
+    }
+
+    protected void validateMenuItemTagType(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid menu_item_tag_type");
+        } else if (
+                !input.equals("allergy") &&
+                        !input.equals("promotional") &&
+                        !input.equals("ingredient")
+                ) {
+            throw new InvalidParameterException("Invalid menu_item_tag_type");
         }
     }
 }

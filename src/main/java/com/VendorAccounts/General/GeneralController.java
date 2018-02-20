@@ -164,4 +164,10 @@ public class GeneralController extends AbstractController {
         );
     }
 
+    public String getDropDowns(
+            String cookie
+    ) throws Exception {
+        return  "";
+    }
+
 }
