@@ -11,13 +11,13 @@ public class VendorCookie {
     public int requestFeatureID;
     public int accountID;
     public HashMap<String, VendorFeature> vendorFeatures;
-    public HashMap<String, VendorDropdown> dropDowns;
+    public VendorDropdownContainer dropDowns;
     public VendorCookie() {
         this.sessionKey = "";
         this.vendorID = 0;
         this.requestFeatureID = 0;
         this.accountID = 0;
         this.vendorFeatures = new HashMap<String, VendorFeature>();
-        this.dropDowns = new HashMap<String, VendorDropdown>();
+        this.dropDowns = new VendorDropdownContainer();
     }
 }

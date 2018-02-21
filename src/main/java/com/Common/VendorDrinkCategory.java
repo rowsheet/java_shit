@@ -8,7 +8,7 @@ public class VendorDrinkCategory {
     public String icon_enum;
 
     public VendorDrinkCategory() {
-        this.vendor_drink_category_id = 0;
+        this.vendor_id = 0;
         this.vendor_drink_category_id = 0;
         this.name = "";
         this.hex_color = "";

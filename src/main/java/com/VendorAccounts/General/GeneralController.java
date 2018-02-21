@@ -164,10 +164,17 @@ public class GeneralController extends AbstractController {
         );
     }
 
+/*
     public String getDropDowns(
             String cookie
     ) throws Exception {
-        return  "";
+        // Validate input parameters.
+        this.validateString(cookie, "cookie");
+        // Initialize model and return data.
+        GeneralModel generalModel = new GeneralModel();
+        VendorDropdownContainer vendorDropdownContainer = new VendorDropdownContainer();
+        vendorDropdownContainer = generalModel.getDropdowns(cookie);
+        return this.returnJSON(vendorDropdownContainer);
     }
-
+*/
 }

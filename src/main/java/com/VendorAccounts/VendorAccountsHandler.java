@@ -1,7 +1,6 @@
 package com.VendorAccounts;
 
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
-import com.VendorAccounts.General.GeneralModel;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
 import com.VendorAccounts.General.GeneralController;
 import com.sun.tools.javah.Gen;
@@ -276,8 +275,8 @@ public class VendorAccountsHandler {
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "image_id") int image_id
     ) throws Exception {
-        GeneralModel generalModel = new GeneralModel();
-        return generalModel.deleteVenodrPageImage(
+        GeneralController generalController = new GeneralController();
+        return generalController.deleteVendorPageImage(
                 cookie,
                 image_id
         );
@@ -303,8 +302,8 @@ public class VendorAccountsHandler {
             @WebParam(name = "longitude") float longitude,
             @WebParam(name = "google_maps_zoom") int google_maps_zoom
     ) throws Exception {
-        GeneralModel generalModel = new GeneralModel();
-        return generalModel.setGoogleMapsAddress(
+        GeneralController generalController = new GeneralController();
+        return generalController.setGoogleMapsAddress(
             cookie,
             google_maps_address,
             latitude,
@@ -319,10 +318,13 @@ public class VendorAccountsHandler {
      * @param cookie
      * @throws Exception
      */
-//    @WebMethod
-//    public String getDropDowns(
-//            @WebParam(name = "cookie") String cookie
-//    ) throws Exception {
-//    }
-
+/*
+    @WebMethod
+    public String getDropDowns(
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.getDropDowns(cookie);
+    }
+*/
 }

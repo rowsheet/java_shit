@@ -3,15 +3,19 @@ package com.Common;
 import java.sql.*;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.ConcurrentModificationException;
 import java.util.Map;
 
 import com.google.gson.*;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+import sun.security.jgss.GSSCaller;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
  */
 public class AbstractModel {
 
+    private Connection SessionDAO;
     protected Connection DAO;
     protected UserCookie userCookie;
     protected VendorCookie vendorCookie;
@@ -26,18 +30,39 @@ public class AbstractModel {
         this.DAO = DriverManager
                 .getConnection("jdbc:postgresql://localhost:5432/skiphopp",
                         db_username, db_password);
+        // Initialize data access object for sesseions.
+        // In the future, this will be ported to Redis.
+        Class.forName("org.postgresql.Driver");
+        this.SessionDAO = DriverManager
+                .getConnection("jdbc:postgresql://localhost:5432/skiphopp",
+                        db_username, db_password);
         // @TODO only initialize on of these and put the account type in the constructor.
         this.userCookie = new UserCookie();
         this.vendorCookie = new VendorCookie();
     }
 
-    private String checkSessionSQL =
+    // @TODO This is going to be a MAJOR performance hit, needs to be materialized elseehere (Like Redis).
+    private String checkUserSessionSQL =
             "SELECT " +
                     "   account_id " +
                     "FROM " +
                     "   sessions " +
                     "WHERE " +
                     "   session_key = ?";
+
+    // @TODO Dido on the performance hit. Also should probably get some other shit (like anomoly behavioural
+    // @TODO (cont.) tracking for security).
+    private String checkVendorSessionSQL =
+            "SELECT " +
+                    "   vaa.vendor_id " +
+                    "FROM " +
+                    "   sessions s " +
+                    "LEFT JOIN " +
+                    "   vendor_account_associations vaa " +
+                    "ON " +
+                    "   s.account_id = vaa.account_id " +
+                    "WHERE " +
+                    "   s.session_key = ?";
 
     protected void cleanupDatabase() {
         if (this.DAO != null) {
@@ -54,7 +79,7 @@ public class AbstractModel {
             // the account_id to what it was from the session.
             Gson gson = new Gson();
             this.userCookie = gson.fromJson(cookie, UserCookie.class);
-            preparedStatement = this.DAO.prepareStatement(this.checkSessionSQL);
+            preparedStatement = this.DAO.prepareStatement(this.checkUserSessionSQL);
             preparedStatement.setString(1, this.userCookie.sessionKey);
             resultSet = preparedStatement.executeQuery();
             int account_id = 0;
@@ -122,15 +147,52 @@ public class AbstractModel {
 
     /**
      * Takes a cookie as a JSON string and just retuns the
-     * userID. If there is no userID, and exception will
+     * vendorID. If there is no userID, and exception will
      * be thrown.
      * @param cookie
      * @return
      */
 
-    protected int validateCookie(String cookie)
+    protected int validateVendorCookie(String cookie)
         throws Exception {
-        return 1;
+        // Parse the cookie string and set the internal vendorCookie object.
+        // We will need to sessionKey from this data.
+        Gson gson = new Gson();
+        this.vendorCookie = gson.fromJson(cookie, VendorCookie.class);
+        // Fetching session data.
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            String session_key = this.vendorCookie.sessionKey;
+            preparedStatement = this.SessionDAO.prepareStatement(this.checkVendorSessionSQL);
+            preparedStatement.setString(1, session_key);
+            resultSet = preparedStatement.executeQuery();
+            int rows_of_session_found = 0;
+            int vendor_id = 0;
+            while (resultSet.next()) {
+                vendor_id = resultSet.getInt("vendor_id");
+                rows_of_session_found++;
+            }
+            if (rows_of_session_found == 0) {
+                throw new Exception("Invalid session.");
+            }
+            // Return the vendor_id.
+            return vendor_id;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to validate session.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.SessionDAO != null) {
+                this.SessionDAO.close();
+            }
+        }
     }
 
     /**
@@ -162,8 +224,6 @@ public class AbstractModel {
 
     protected void validateCookieVendorFeature(String cookie, String feature_name)
         throws Exception {
-        Gson gson = new Gson();
-        this.vendorCookie = gson.fromJson(cookie, VendorCookie.class);
         VendorFeature vendorFeature = this.vendorCookie.vendorFeatures.get(feature_name);
         if (vendorFeature == null) {
             // No feature by that name exists in the request cookie, meaning this
@@ -180,6 +240,7 @@ public class AbstractModel {
             // accounts (or investigate). The user is manually setting permissions
             // maliciously.
             this.vendorCookie.requestFeatureID = vendorFeature.feature_id;
+            // We should be good here.
         }
     }
 
