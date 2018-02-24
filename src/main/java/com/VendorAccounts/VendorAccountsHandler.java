@@ -311,20 +311,4 @@ public class VendorAccountsHandler {
             google_maps_zoom
         );
     }
-
-    /**
-     * Return all current updated drop-downs.
-     *
-     * @param cookie
-     * @throws Exception
-     */
-/*
-    @WebMethod
-    public String getDropDowns(
-            @WebParam(name = "cookie") String cookie
-    ) throws Exception {
-        GeneralController generalController = new GeneralController();
-        return generalController.getDropDowns(cookie);
-    }
-*/
 }

@@ -244,10 +244,11 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, VendorFoodCategory> foodCategories = new HashMap<Integer, VendorFoodCategory>();
             // Set up the query.
             stage1 = DAO.prepareStatement(this.getDropdownSQL_stage1);
-            stage1.setInt(1, this.vendorCookie.vendorID);
+            stage1.setInt(1, vendor_id);
             stage1Result = stage1.executeQuery();
             int foodCategoryCount = 0;
             while (stage1Result.next()) {
+                System.out.println(stage1Result.getString("name"));
                 VendorFoodCategory vendorFoodCategory = new VendorFoodCategory();
                 vendorFoodCategory.vendor_food_category_id = stage1Result.getInt("id");
                 vendorFoodCategory.name = stage1Result.getString("name");
@@ -267,7 +268,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, BeerCategory> beerCategories = new HashMap<Integer, BeerCategory>();
             // Set up the query.
             stage2 = DAO.prepareStatement(this.getDropdownSQL_stage2);
-            stage2.setInt(1, this.vendorCookie.vendorID);
+            stage2.setInt(1, vendor_id);
             stage2Result = stage2.executeQuery();
             int beerCategoriesCount = 0;
             while (stage2Result.next()) {
@@ -290,7 +291,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, VendorDrinkCategory> drinkCategories = new HashMap<Integer, VendorDrinkCategory>();
             // Set up the query.
             stage3 = DAO.prepareStatement(this.getDropdownSQL_stage3);
-            stage3.setInt(1, this.vendorCookie.vendorID);
+            stage3.setInt(1, vendor_id);
             stage3Result = stage3.executeQuery();
             int drinkCategoriesCount = 0;
             while (stage2Result.next()) {
@@ -314,7 +315,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, EventCategory> eventCategories = new HashMap<Integer, EventCategory>();
             // Set up the query.
             stage4 = DAO.prepareStatement(this.getDropdownSQL_stage4);
-            stage4.setInt(1, this.vendorCookie.vendorID);
+            stage4.setInt(1, vendor_id);
             stage4Result = stage4.executeQuery();
             int eventCategoriesCount = 0;
             while (stage4Result.next()) {
@@ -337,7 +338,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, VendorFoodTag> foodTags = new HashMap<Integer, VendorFoodTag>();
             // Set up the query.
             stage5 = DAO.prepareStatement(this.getDropdownSQL_stage5);
-            stage5.setInt(1, this.vendorCookie.vendorID);
+            stage5.setInt(1, vendor_id);
             stage5Result = stage5.executeQuery();
             int foodTagCount = 0;
             while (stage5Result.next()) {
@@ -361,7 +362,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, BeerTag> beerTags = new HashMap<Integer, BeerTag>();
             // Set up the query.
             stage6 = DAO.prepareStatement(this.getDropdownSQL_stage6);
-            stage6.setInt(1, this.vendorCookie.vendorID);
+            stage6.setInt(1, vendor_id);
             stage6Result = stage6.executeQuery();
             int beerTagCount = 0;
             while (stage6Result.next()) {
@@ -385,7 +386,7 @@ public class VendorAuthenticationModel extends AbstractModel {
             HashMap<Integer, VendorDrinkTag> drinkTags = new HashMap<Integer, VendorDrinkTag>();
             // Set up the query.
             stage7 = DAO.prepareStatement(this.getDropdownSQL_stage7);
-            stage7.setInt(1, this.vendorCookie.vendorID);
+            stage7.setInt(1, vendor_id);
             stage7Result = stage7.executeQuery();
             int drinkTagCount = 0;
             while (stage7Result.next()) {
@@ -397,6 +398,7 @@ public class VendorAuthenticationModel extends AbstractModel {
                 vendorDrinkTag.vendor_id = this.vendorCookie.vendorID;
                 // Add the object the hash-map of drop-downs.
                 drinkTags.put(drinkTagCount, vendorDrinkTag);
+                drinkTagCount++;
             }
             // Add the dropdown to drop-downs container.
             vendorDropdownContainer.drinkTags = drinkTags;
