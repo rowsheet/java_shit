@@ -53,7 +53,7 @@ public class ExtrasController extends AbstractController {
 
     public boolean updateNutritionalFact(
             String cookie,
-            int nutritional_fact_id,
+            int id,
             String profile_name,
             int serving_size,
             int calories,
@@ -78,7 +78,7 @@ public class ExtrasController extends AbstractController {
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.updateNutritionalFact(
                 cookie,
-                nutritional_fact_id,
+                id,
                 profile_name,
                 serving_size,
                 calories,
@@ -103,13 +103,14 @@ public class ExtrasController extends AbstractController {
 
     public boolean deleteNutritionalFact(
             String cookie,
-            int nutritional_fact_id
+            int id
     ) throws Exception {
         this.validateString(cookie, "cookie");
+        this.validateID(id, "id");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.deleteNutritionalFact(
             cookie,
-            nutritional_fact_id
+            id
         );
     }
 
@@ -119,8 +120,7 @@ public class ExtrasController extends AbstractController {
             int vendor_food_id
     ) throws Exception {
         this.validateString(cookie, "cookie");
-        this.validateID(nutritional_fact_id, "nutritional_fact_id");
-        System.out.println(vendor_food_id);
+        this.validateID(nutritional_fact_id, "id");
         this.validateID(vendor_food_id, "vendor_food_id");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.associateFoodNutritionalFact(
@@ -149,7 +149,7 @@ public class ExtrasController extends AbstractController {
             int vendor_drink_id
     ) throws Exception {
         this.validateString(cookie, "cookie");
-        this.validateID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateID(nutritional_fact_id, "id");
         this.validateID(vendor_drink_id, "vendor_drink_id");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.associateDrinkNutritionalFact(
@@ -178,7 +178,7 @@ public class ExtrasController extends AbstractController {
             int beer_id
     ) throws Exception {
         this.validateString(cookie, "cookie");
-        this.validateID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateID(nutritional_fact_id, "id");
         this.validateID(beer_id, "beer_id");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.associateBeerNutritionalFact(

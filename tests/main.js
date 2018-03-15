@@ -16,7 +16,7 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
-temp_cookie = '{"sessionKey":"3eFI3w5d++bQQIQzhX9+wIwh1IPyCuE8/63NeL9IxeKFdZQ5K38NcI3Q67RhefdGUtk=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+temp_cookie = '{"sessionKey":"P9MprRpQBoCLQyXPhOpZvn+pCTmCPgRAoAzJ4e3xaMBBqdn5wTm0wlcy080z6r4vRuU=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
 	soap.createClient(url, function(err, client) {
@@ -599,8 +599,7 @@ call_api(vendormenu_url, "updateBeerCategory",{
 });
 */
 /*
-call_api(vendormenu_url, "deleteBeerCategory",{
-	"cookie": temp_cookie,
+call_api(vendormenu_url, "deleteBeerCategory",{ "cookie": temp_cookie,
 	"id": 3 
 });
 */
@@ -877,7 +876,11 @@ call_api(vendormenu_url, "createFood", {
 	"food_sizes": ["Small"],
 	"food_category_id": 4,
 	"nutritional_fact_id": 2,
-	"food_tag_id_one": 1	
+	"food_tag_id_one": 1,
+	"food_tag_id_two": 1,
+	"food_tag_id_three": 4,
+	"food_tag_id_four": 6,
+	"food_tag_id_five": 6
 });
 */
 /*
@@ -973,10 +976,84 @@ call_api(vendoraccounts_url, "getDropDowns", {
 	"cookie": temp_cookie
 });
 */
+/*
 call_api(vendoraccounts_url, "vendorLogin", {
 	"module": "VendorAccounts",
 	"command": "vendorLogin",
 	"email_address": "example_brewing@gmail.com",
 	"password": "nahannielenor",
 	"ip_address": "FUCK YOU"
+});
+*/
+/*
+call_api(publicbrewery_url, "loadBeerMenu", {
+	"brewery_id": 21
+});
+*/
+/*
+call_api(publicbrewery_url, "loadDrinkMenu", {
+	"brewery_id": 21
+});
+*/
+/*
+call_api(vendormenu_url, "createFoodCategory", {
+	"module": "VendorMenu",
+	"command": "createFoodCategory",
+	"cookie": temp_cookie,
+	"name": "YOYO2",
+	"hex_color": "#ff0010"
+});
+*/
+/*
+call_api(vendormenu_url, "updateFoodCategory", {
+	"module": "VendorMenu",
+	"command": "updateFoodCategory",
+	"cookie": temp_cookie,
+	"id": 14,
+	"name": "New Test Name",
+	"hex_color": "#000fff"
+});
+*/
+/*
+call_api(publicbrewery_url, "loadBeerMenu", {
+	"module": "PublicBrewery",
+	"command": "loadBeerMenu",
+	"brewery_id": 21
+});
+*/
+/*
+call_api(vendormenu_url, "createBeerCategory", {
+	"module": "VendorMenu",
+	"command": "createBeerCategory",
+	"cookie": temp_cookie,
+	"name": "B1 Change",
+	"hex_color": "#ff0010"
+});
+*/
+/*
+call_api(vendormenu_url, "updateBeerCategory", {
+	"module": "VendorMenu",
+	"command": "updateBeerCategory",
+	"id": 10,
+	"cookie": temp_cookie,
+	"name": "B1 Change",
+	"hex_color": "#ff0010"
+});
+*/
+/*
+call_api(vendormenu_url, "createDrinkCategory", {
+	"module": "VendorMenu",
+	"command": "createDrinkCategory",
+	"cookie": temp_cookie,
+	"name": "D1",
+	"hex_color": "#ff0010"
+});
+*/
+call_api(vendormenu_url, "updateDrinkCategory", {
+	"module": "VendorMenu",
+	"command": "updateDrinkCategory",
+	"cookie": temp_cookie,
+	"id": 6,
+	"name": "D1 NEW",
+	"hex_color": "#ff0010"
 });

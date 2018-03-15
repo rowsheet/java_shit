@@ -475,8 +475,9 @@ public class BeerModel extends AbstractModel {
                     "beer_categories (" +
                     "   vendor_id, " +
                     "   name, " +
-                    "   hex_color" +
-                    ") VALUES (?,?,?) " +
+                    "   hex_color, " +
+                    "   description" +
+                    ") VALUES (?,?,?,?) " +
                     "RETURNING id";
 
     private String confirmBeerCategoryOwnershipSQL =
@@ -491,7 +492,8 @@ public class BeerModel extends AbstractModel {
             "UPDATE beer_categories " +
                     "SET " +
                     "   name = ?, " +
-                    "   hex_color = ? " +
+                    "   hex_color = ?, " +
+                    "   description = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -502,8 +504,9 @@ public class BeerModel extends AbstractModel {
 
     public int createBeerCategory(
             String cookie,
-            String category_name,
-            String hex_color
+            String name,
+            String hex_color,
+            String description
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -514,8 +517,13 @@ public class BeerModel extends AbstractModel {
             // Just insert the category returning the ID.
             preparedStatement = this.DAO.prepareStatement(this.createBeerCategorySQL);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
-            preparedStatement.setString(2, category_name);
+            preparedStatement.setString(2, name);
             preparedStatement.setString(3, hex_color);
+            if (description == null) {
+                preparedStatement.setNull(4, Types.VARCHAR);
+            } else {
+                preparedStatement.setString(4, description);
+            }
             resultSet = preparedStatement.executeQuery();
             // Get the new id of the new category.
             int beer_category_id = 0;
@@ -556,8 +564,9 @@ public class BeerModel extends AbstractModel {
     public boolean updateBeerCategory(
             String cookie,
             int id,
-            String new_category_name,
-            String new_hex_color
+            String category_name,
+            String hex_color,
+            String description
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -592,9 +601,14 @@ public class BeerModel extends AbstractModel {
             Update data.
              */
             stage3 = this.DAO.prepareStatement(this.updateBeerCategorySQL);
-            stage3.setString(1, new_category_name);
-            stage3.setString(2, new_hex_color);
-            stage3.setInt(3, id);
+            stage3.setString(1, category_name);
+            stage3.setString(2, hex_color);
+            if (description == null) {
+                stage3.setNull(3, Types.VARCHAR);
+            } else {
+                stage3.setString(3, description);
+            }
+            stage3.setInt(4, id);
             stage3.execute();
             /*
             Done. Commit.

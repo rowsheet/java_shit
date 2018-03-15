@@ -1,7 +1,7 @@
 package com.UserFavorites.Places;
 
 import com.Common.AbstractController;
-import com.Common.Brewery;
+import com.Common.PublicVendor.Brewery;
 
 import java.util.HashMap;
 

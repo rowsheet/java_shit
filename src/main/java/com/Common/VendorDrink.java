@@ -13,10 +13,12 @@ public class VendorDrink {
     public String description;
     public float price;
     public String creation_timestamp;
+    public String creation_days_ago;
     public String hex_one;
     public String hex_two;
     public String hex_three;
-    public String hex_background;
+    public String hex_background; // Icon background.
+    public String hex_icon_text; // White or black depending on hex_background.
     public String drink_serve_temp; // db::enum ('warm', 'hot', 'cold', 'on-the-rocks')
     public String servings; // not int because db::enum, some that look like '5+';
     public String icon_enum;
@@ -24,13 +26,14 @@ public class VendorDrink {
     public VendorDrinkCategory vendor_drink_category;
     public ArrayList<Spirit> spirits;
     public boolean is_alcoholic;
+    public VendorNutritionalFact nutritional_facts;
     // Ingredients and tags.
     public ArrayList<VendorDrinkIngredient> vendor_drink_ingredients;
-    public String tag_one;
-    public String tag_two;
-    public String tag_three;
-    public String tag_four;
-    public String tag_five;
+    public VendorDrinkTag tag_one;
+    public VendorDrinkTag tag_two;
+    public VendorDrinkTag tag_three;
+    public VendorDrinkTag tag_four;
+    public VendorDrinkTag tag_five;
 
     /**
      * These have to be calculated.
@@ -56,13 +59,16 @@ public class VendorDrink {
         this.description = "";
         this.price = (float)0.0;
         this.creation_timestamp = "";
+        this.creation_days_ago = "";
         this.hex_one = "";
         this.hex_two = "";
         this.hex_three = "";
         this.hex_background = "";
+        this.hex_icon_text = "";
         this.vendor_drink_category = new VendorDrinkCategory();
         this.spirits = new ArrayList<Spirit>();
         this.is_alcoholic = false;
+        this.nutritional_facts = new VendorNutritionalFact();
         this.drink_serve_temp = "";
         this.servings = "";
 
@@ -74,10 +80,10 @@ public class VendorDrink {
         this.images = new HashMap<Integer, VendorDrinkImage>();
 
         this.vendor_drink_ingredients = new ArrayList<VendorDrinkIngredient>();
-        this.tag_one = "";
-        this.tag_two = "";
-        this.tag_three = "";
-        this.tag_four = "";
-        this.tag_five = "";
+        this.tag_one = new VendorDrinkTag();
+        this.tag_two = new VendorDrinkTag();
+        this.tag_three = new VendorDrinkTag();
+        this.tag_four = new VendorDrinkTag();
+        this.tag_five = new VendorDrinkTag();
     }
 }

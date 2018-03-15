@@ -1,7 +1,7 @@
 package com.Common;
 
 public class VendorNutritionalFact {
-    public int nutritional_fact_id;
+    public int id;
     public int vendor_id;
     public int serving_size;
     public int calories;
@@ -23,7 +23,7 @@ public class VendorNutritionalFact {
     public int protein;
     public String profile_name;
     public VendorNutritionalFact() {
-        this.nutritional_fact_id = 0;
+        this.id = 0;
         this.vendor_id = 0;
         this.serving_size = 0;
         this.calories = 0;

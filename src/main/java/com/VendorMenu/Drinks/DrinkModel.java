@@ -556,9 +556,9 @@ public class DrinkModel extends AbstractModel {
                     "vendor_drink_categories (" +
                     "   vendor_id, " +
                     "   name, " +
-                    "   hex_color," +
-                    "   icon_enum" +
-                    ") VALUES (?,?,?,?::vendor_drink_icon) " +
+                    "   hex_color, " +
+                    "   description " +
+                    ") VALUES (?,?,?,?) " +
                     "RETURNING id";
 
     private String confirmDrinkCategoryOwnershipSQL =
@@ -574,7 +574,7 @@ public class DrinkModel extends AbstractModel {
                     "SET " +
                     "   name = ?, " +
                     "   hex_color = ?, " +
-                    "   icon_enum = ?::vendor_drink_icon " +
+                    "   description = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -587,7 +587,7 @@ public class DrinkModel extends AbstractModel {
             String cookie,
             String category_name,
             String hex_color,
-            String icon_enum
+            String description
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -600,7 +600,7 @@ public class DrinkModel extends AbstractModel {
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
             preparedStatement.setString(2, category_name);
             preparedStatement.setString(3, hex_color);
-            preparedStatement.setString(4, icon_enum);
+            preparedStatement.setString(4, description);
             resultSet = preparedStatement.executeQuery();
             // Get the new id of the new category.
             int drink_category_id = 0;
@@ -621,7 +621,7 @@ public class DrinkModel extends AbstractModel {
             System.out.println("ROLLING BACK");
             // Try to parse exception message.
             if (ex.getMessage().contains("drink_categories_vendor_id_name_idx")) {
-                throw new Exception("This account already has an drink with that name!");
+                throw new Exception("This account already has an drink category with that name!");
             }
             throw new Exception("Unable to create drink category.");
         } finally {
@@ -641,9 +641,9 @@ public class DrinkModel extends AbstractModel {
     public boolean updateDrinkCategory(
             String cookie,
             int id,
-            String new_category_name,
-            String new_hex_color,
-            String new_icon_enum
+            String name,
+            String hex_color,
+            String description
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -678,9 +678,9 @@ public class DrinkModel extends AbstractModel {
             Update data.
              */
             stage3 = this.DAO.prepareStatement(this.updateDrinkCategorySQL);
-            stage3.setString(1, new_category_name);
-            stage3.setString(2, new_hex_color);
-            stage3.setString(3, new_icon_enum);
+            stage3.setString(1, name);
+            stage3.setString(2, hex_color);
+            stage3.setString(3, description);
             stage3.setInt(4, id);
             stage3.execute();
             /*
@@ -1009,7 +1009,7 @@ public class DrinkModel extends AbstractModel {
      * @param cookie
      * @param id
      * @param new_name
-     * @param new_hex_color
+     * @param hex_color
      * @param new_tag_type
      * @return
      * @throws Exception
@@ -1018,7 +1018,7 @@ public class DrinkModel extends AbstractModel {
             String cookie,
             int id,
             String new_name,
-            String new_hex_color,
+            String hex_color,
             String new_tag_type
     ) throws Exception {
         PreparedStatement validationPreparedStatement = null;
@@ -1046,7 +1046,7 @@ public class DrinkModel extends AbstractModel {
              */
             preparedStatement = this.DAO.prepareStatement(this.updateVendorDrinkTagSQL);
             preparedStatement.setString(1, new_name);
-            preparedStatement.setString(2, new_hex_color);
+            preparedStatement.setString(2, hex_color);
             preparedStatement.setString(3, new_tag_type);
             preparedStatement.setInt(4, id);
             preparedStatement.execute();

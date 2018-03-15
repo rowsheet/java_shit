@@ -1,15 +1,8 @@
 package com.PublicBrewery.Beer;
 
-import com.Common.AbstractModel;
-import com.Common.Beer;
-import com.Common.BeerImage;
-import com.Common.BeerReview;
-import com.Common.BeerIngredient;
-import com.Common.VendorNutritionalFact;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import com.Common.*;
+import com.Common.PublicVendor.BeerMenu;
 
-import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Array;
@@ -35,15 +28,82 @@ public class BeerModel extends AbstractModel {
                     "   b.price AS beer_price," +
                     "   b.beer_sizes AS beer_sizes, " +
                     "   b.hop_score AS beer_hop_score, " +
+                    "   b.creation_timestamp AS creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', b.creation_timestamp::date)) AS creation_days_ago, " +
                     "   bc.name AS beer_category_name, " +
                     "   bc.hex_color AS beer_category_hex_color, " +
-                    "   bc.id AS beer_category_id " +
+                    "   bc.id AS beer_category_id, " +
+                    "   bc.description AS beer_category_description, " +
+                    "   vbt1.id AS tag_one_id, " +
+                    "   vbt1.name AS tag_one_name, " +
+                    "   vbt1.hex_color AS tag_one_hex_color, " +
+                    "   vbt1.tag_type AS tag_one_tag_type, " +
+                    "   vbt2.id AS tag_two_id, " +
+                    "   vbt2.name AS tag_two_name, " +
+                    "   vbt2.hex_color AS tag_two_hex_color, " +
+                    "   vbt2.tag_type AS tag_two_tag_type, " +
+                    "   vbt3.id AS tag_three_id, " +
+                    "   vbt3.name AS tag_three_name, " +
+                    "   vbt3.hex_color AS tag_three_hex_color, " +
+                    "   vbt3.tag_type AS tag_three_tag_type, " +
+                    "   vbt4.id AS tag_four_id, " +
+                    "   vbt4.name AS tag_four_name, " +
+                    "   vbt4.hex_color AS tag_four_hex_color, " +
+                    "   vbt4.tag_type AS tag_four_tag_type, " +
+                    "   vbt5.id AS tag_five_id, " +
+                    "   vbt5.name AS tag_five_name, " +
+                    "   vbt5.hex_color AS tag_five_hex_color, " +
+                    "   vbt5.tag_type AS tag_five_tag_type, " +
+                    "   vnf.id AS nutritional_fact_id, " +
+                    "   vnf.serving_size AS nutritional_fact_serving_size, " +
+                    "   vnf.calories AS nutritional_fact_calories, " +
+                    "   vnf.calories_from_fat  AS nutritional_fact_calories_from_fat, " +
+                    "   vnf.total_fat  AS nutritional_fact_total_fat, " +
+                    "   vnf.saturated_fat  AS nutritional_fact_saturated_fat, " +
+                    "   vnf.trans_fat  AS nutritional_fact_trans_fat, " +
+                    "   vnf.cholesterol  AS nutritional_fact_cholesterol, " +
+                    "   vnf.sodium AS nutritional_fact_sodium, " +
+                    "   vnf.total_carbs  AS nutritional_fact_total_carbs, " +
+                    "   vnf.dietary_fiber  AS nutritional_fact_dietary_fiber, " +
+                    "   vnf.sugar  AS nutritional_fact_sugar, " +
+                    "   vnf.vitamin_a  AS nutritional_fact_vitamin_a, " +
+                    "   vnf.vitamin_b  AS nutritional_fact_vitamin_b, " +
+                    "   vnf.vitamin_c  AS nutritional_fact_vitamin_c, " +
+                    "   vnf.vitamin_d  AS nutritional_fact_vitamin_d, " +
+                    "   vnf.calcium  AS nutritional_fact_calcium, " +
+                    "   vnf.iron AS nutritional_fact_iron, " +
+                    "   vnf.protein  AS nutritional_fact_protein, " +
+                    "   vnf.profile_name AS nutritional_fact_profile_name " +
                     "FROM" +
                     "   beers b " +
+                    "LEFT JOIN " +
+                    "   beer_tags vbt1 " +
+                    "ON " +
+                    "   b.tag_one = vbt1.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags vbt2 " +
+                    "ON " +
+                    "   b.tag_two = vbt2.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags vbt3 " +
+                    "ON " +
+                    "   b.tag_three = vbt3.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags vbt4 " +
+                    "ON " +
+                    "   b.tag_four = vbt4.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags vbt5 " +
+                    "ON " +
+                    "   b.tag_five = vbt5.id " +
                     "LEFT JOIN" +
                     "   beer_categories bc " +
                     "ON " +
                     "   b.beer_category_id = bc.id " +
+                    "LEFT JOIN " +
+                    "   vendor_nutritional_facts vnf " +
+                    "ON " +
+                    "   b.nutritional_facts_id = vnf.id " +
                     "WHERE" +
                     "   b.vendor_id = ?";
 
@@ -203,12 +263,13 @@ public class BeerModel extends AbstractModel {
      * 3) Load all image urls (has map by display order).
      * 4) Calculate review averages for all the beers.
      * 5) Load all ingredients (and associated nutritional facts).
+     * 6) Load all drop-downs.
      *
      * @param brewery_id
      * @return HashMap<beer_id, beer_data_structure>
      * @throws Exception
      */
-    public HashMap<Integer, Beer> loadBeerMenu(
+    public BeerMenu loadBeerMenu(
             int brewery_id
     ) throws Exception {
         PreparedStatement stage1 = null;
@@ -218,6 +279,10 @@ public class BeerModel extends AbstractModel {
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         try {
+            // Initialize variables.
+            BeerMenu beerMenu = new BeerMenu();
+            HashMap<Integer, Beer> beerHashMap = new HashMap<Integer, Beer>();
+            VendorDropdownContainer dropDowns = new VendorDropdownContainer();
             // Prepare the statements.
             stage1 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
@@ -229,8 +294,8 @@ public class BeerModel extends AbstractModel {
             stage1Result = stage1.executeQuery();
             // Hash map because when we fetch reviews, they need to be added to each respective beer
             // the moment they are pulled from the result set.
-            HashMap<Integer, Beer> beerHashMap = new HashMap<Integer, Beer>();
             while (stage1Result.next()) {
+                Color color = new Color();
                 Beer beer = new Beer();
                 beer.beer_id = stage1Result.getInt("beer_id");
                 beer.vendor_id = stage1Result.getInt("beer_vendor_id");
@@ -253,7 +318,84 @@ public class BeerModel extends AbstractModel {
                 beer.beer_category.name = stage1Result.getString("beer_category_name");
                 beer.beer_category.hex_color = stage1Result.getString("beer_category_hex_color");
                 beer.beer_category.vendor_id = beer.vendor_id;
-                beer.beer_category.beer_category_id = stage1Result.getInt("beer_category_id");
+                beer.beer_category.id = stage1Result.getInt("beer_category_id");
+                beer.beer_category.description = stage1Result.getString("beer_category_description");
+                beer.beer_category.text_color = color.getInverseBW(beer.beer_category.hex_color);
+                beer.creation_timestamp = stage1Result.getString("creation_timestamp");
+                beer.creation_days_ago = stage1Result.getString("creation_days_ago");
+                BeerTag tag_one = new BeerTag();
+                BeerTag tag_two = new BeerTag();
+                BeerTag tag_three = new BeerTag();
+                BeerTag tag_four = new BeerTag();
+                BeerTag tag_five = new BeerTag();
+                tag_one.id = stage1Result.getInt("tag_one_id");
+                tag_one.name = stage1Result.getString("tag_one_name");
+                tag_one.hex_color = stage1Result.getString("tag_one_hex_color");
+                tag_one.tag_type = stage1Result.getString("tag_one_tag_type");
+                tag_one.vendor_id = beer.vendor_id;
+                if (tag_one.id != 0) {
+                    tag_one.text_color = color.getInverseBW(tag_one.hex_color);
+                }
+                beer.tag_one = tag_one;
+                tag_two.id = stage1Result.getInt("tag_two_id");
+                tag_two.name = stage1Result.getString("tag_two_name");
+                tag_two.hex_color = stage1Result.getString("tag_two_hex_color");
+                tag_two.tag_type = stage1Result.getString("tag_two_tag_type");
+                tag_two.vendor_id = beer.vendor_id;
+                if (tag_two.id != 0) {
+                    tag_two.text_color = color.getInverseBW(tag_two.hex_color);
+                }
+                beer.tag_two = tag_two;
+                tag_three.id = stage1Result.getInt("tag_three_id");
+                tag_three.name = stage1Result.getString("tag_three_name");
+                tag_three.hex_color = stage1Result.getString("tag_three_hex_color");
+                tag_three.tag_type = stage1Result.getString("tag_three_tag_type");
+                tag_three.vendor_id = beer.vendor_id;
+                if (tag_three.id != 0) {
+                    tag_three.text_color = color.getInverseBW(tag_three.hex_color);
+                }
+                beer.tag_three = tag_three;
+                tag_four.id = stage1Result.getInt("tag_four_id");
+                tag_four.name = stage1Result.getString("tag_four_name");
+                tag_four.hex_color = stage1Result.getString("tag_four_hex_color");
+                tag_four.tag_type = stage1Result.getString("tag_four_tag_type");
+                tag_four.vendor_id = beer.vendor_id;
+                if (tag_four.id != 0) {
+                    tag_four.text_color = color.getInverseBW(tag_four.hex_color);
+                }
+                beer.tag_four = tag_four;
+                tag_five.id = stage1Result.getInt("tag_five_id");
+                tag_five.name = stage1Result.getString("tag_five_name");
+                tag_five.hex_color = stage1Result.getString("tag_five_hex_color");
+                tag_five.tag_type = stage1Result.getString("tag_five_tag_type");
+                tag_five.vendor_id = beer.vendor_id;
+                if (tag_five.id != 0) {
+                    tag_five.text_color = color.getInverseBW(tag_five.hex_color);
+                }
+                beer.tag_five = tag_five;
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                vendorNutritionalFact.id = stage1Result.getInt("nutritional_fact_id");
+                vendorNutritionalFact.vendor_id = beer.vendor_id;
+                vendorNutritionalFact.serving_size = stage1Result.getInt("nutritional_fact_serving_size");
+                vendorNutritionalFact.calories = stage1Result.getInt("nutritional_fact_calories");
+                vendorNutritionalFact.calories_from_fat = stage1Result.getInt("nutritional_fact_calories_from_fat");
+                vendorNutritionalFact.total_fat = stage1Result.getInt("nutritional_fact_total_fat");
+                vendorNutritionalFact.saturated_fat = stage1Result.getInt("nutritional_fact_saturated_fat");
+                vendorNutritionalFact.trans_fat = stage1Result.getInt("nutritional_fact_trans_fat");
+                vendorNutritionalFact.cholesterol = stage1Result.getInt("nutritional_fact_cholesterol");
+                vendorNutritionalFact.sodium = stage1Result.getInt("nutritional_fact_sodium");
+                vendorNutritionalFact.total_carbs = stage1Result.getInt("nutritional_fact_total_carbs");
+                vendorNutritionalFact.dietary_fiber = stage1Result.getInt("nutritional_fact_dietary_fiber");
+                vendorNutritionalFact.sugar = stage1Result.getInt("nutritional_fact_sugar");
+                vendorNutritionalFact.vitamin_a = stage1Result.getInt("nutritional_fact_vitamin_a");
+                vendorNutritionalFact.vitamin_b = stage1Result.getInt("nutritional_fact_vitamin_b");
+                vendorNutritionalFact.vitamin_c = stage1Result.getInt("nutritional_fact_vitamin_c");
+                vendorNutritionalFact.vitamin_d = stage1Result.getInt("nutritional_fact_vitamin_d");
+                vendorNutritionalFact.calcium = stage1Result.getInt("nutritional_fact_calcium");
+                vendorNutritionalFact.iron = stage1Result.getInt("nutritional_fact_iron");
+                vendorNutritionalFact.protein = stage1Result.getInt("nutritional_fact_protein");
+                vendorNutritionalFact.profile_name = stage1Result.getString("nutritional_fact_profile_name");
+                beer.nutritional_facts = vendorNutritionalFact;
                 beerHashMap.put(beer.beer_id, beer);
             }
             /*
@@ -308,7 +450,7 @@ public class BeerModel extends AbstractModel {
             Stage 5
              */
             // Load all ingredients and associated nutritional facts.
-            // Go through the beer_hash_map. It has all the ids for the vendor_drinks.
+            // Go through the beer_hash_map. It has all the ids for the beers.
             for (Beer beer : beerHashMap.values()) {
                 PreparedStatement preparedStatement = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage5);
                 preparedStatement.setInt(1, beer.beer_id);
@@ -337,7 +479,7 @@ public class BeerModel extends AbstractModel {
                     beerIngredient.tag_five = resultSet.getString("beer_tag_five");
                     // Assign all nutritional fact values.
                     vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
-                    vendorNutritionalFact.nutritional_fact_id = resultSet.getShort("nf_nutritional_facts_id");
+                    vendorNutritionalFact.id = resultSet.getShort("nf_nutritional_facts_id");
                     vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
                     vendorNutritionalFact.serving_size = resultSet.getInt("nf_serving_size");
                     vendorNutritionalFact.calories = resultSet.getInt("nf_calories");
@@ -359,12 +501,11 @@ public class BeerModel extends AbstractModel {
                     vendorNutritionalFact.protein = resultSet.getInt("nf_protein");
                     vendorNutritionalFact.profile_name = resultSet.getString("nf_profile_name");
                     // Link the nutritional fact to the to the ingredient data-structure.
-                    System.out.println(vendorNutritionalFact);
                     beerIngredient.nutritional_fact_profile = vendorNutritionalFact;
                     // Finally add the ingredients to the total array list.
                     ingredients_array.add(beerIngredient);
                 }
-                // Associate the ingredients array to the drink.
+                // Associate the ingredients array to the beer.
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
@@ -372,7 +513,17 @@ public class BeerModel extends AbstractModel {
                     resultSet.close();
                 }
             }
-            return beerHashMap;
+            /*
+            Stage 6
+            Load all drop-downs.
+             */
+            dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
+            /*
+            Assemble main return object and be done.
+             */
+            beerMenu.menuItems = beerHashMap;
+            beerMenu.dropDowns = dropDowns;
+            return beerMenu;
         } catch (Exception ex) {
             System.out.print(ex);
             throw new Exception("Unable to load beer menu.");

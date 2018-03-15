@@ -14,7 +14,7 @@ package com.PublicBrewery.Brewery;
 
 import com.Common.AbstractModel;
 
-import com.Common.Brewery;
+import com.Common.PublicVendor.Brewery;
 import com.Common.VendorPageImage;
 import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;

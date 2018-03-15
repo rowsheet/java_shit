@@ -1,6 +1,8 @@
 package com.PublicBrewery.Drink;
 
 import com.Common.*;
+import com.Common.PublicVendor.DrinkMenu;
+import jnr.ffi.annotations.In;
 import sun.security.provider.ConfigFile;
 
 import java.sql.PreparedStatement;
@@ -23,16 +25,83 @@ public class DrinkModel extends AbstractModel {
                     "   vd.drink_serve_temp AS vendor_drink_serve_temp, " +
                     "   vd.servings AS vendor_drink_servings," +
                     "   vd.icon_enum AS vendor_drink_icon_enum, " +
+                    "   vd.creation_timestamp AS creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vd.creation_timestamp::date)) AS creation_days_ago, " +
                     "   vdc.id AS vendor_drink_category_id, " +
                     "   vdc.name AS vendor_drink_category_name, " +
                     "   vdc.hex_color AS vendor_drink_category_hex_color, " +
-                    "   vdc.icon_enum AS vendor_drink_category_icon_enum " +
+                    "   vdc.icon_enum AS vendor_drink_category_icon_enum, " +
+                    "   vdc.description AS vendor_drink_category_description, " +
+                    "   vdt1.id AS tag_one_id, " +
+                    "   vdt1.name AS tag_one_name, " +
+                    "   vdt1.hex_color AS tag_one_hex_color, " +
+                    "   vdt1.tag_type AS tag_one_tag_type, " +
+                    "   vdt2.id AS tag_two_id, " +
+                    "   vdt2.name AS tag_two_name, " +
+                    "   vdt2.hex_color AS tag_two_hex_color, " +
+                    "   vdt2.tag_type AS tag_two_tag_type, " +
+                    "   vdt3.id AS tag_three_id, " +
+                    "   vdt3.name AS tag_three_name, " +
+                    "   vdt3.hex_color AS tag_three_hex_color, " +
+                    "   vdt3.tag_type AS tag_three_tag_type, " +
+                    "   vdt4.id AS tag_four_id, " +
+                    "   vdt4.name AS tag_four_name, " +
+                    "   vdt4.hex_color AS tag_four_hex_color, " +
+                    "   vdt4.tag_type AS tag_four_tag_type, " +
+                    "   vdt5.id AS tag_five_id, " +
+                    "   vdt5.name AS tag_five_name, " +
+                    "   vdt5.hex_color AS tag_five_hex_color, " +
+                    "   vdt5.tag_type AS tag_five_tag_type," +
+                    "   vnf.id AS nutritional_fact_id, " +
+                    "   vnf.serving_size AS nutritional_fact_serving_size, " +
+                    "   vnf.calories AS nutritional_fact_calories, " +
+                    "   vnf.calories_from_fat  AS nutritional_fact_calories_from_fat, " +
+                    "   vnf.total_fat  AS nutritional_fact_total_fat, " +
+                    "   vnf.saturated_fat  AS nutritional_fact_saturated_fat, " +
+                    "   vnf.trans_fat  AS nutritional_fact_trans_fat, " +
+                    "   vnf.cholesterol  AS nutritional_fact_cholesterol, " +
+                    "   vnf.sodium AS nutritional_fact_sodium, " +
+                    "   vnf.total_carbs  AS nutritional_fact_total_carbs, " +
+                    "   vnf.dietary_fiber  AS nutritional_fact_dietary_fiber, " +
+                    "   vnf.sugar  AS nutritional_fact_sugar, " +
+                    "   vnf.vitamin_a  AS nutritional_fact_vitamin_a, " +
+                    "   vnf.vitamin_b  AS nutritional_fact_vitamin_b, " +
+                    "   vnf.vitamin_c  AS nutritional_fact_vitamin_c, " +
+                    "   vnf.vitamin_d  AS nutritional_fact_vitamin_d, " +
+                    "   vnf.calcium  AS nutritional_fact_calcium, " +
+                    "   vnf.iron AS nutritional_fact_iron, " +
+                    "   vnf.protein  AS nutritional_fact_protein, " +
+                    "   vnf.profile_name AS nutritional_fact_profile_name " +
                     "FROM " +
                     "   vendor_drinks vd " +
                     "LEFT JOIN " +
                     "   vendor_drink_categories vdc " +
                     "ON " +
                     "   vd.vendor_drink_category_id = vdc.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt1 " +
+                    "ON " +
+                    "   vd.tag_one = vdt1.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt2 " +
+                    "ON " +
+                    "   vd.tag_two = vdt2.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt3 " +
+                    "ON " +
+                    "   vd.tag_three = vdt3.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt4 " +
+                    "ON " +
+                    "   vd.tag_four = vdt4.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt5 " +
+                    "ON " +
+                    "   vd.tag_five = vdt5.id " +
+                    "LEFT JOIN " +
+                    "   vendor_nutritional_facts vnf " +
+                    "ON " +
+                    "   vd.nutritional_facts_id = vnf.id " +
                     "WHERE" +
                     "   vd.vendor_id = ?";
 
@@ -165,12 +234,13 @@ public class DrinkModel extends AbstractModel {
      * 4) Get all spirits-associations for drink.
      * 5) Calculate review averages for all the drinks.
      * 6) Load all ingredients.
+     * 7) Load all drop-downs.
      *
      * @param brewery_id
      * @return HashMap<vendor_drink_id, vendor_drink_data_structure>
      * @throws Exception
      */
-    public HashMap<Integer, VendorDrink> loadDrinkMenu(
+    public DrinkMenu loadDrinkMenu(
             int brewery_id
     ) throws Exception {
         PreparedStatement stage1 = null;
@@ -182,6 +252,10 @@ public class DrinkModel extends AbstractModel {
         PreparedStatement stage4 = null;
         ResultSet stage4Result = null;
         try {
+            // Initialize variables.
+            DrinkMenu drinkMenu = new DrinkMenu();
+            HashMap<Integer, VendorDrink> menuItems = new HashMap<Integer, VendorDrink>();
+            VendorDropdownContainer dropDowns = new VendorDropdownContainer();
             // Prepare the statements.
             stage1 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage2);
@@ -193,8 +267,8 @@ public class DrinkModel extends AbstractModel {
             stage1Result = stage1.executeQuery();
             // Hash map because when we fetch reviews, they need to be added to each respective drink
             // the moment they are pulled from the result set.
-            HashMap<Integer, VendorDrink> vendorDrinkHashMap = new HashMap<Integer, VendorDrink>();
             while (stage1Result.next()) {
+                Color color = new Color();
                 VendorDrink vendorDrink = new VendorDrink();
                 vendorDrink.vendor_drink_id = stage1Result.getInt("vendor_drink_id");
                 vendorDrink.name = stage1Result.getString("vendor_drink_name");
@@ -205,15 +279,92 @@ public class DrinkModel extends AbstractModel {
                 vendorDrink.hex_two = stage1Result.getString("vendor_drink_hex_two");
                 vendorDrink.hex_three = stage1Result.getString("vendor_drink_hex_three");
                 vendorDrink.hex_background = stage1Result.getString("vendor_drink_hex_background");
+                vendorDrink.hex_icon_text = color.getInverseBW(vendorDrink.hex_background);
                 vendorDrink.drink_serve_temp = stage1Result.getString("vendor_drink_serve_temp");
                 vendorDrink.servings = stage1Result.getString("vendor_drink_servings");
                 vendorDrink.icon_enum = stage1Result.getString("vendor_drink_icon_enum");
+                vendorDrink.creation_timestamp = stage1Result.getString("creation_timestamp");
+                vendorDrink.creation_days_ago = stage1Result.getString("creation_days_ago");
                 vendorDrink.vendor_drink_category.vendor_id = vendorDrink.vendor_id;
                 vendorDrink.vendor_drink_category.name = stage1Result.getString("vendor_drink_category_name");
                 vendorDrink.vendor_drink_category.hex_color = stage1Result.getString("vendor_drink_category_hex_color");
-                vendorDrink.vendor_drink_category.vendor_drink_category_id = stage1Result.getInt("vendor_drink_category_id");
-                vendorDrink.vendor_drink_category.icon_enum = stage1Result.getString("vendor_drink_category_icon_enum");
-                vendorDrinkHashMap.put(vendorDrink.vendor_drink_id, vendorDrink);
+                vendorDrink.vendor_drink_category.id = stage1Result.getInt("vendor_drink_category_id");
+                vendorDrink.vendor_drink_category.description = stage1Result.getString("vendor_drink_category_description");
+                vendorDrink.vendor_drink_category.text_color = color.getInverseBW(vendorDrink.vendor_drink_category.hex_color);
+                VendorDrinkTag tag_one = new VendorDrinkTag();
+                VendorDrinkTag tag_two = new VendorDrinkTag();
+                VendorDrinkTag tag_three = new VendorDrinkTag();
+                VendorDrinkTag tag_four = new VendorDrinkTag();
+                VendorDrinkTag tag_five = new VendorDrinkTag();
+                tag_one.id = stage1Result.getInt("tag_one_id");
+                tag_one.name = stage1Result.getString("tag_one_name");
+                tag_one.hex_color = stage1Result.getString("tag_one_hex_color");
+                tag_one.tag_type = stage1Result.getString("tag_one_tag_type");
+                tag_one.vendor_id = vendorDrink.vendor_id;
+                if (tag_one.id != 0) {
+                    tag_one.text_color = color.getInverseBW(tag_one.hex_color);
+                }
+                vendorDrink.tag_one = tag_one;
+                tag_two.id = stage1Result.getInt("tag_two_id");
+                tag_two.name = stage1Result.getString("tag_two_name");
+                tag_two.hex_color = stage1Result.getString("tag_two_hex_color");
+                tag_two.tag_type = stage1Result.getString("tag_two_tag_type");
+                tag_two.vendor_id = vendorDrink.vendor_id;
+                if (tag_two.id != 0) {
+                    tag_two.text_color = color.getInverseBW(tag_two.hex_color);
+                }
+                vendorDrink.tag_two = tag_two;
+                tag_three.id = stage1Result.getInt("tag_three_id");
+                tag_three.name = stage1Result.getString("tag_three_name");
+                tag_three.hex_color = stage1Result.getString("tag_three_hex_color");
+                tag_three.tag_type = stage1Result.getString("tag_three_tag_type");
+                tag_three.vendor_id = vendorDrink.vendor_id;
+                if (tag_three.id != 0) {
+                    tag_three.text_color = color.getInverseBW(tag_three.hex_color);
+                }
+                vendorDrink.tag_three = tag_three;
+                tag_four.id = stage1Result.getInt("tag_four_id");
+                tag_four.name = stage1Result.getString("tag_four_name");
+                tag_four.hex_color = stage1Result.getString("tag_four_hex_color");
+                tag_four.tag_type = stage1Result.getString("tag_four_tag_type");
+                tag_four.vendor_id = vendorDrink.vendor_id;
+                if (tag_four.id != 0) {
+                    tag_four.text_color = color.getInverseBW(tag_four.hex_color);
+                }
+                vendorDrink.tag_four = tag_four;
+                tag_five.id = stage1Result.getInt("tag_five_id");
+                tag_five.name = stage1Result.getString("tag_five_name");
+                tag_five.hex_color = stage1Result.getString("tag_five_hex_color");
+                tag_five.tag_type = stage1Result.getString("tag_five_tag_type");
+                tag_five.vendor_id = vendorDrink.vendor_id;
+                if (tag_five.id != 0) {
+                    tag_five.text_color = color.getInverseBW(tag_five.hex_color);
+                }
+                vendorDrink.tag_five = tag_five;
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                vendorNutritionalFact.id = stage1Result.getInt("nutritional_fact_id");
+                vendorNutritionalFact.vendor_id = vendorDrink.vendor_id;
+                vendorNutritionalFact.serving_size = stage1Result.getInt("nutritional_fact_serving_size");
+                vendorNutritionalFact.calories = stage1Result.getInt("nutritional_fact_calories");
+                vendorNutritionalFact.calories_from_fat = stage1Result.getInt("nutritional_fact_calories_from_fat");
+                vendorNutritionalFact.total_fat = stage1Result.getInt("nutritional_fact_total_fat");
+                vendorNutritionalFact.saturated_fat = stage1Result.getInt("nutritional_fact_saturated_fat");
+                vendorNutritionalFact.trans_fat = stage1Result.getInt("nutritional_fact_trans_fat");
+                vendorNutritionalFact.cholesterol = stage1Result.getInt("nutritional_fact_cholesterol");
+                vendorNutritionalFact.sodium = stage1Result.getInt("nutritional_fact_sodium");
+                vendorNutritionalFact.total_carbs = stage1Result.getInt("nutritional_fact_total_carbs");
+                vendorNutritionalFact.dietary_fiber = stage1Result.getInt("nutritional_fact_dietary_fiber");
+                vendorNutritionalFact.sugar = stage1Result.getInt("nutritional_fact_sugar");
+                vendorNutritionalFact.vitamin_a = stage1Result.getInt("nutritional_fact_vitamin_a");
+                vendorNutritionalFact.vitamin_b = stage1Result.getInt("nutritional_fact_vitamin_b");
+                vendorNutritionalFact.vitamin_c = stage1Result.getInt("nutritional_fact_vitamin_c");
+                vendorNutritionalFact.vitamin_d = stage1Result.getInt("nutritional_fact_vitamin_d");
+                vendorNutritionalFact.calcium = stage1Result.getInt("nutritional_fact_calcium");
+                vendorNutritionalFact.iron = stage1Result.getInt("nutritional_fact_iron");
+                vendorNutritionalFact.protein = stage1Result.getInt("nutritional_fact_protein");
+                vendorNutritionalFact.profile_name = stage1Result.getString("nutritional_fact_profile_name");
+                vendorDrink.nutritional_facts = vendorNutritionalFact;
+                menuItems.put(vendorDrink.vendor_drink_id, vendorDrink);
             }
             /*
             Stage 2
@@ -235,7 +386,7 @@ public class DrinkModel extends AbstractModel {
                 vendorDrinkReview.review_image_four = stage2Result.getString("review_image_four");
                 vendorDrinkReview.review_image_five = stage2Result.getString("review_image_five");
                 // Add the drink review to the appropriate drink.
-                vendorDrinkHashMap.get(vendorDrinkReview.vendor_drink_id).reviews.add(vendorDrinkReview);
+                menuItems.get(vendorDrinkReview.vendor_drink_id).reviews.add(vendorDrinkReview);
             }
             /*
             Stage 3
@@ -247,25 +398,25 @@ public class DrinkModel extends AbstractModel {
                 vendorDrinkImage.drink_id = stage3Result.getInt("vendor_drink_id");
                 vendorDrinkImage.display_order = stage3Result.getInt("vendor_drink_display_order");
                 vendorDrinkImage.filename = stage3Result.getString("vendor_drink_filename");
-                vendorDrinkHashMap.get(vendorDrinkImage.drink_id).images.put(vendorDrinkImage.display_order, vendorDrinkImage);
+                menuItems.get(vendorDrinkImage.drink_id).images.put(vendorDrinkImage.display_order, vendorDrinkImage);
             }
             /*
             Stage 4
              */
-            for (int vendor_drink_id: vendorDrinkHashMap.keySet()) {
+            for (int vendor_drink_id: menuItems.keySet()) {
                 stage4 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage4);
                 stage4.setInt(1, vendor_drink_id);
                 stage4Result = stage4.executeQuery();
                 while (stage4Result.next()) {
                     Spirit spirit = new Spirit();
-                    spirit.spirit_id = stage4Result.getInt("spirit_id");
+                    spirit.id = stage4Result.getInt("spirit_id");
                     spirit.brand_name = stage4Result.getString("spirit_brand_name");
                     spirit.company_name = stage4Result.getString("spirit_company_name");
                     spirit.spirit_type = stage4Result.getString("spirit_type");
                     // Mark the drink as alcoholic and add the spirits.
-                    if (spirit.spirit_id != 0) {
-                        vendorDrinkHashMap.get(vendor_drink_id).is_alcoholic = true;
-                        vendorDrinkHashMap.get(vendor_drink_id).spirits.add(spirit);
+                    if (spirit.id != 0) {
+                        menuItems.get(vendor_drink_id).is_alcoholic = true;
+                        menuItems.get(vendor_drink_id).spirits.add(spirit);
                     }
                 }
             }
@@ -273,7 +424,7 @@ public class DrinkModel extends AbstractModel {
             Stage 5
              */
             // Go through each drink and calculate the review star averages.
-            for (VendorDrink vendorDrink : vendorDrinkHashMap.values()) {
+            for (VendorDrink vendorDrink : menuItems.values()) {
                 if (vendorDrink.reviews.size() > 0) {
                     float total = 0;
                     for (VendorDrinkReview vendorDrinkReview: vendorDrink.reviews) {
@@ -288,28 +439,19 @@ public class DrinkModel extends AbstractModel {
              */
             // YOU LEFT OFF HERE
             // Load all ingredients for all drinks.
-/*
-            for (VendorDrink vendorDrink: vendorDrinkHashMap.values()) {
-                PreparedStatement preparedStatement = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage6);
-                preparedStatement.setInt(1, vendorDrink.vendor_id);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                ArrayList drink_ingredients = new ArrayList<VendorDrinkIngredient>();
-                while (resultSet.next()) {
-                    // Initialize drink ingredient and nutritional fact profiles.
-                    VendorDrinkIngredient vendorDrinkIngredient = new VendorDrinkIngredient();
-                    VendorNutritionalFact nutritionalFact = new VendorNutritionalFact();
-                    // Assign all ingredient values.
-                }
-                // Clean stuff up.
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            }
-*/
-            return vendorDrinkHashMap;
+            // @TODO implement
+            /*
+            /*
+            Stage 7
+            // Load drop-downs.
+             */
+            dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
+            /*
+            Assemble final component.
+             */
+            drinkMenu.dropDowns = dropDowns;
+            drinkMenu.menuItems = menuItems;
+            return drinkMenu;
         } catch (Exception ex) {
             System.out.print(ex);
             throw new Exception("Unable to load drink menu.");

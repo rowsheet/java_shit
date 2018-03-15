@@ -1,5 +1,6 @@
-package com.Common;
+package com.Common.PublicVendor;
 
+import com.Common.*;
 import jnr.ffi.annotations.In;
 
 import java.util.ArrayList;
@@ -65,9 +66,12 @@ public class Brewery {
     /**
      * Owned Info
      */
-    public HashMap<Integer, Beer> beerMenu;
-    public HashMap<Integer, VendorFood> foodMenu;
-    public HashMap<Integer, VendorDrink> drinkMenu;
+//    public HashMap<Integer, Beer> beerMenu;
+    public BeerMenu beerMenu;
+//    public HashMap<Integer, VendorFood> foodMenu;
+    public FoodMenu foodMenu;
+//    public HashMap<Integer, VendorDrink> drinkMenu;
+    public DrinkMenu drinkMenu;
     public HashMap<Integer, Event> events;
     public HashMap<Integer, VendorReview> reviews;
 
@@ -103,9 +107,12 @@ public class Brewery {
         this.longitude = (float)0.0;
         this.google_maps_zoom = 0;
         this.official_business_name = null;
-        this.beerMenu = new HashMap<Integer, Beer>();
-        this.foodMenu = new HashMap<Integer, VendorFood>();
-        this.drinkMenu = new HashMap<Integer, VendorDrink>();
+//        this.beerMenu = new HashMap<Integer, Beer>();
+        this.beerMenu = new BeerMenu();
+//        this.foodMenu = new HashMap<Integer, VendorFood>();
+        this.foodMenu = new FoodMenu();
+//        this.drinkMenu = new HashMap<Integer, VendorDrink>();
+        this.drinkMenu = new DrinkMenu();
         this.events = new HashMap<Integer, Event>();
         this.reviews = new HashMap<Integer, VendorReview>();
     }

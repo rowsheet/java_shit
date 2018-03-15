@@ -1,6 +1,7 @@
 package com.PublicBrewery.Food;
 
 import com.Common.AbstractController;
+import com.Common.PublicVendor.FoodMenu;
 import com.Common.VendorFood;
 import jnr.ffi.annotations.In;
 
@@ -19,13 +20,13 @@ public class FoodController extends AbstractController {
         // Initialize model and create the data.
         FoodModel foodModel = new FoodModel();
         // Load the data structure we're loading.
-        HashMap<Integer, VendorFood> vendorFoodHashMap = new HashMap<Integer, VendorFood>();
+        FoodMenu foodMenu = new FoodMenu();
         // Load the data using the model.
-        vendorFoodHashMap = foodModel.loadFoodMenu(
+        foodMenu = foodModel.loadFoodMenu(
                 brewery_id
         );
         // Return JSON or data structure returned by model.
-        return this.returnJSON(vendorFoodHashMap);
+        return this.returnJSON(foodMenu);
     }
 
     public String loadFoodMenuPaginated(

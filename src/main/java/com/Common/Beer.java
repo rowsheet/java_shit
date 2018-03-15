@@ -21,17 +21,20 @@ public class Beer {
     public String[] beer_tastes;
     public String description;
     public float price;
+    public String creation_timestamp;
+    public String creation_days_ago;
     public String[] beer_sizes;
     public String hop_score;
     // From a join, but almost straight from DB (one-to-one) relationship.
     public BeerCategory beer_category;
+    public VendorNutritionalFact nutritional_facts;
     // Ingredients and tags.
     public ArrayList<BeerIngredient> beer_ingredients;
-    public String tag_one;
-    public String tag_two;
-    public String tag_three;
-    public String tag_four;
-    public String tag_five;
+    public BeerTag tag_one;
+    public BeerTag tag_two;
+    public BeerTag tag_three;
+    public BeerTag tag_four;
+    public BeerTag tag_five;
 
     /**
      * These have to be calculated.
@@ -53,17 +56,20 @@ public class Beer {
     public Beer() {
         this.beer_id = 0;
         this.vendor_id = 0;
-        this.name = null;
+        this.name = "";
         this.color = 0;
         this.bitterness = 0;
         this.abv = 0;
-        this.beer_style = null;
+        this.beer_style = "";
         this.beer_tastes = null;
-        this.description = null;
+        this.description = "";
         this.price = (float) 0.0;
+        this.creation_timestamp = "";
+        this.creation_days_ago = "";
         this.beer_sizes = null;
-        this.hop_score = null;
+        this.hop_score = "";
         this.beer_category = new BeerCategory();
+        this.nutritional_facts = new VendorNutritionalFact();
 
         this.review_count = 0;
         this.review_average = (float) 0.0;
@@ -73,10 +79,10 @@ public class Beer {
         this.images = new HashMap<Integer, BeerImage>();
 
         this.beer_ingredients = new ArrayList<BeerIngredient>();
-        this.tag_one = "";
-        this.tag_two = "";
-        this.tag_three = "";
-        this.tag_four = "";
-        this.tag_five = "";
+        this.tag_one = new BeerTag();
+        this.tag_two = new BeerTag();
+        this.tag_three = new BeerTag();
+        this.tag_four = new BeerTag();
+        this.tag_five = new BeerTag();
     }
 }

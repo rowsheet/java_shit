@@ -109,8 +109,7 @@ public class PublicBreweryHandler {
             @WebParam(name="descending") boolean descending
     ) throws Exception {
         BeerController beerController = new BeerController();
-        return beerController.loadBeerMenuPaginated(
-                brewery_id,
+        return beerController.loadBeerMenuPaginated( brewery_id,
                 limit,
                 offset,
                 order_by,

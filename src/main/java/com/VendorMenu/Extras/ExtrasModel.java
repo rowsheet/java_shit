@@ -157,7 +157,7 @@ public class ExtrasModel extends AbstractModel {
 
     public boolean updateNutritionalFact(
             String cookie,
-            int nutritional_fact_id,
+            int id,
             String profile_name,
             int serving_size,
             int calories,
@@ -188,7 +188,7 @@ public class ExtrasModel extends AbstractModel {
             this.validateCookieVendorFeature(cookie,"nutritional_facts");
             // Verify resource ownership.
             stage1 = this.DAO.prepareStatement(this.verifyNutritionalFactOwnershipSQL);
-            stage1.setInt(1, nutritional_fact_id);
+            stage1.setInt(1, id);
             stage1Result = stage1.executeQuery();
             int vendor_id = 0;
             while (stage1Result.next()) {
@@ -219,7 +219,7 @@ public class ExtrasModel extends AbstractModel {
             stage2.setInt(18, calcium);
             stage2.setInt(19, iron);
             stage2.setString(20, profile_name);
-            stage2.setInt(21, nutritional_fact_id);
+            stage2.setInt(21, id);
             stage2.execute();
             // Done. Commit.
             this.DAO.commit();
@@ -250,7 +250,7 @@ public class ExtrasModel extends AbstractModel {
 
     public boolean deleteNutritionalFact(
             String cookie,
-            int nutritional_fact_id
+            int id
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -260,7 +260,7 @@ public class ExtrasModel extends AbstractModel {
             this.DAO.setAutoCommit(false);
             // Verify resource ownership.
             stage1 = this.DAO.prepareStatement(this.verifyNutritionalFactOwnershipSQL);
-            stage1.setInt(1, nutritional_fact_id);
+            stage1.setInt(1, id);
             stage1Result = stage1.executeQuery();
             int vendor_id = 0;
             while (stage1Result.next()) {
@@ -271,7 +271,7 @@ public class ExtrasModel extends AbstractModel {
             }
             // Delete the data.
             stage2 = this.DAO.prepareStatement(this.deleteNutritionalFactsSQL);
-            stage2.setInt(1, nutritional_fact_id);
+            stage2.setInt(1, id);
             stage2.execute();
             // Done. Commit.
             this.DAO.commit();

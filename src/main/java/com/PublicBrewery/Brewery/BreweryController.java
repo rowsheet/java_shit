@@ -1,9 +1,7 @@
 package com.PublicBrewery.Brewery;
 
 import com.Common.AbstractController;
-import com.Common.Brewery;
-
-import com.google.gson.*;
+import com.Common.PublicVendor.Brewery;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.

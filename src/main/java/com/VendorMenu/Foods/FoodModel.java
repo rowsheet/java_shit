@@ -313,7 +313,8 @@ public class FoodModel extends AbstractModel {
             int food_tag_id_two,
             int food_tag_id_three,
             int food_tag_id_four,
-            int food_tag_id_five
+            int food_tag_id_five,
+            String cover_image
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -371,6 +372,10 @@ public class FoodModel extends AbstractModel {
             if (food_id == 0) {
                 throw new FoodException("Unable to create food."); // Unknown reason.
             }
+            System.out.println("DEBUG");
+            if (cover_image != null) {
+                System.out.println("NULL");
+            }
             return food_id;
         } catch (FoodException ex) {
             System.out.print(ex.getMessage());
@@ -404,8 +409,9 @@ public class FoodModel extends AbstractModel {
                     "vendor_food_categories (" +
                     "   vendor_id, " +
                     "   name, " +
-                    "   hex_color" +
-                    ") VALUES (?,?,?) " +
+                    "   hex_color, " +
+                    "   description " +
+                    ") VALUES (?,?,?,?) " +
                     "RETURNING id";
 
     private String confirmFoodCategoryOwnershipSQL =
@@ -420,7 +426,8 @@ public class FoodModel extends AbstractModel {
             "UPDATE vendor_food_categories " +
                     "SET " +
                     "   name = ?, " +
-                    "   hex_color = ? " +
+                    "   hex_color = ?, " +
+                    "   description = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -432,7 +439,8 @@ public class FoodModel extends AbstractModel {
     public int createFoodCategory(
             String cookie,
             String category_name,
-            String hex_color
+            String hex_color,
+            String description
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -440,11 +448,20 @@ public class FoodModel extends AbstractModel {
             // Validate cookie. Just check for the "food_menu" permission. Food categories
             // doesn't need to be it's own permission.
             this.validateCookieVendorFeature(cookie, "food_menu");
+            // Description may be null.
+            if (description == null) {
+                description = "";
+            }
             // Just insert the category returning the ID.
             preparedStatement = this.DAO.prepareStatement(this.createFoodCategorySQL);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
             preparedStatement.setString(2, category_name);
             preparedStatement.setString(3, hex_color);
+            if (description == null) {
+                preparedStatement.setNull(4, Types.VARCHAR);
+            } else {
+                preparedStatement.setString(4, description);
+            }
             resultSet = preparedStatement.executeQuery();
             // Get the new id of the new category.
             int food_category_id = 0;
@@ -486,7 +503,8 @@ public class FoodModel extends AbstractModel {
             String cookie,
             int id,
             String new_category_name,
-            String new_hex_color
+            String new_hex_color,
+            String description
     ) throws Exception {
         PreparedStatement stage2 = null;
         ResultSet stage2Result = null;
@@ -523,7 +541,13 @@ public class FoodModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.updateFoodCategorySQL);
             stage3.setString(1, new_category_name);
             stage3.setString(2, new_hex_color);
-            stage3.setInt(3, id);
+            // Description may be null.
+            if (description == null) {
+                stage3.setNull(3, Types.VARCHAR);
+            } else {
+                stage3.setString(3, description);
+            }
+            stage3.setInt(4, id);
             stage3.execute();
             /*
             Done. Commit.

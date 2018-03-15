@@ -57,7 +57,7 @@ public class DrinkController extends AbstractController {
         this.validateDrinkServingSize(servings);
         this.validateDrinkIconEnum(icon_enum);
         // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
-        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(nutritional_fact_id, "id");
         this.validateNullID(drink_tag_id_one, "drink_tag_id_one");
         this.validateNullID(drink_tag_id_two, "drink_tag_id_two");
         this.validateNullID(drink_tag_id_three, "drink_tag_id_three");
@@ -124,7 +124,7 @@ public class DrinkController extends AbstractController {
         this.validateDrinkServingSize(servings);
         this.validateDrinkIconEnum(icon_enum);
         // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
-        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(nutritional_fact_id, "id");
         this.validateNullID(drink_tag_id_one, "drink_tag_id_one");
         this.validateNullID(drink_tag_id_two, "drink_tag_id_two");
         this.validateNullID(drink_tag_id_three, "drink_tag_id_three");
@@ -156,43 +156,44 @@ public class DrinkController extends AbstractController {
 
     public int createDrinkCategory(
             String cookie,
-            String category_name,
+            String name,
             String hex_color,
-            String icon_enum
+            String description
     ) throws Exception {
         // Validate input parameters.
+        // Don't validate description for null. Null is ok.
         this.validateString(cookie, "cookie");
         this.validateHexColor(hex_color);
-        this.validateDrinkIconEnum(icon_enum);
+        this.validateString(name, "name");
         // Initialize model and create data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.createDrinkCategory(
                 cookie,
-                category_name,
+                name,
                 hex_color,
-                icon_enum);
+                description);
     }
 
     public boolean updateDrinkCategory(
             String cookie,
             int id,
-            String new_category_name,
-            String new_hex_color,
-            String new_icon_enum
+            String name,
+            String hex_color,
+            String description
     ) throws Exception {
         // Validate input parameters.
+        // Don't validate description for null. Null is ok.
         this.validateString(cookie, "cookie");
-        this.validateString(new_category_name, "new_category_name.");
-        this.validateHexColor(new_hex_color);
-        this.validateDrinkIconEnum(new_icon_enum);
+        this.validateString(name, "name.");
+        this.validateHexColor(hex_color);
         // Initialize model and create data.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.updateDrinkCategory(
                 cookie,
                 id,
-                new_category_name,
-                new_hex_color,
-                new_icon_enum);
+                name,
+                hex_color,
+                description);
     }
 
     public boolean deleteDrinkCategory(
@@ -280,23 +281,23 @@ public class DrinkController extends AbstractController {
             String cookie,
             int id,
             String new_name,
-            String new_hex_color,
-            String new_tag_type
+            String hex_color,
+            String tag_type
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(id, "vendor_drink_tag_id");
+        this.validateID(id, "id");
         this.validateString(new_name, "new_name");
-        this.validateHexColor(new_hex_color);
-        this.validateMenuItemTagType(new_tag_type);
+        this.validateHexColor(hex_color);
+        this.validateMenuItemTagType(tag_type);
         // Initialize model and return model response.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.updateVendorDrinkTag(
                 cookie,
                 id,
                 new_name,
-                new_hex_color,
-                new_tag_type
+                hex_color,
+                tag_type
         );
     }
 
@@ -306,7 +307,7 @@ public class DrinkController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(id, "vendor_drink_tag_id");
+        this.validateID(id, "id");
         // Initialize model and return model response.
         DrinkModel drinkModel = new DrinkModel();
         return drinkModel.deleteVendorDrinkTag(

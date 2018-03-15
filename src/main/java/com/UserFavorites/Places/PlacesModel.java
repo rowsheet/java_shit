@@ -1,7 +1,7 @@
 package com.UserFavorites.Places;
 
 import com.Common.AbstractModel;
-import com.Common.Brewery;
+import com.Common.PublicVendor.Brewery;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

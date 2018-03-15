@@ -1,7 +1,5 @@
 package com.VendorAccounts.BreweryRegistration;
 
-import com.Common.Brewery;
-
 /**
  * Created by alexanderkleinhans on 6/23/17.
  */

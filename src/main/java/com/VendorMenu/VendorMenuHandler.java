@@ -52,6 +52,7 @@ public class VendorMenuHandler {
             @WebParam(name = "beer_tag_id_four") int beer_tag_id_four,
             @WebParam(name = "beer_tag_id_five") int beer_tag_id_five
     ) throws Exception {
+        System.out.println("SUP");
         BeerController beerController = new BeerController();
         return beerController.createBeer(
                 cookie,
@@ -140,14 +141,16 @@ public class VendorMenuHandler {
     @WebMethod
     public int createBeerCategory (
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="category_name") String category_name,
-            @WebParam(name="hex_color") String hex_color
+            @WebParam(name="name") String name,
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="description") String description
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.createBeerCategory(
                 cookie,
-                category_name,
-                hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
@@ -155,15 +158,17 @@ public class VendorMenuHandler {
     public boolean updateBeerCategory (
             @WebParam(name="cookie") String cookie,
             @WebParam(name="id") int id,
-            @WebParam(name="new_category_name") String new_category_name,
-            @WebParam(name="new_hex_color") String new_hex_color
+            @WebParam(name="name") String name,
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="description") String description
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.updateBeerCategory(
                 cookie,
                 id,
-                new_category_name,
-                new_hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
@@ -249,17 +254,17 @@ public class VendorMenuHandler {
     public boolean updateBeerTag(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "id") int id,
-            @WebParam(name = "new_name") String new_name,
-            @WebParam(name = "new_hex_color") String new_hex_color,
-            @WebParam(name = "new_tag_type") String new_tag_type
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.updateBeerTag(
                 cookie,
                 id,
-                new_name,
-                new_hex_color,
-                new_tag_type
+                name,
+                hex_color,
+                tag_type
         );
     }
 
@@ -301,7 +306,8 @@ public class VendorMenuHandler {
             @WebParam(name = "food_tag_id_two") int food_tag_id_two,
             @WebParam(name = "food_tag_id_three") int food_tag_id_three,
             @WebParam(name = "food_tag_id_four") int food_tag_id_four,
-            @WebParam(name = "food_tag_id_five") int food_tag_id_five
+            @WebParam(name = "food_tag_id_five") int food_tag_id_five,
+            @WebParam(name = "cover_image") String cover_image
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.createFood(
@@ -316,7 +322,8 @@ public class VendorMenuHandler {
                 food_tag_id_two,
                 food_tag_id_three,
                 food_tag_id_four,
-                food_tag_id_five
+                food_tag_id_five,
+                cover_image
         );
     }
 
@@ -373,14 +380,16 @@ public class VendorMenuHandler {
     @WebMethod
     public int createFoodCategory (
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="category_name") String category_name,
-            @WebParam(name="hex_color") String hex_color
+            @WebParam(name="name") String name,
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="description") String description
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.createFoodCategory(
                 cookie,
-                category_name,
-                hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
@@ -388,15 +397,17 @@ public class VendorMenuHandler {
     public boolean updateFoodCategory (
             @WebParam(name="cookie") String cookie,
             @WebParam(name="id") int id,
-            @WebParam(name="new_category_name") String new_category_name,
-            @WebParam(name="new_hex_color") String new_hex_color
+            @WebParam(name="name") String name,
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="description") String description
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.updateFoodCategory(
                 cookie,
                 id,
-                new_category_name,
-                new_hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
@@ -480,17 +491,17 @@ public class VendorMenuHandler {
     public boolean updateFoodTag(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "id") int id,
-            @WebParam(name = "new_name") String new_name,
-            @WebParam(name = "new_hex_color") String new_hex_color,
-            @WebParam(name = "new_tag_type") String new_tag_type
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.updateVendorFoodTag(
                 cookie,
                 id,
-                new_name,
-                new_hex_color,
-                new_tag_type
+                name,
+                hex_color,
+                tag_type
         );
     }
 
@@ -540,6 +551,7 @@ public class VendorMenuHandler {
             @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
             @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
+        Thread.sleep(2000);
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrink(
                 cookie,
@@ -587,6 +599,7 @@ public class VendorMenuHandler {
             @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
             @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
+        Thread.sleep(2000);
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrink(
                 cookie,
@@ -630,33 +643,33 @@ public class VendorMenuHandler {
     @WebMethod
     public int createDrinkCategory (
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="category_name") String category_name,
+            @WebParam(name="name") String name,
             @WebParam(name="hex_color") String hex_color,
-            @WebParam(name="icon_enum") String icon_enum
+            @WebParam(name="description") String description
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrinkCategory(
                 cookie,
-                category_name,
+                name,
                 hex_color,
-                icon_enum);
+                description);
     }
 
     @WebMethod
     public boolean updateDrinkCategory (
             @WebParam(name="cookie") String cookie,
             @WebParam(name="id") int id,
-            @WebParam(name="new_category_name") String new_category_name,
-            @WebParam(name="new_hex_color") String new_hex_color,
-            @WebParam(name="new_icon_enum") String new_icon_enum
+            @WebParam(name="name") String name,
+            @WebParam(name="hex_color") String hex_color,
+            @WebParam(name="description") String description
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrinkCategory(
                 cookie,
                 id,
-                new_category_name,
-                new_hex_color,
-                new_icon_enum);
+                name,
+                hex_color,
+                description);
     }
 
     @WebMethod
@@ -735,17 +748,17 @@ public class VendorMenuHandler {
     public boolean updateDrinkTag(
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "id") int id,
-            @WebParam(name = "new_name") String new_name,
-            @WebParam(name = "new_hex_color") String new_hex_color,
-            @WebParam(name = "new_tag_type") String new_tag_type
+            @WebParam(name = "name") String name,
+            @WebParam(name = "hex_color") String hex_color,
+            @WebParam(name = "tag_type") String tag_type
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.updateVendorDrinkTag(
                 cookie,
                 id,
-                new_name,
-                new_hex_color,
-                new_tag_type
+                name,
+                hex_color,
+                tag_type
         );
     }
 
@@ -1081,7 +1094,7 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean updateNutritionalFact(
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name="id") int id,
             @WebParam(name="profile_name") String profile_name,
             @WebParam(name="serving_size") int serving_size,
             @WebParam(name="calories") int calories,
@@ -1105,7 +1118,7 @@ public class VendorMenuHandler {
         ExtrasController extrasController = new ExtrasController();
         return extrasController.updateNutritionalFact(
                 cookie,
-                nutritional_fact_id,
+                id,
                 profile_name,
                 serving_size,
                 calories,
@@ -1131,12 +1144,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteNutritionalFact(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         ExtrasController extrasController = new ExtrasController();
         return extrasController.deleteNutritionalFact(
                 cookie,
-                nutritional_fact_id
+                id
         );
     }
 
@@ -1217,4 +1230,5 @@ public class VendorMenuHandler {
                 beer_id
         );
     }
+
 }

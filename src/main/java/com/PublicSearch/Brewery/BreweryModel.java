@@ -1,7 +1,7 @@
 package com.PublicSearch.Brewery;
 
 import com.Common.AbstractModel;
-import com.Common.Brewery;
+import com.Common.PublicVendor.Brewery;
 import com.Common.BrewerySearchResult;
 import com.Common.Geolocation;
 

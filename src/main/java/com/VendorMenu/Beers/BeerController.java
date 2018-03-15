@@ -3,6 +3,8 @@ package com.VendorMenu.Beers;
 import com.Common.AbstractController;
 import com.Common.Beer;
 
+import java.util.ArrayList;
+
 /**
  * Created by alexanderkleinhans on 6/1/17.
  */
@@ -50,7 +52,7 @@ public class BeerController extends AbstractController {
         this.validateBeerStyle(beer_style);
         this.validateID(beer_category_id, "beer_category_id");
         // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
-        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(nutritional_fact_id, "id");
         this.validateNullID(beer_tag_id_one, "beer_tag_id_one");
         this.validateNullID(beer_tag_id_two, "beer_tag_id_two");
         this.validateNullID(beer_tag_id_three, "beer_tag_id_three");
@@ -71,6 +73,14 @@ public class BeerController extends AbstractController {
         }
         this.validateHopScore(hop_score);
         this.validatePrice(price);
+        // Remove possible duplicate tags.
+        ArrayList<Integer> tag_array = this.filterTagArray(
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
+        );
         // Initialize model and create the data.
         BeerModel beerModel = new BeerModel();
         return beerModel.updateBeer(
@@ -88,11 +98,11 @@ public class BeerController extends AbstractController {
                 hop_score,
                 beer_category_id,
                 nutritional_fact_id,
-                beer_tag_id_one,
-                beer_tag_id_two,
-                beer_tag_id_three,
-                beer_tag_id_four,
-                beer_tag_id_five
+                tag_array.get(0),
+                tag_array.get(1),
+                tag_array.get(2),
+                tag_array.get(3),
+                tag_array.get(4)
         );
     }
 
@@ -125,7 +135,7 @@ public class BeerController extends AbstractController {
         this.validateBeerStyle(beer_style);
         this.validateID(beer_category_id, "beer_category_id");
         // Validate for null (empty) ids for tags. JAVA SOAP will make this zero.
-        this.validateNullID(nutritional_fact_id, "nutritional_fact_id");
+        this.validateNullID(nutritional_fact_id, "id");
         this.validateNullID(beer_tag_id_one, "beer_tag_id_one");
         this.validateNullID(beer_tag_id_two, "beer_tag_id_two");
         this.validateNullID(beer_tag_id_three, "beer_tag_id_three");
@@ -146,6 +156,14 @@ public class BeerController extends AbstractController {
         }
         this.validateHopScore(hop_score);
         this.validatePrice(price);
+        // Remove possible duplicate tags.
+        ArrayList<Integer> tag_array = this.filterTagArray(
+                beer_tag_id_one,
+                beer_tag_id_two,
+                beer_tag_id_three,
+                beer_tag_id_four,
+                beer_tag_id_five
+        );
         // Initialize model and create the data.
         BeerModel beerModel = new BeerModel();
         return beerModel.createBeer(
@@ -162,48 +180,53 @@ public class BeerController extends AbstractController {
                 hop_score,
                 beer_category_id,
                 nutritional_fact_id,
-                beer_tag_id_one,
-                beer_tag_id_two,
-                beer_tag_id_three,
-                beer_tag_id_four,
-                beer_tag_id_five
+                tag_array.get(0),
+                tag_array.get(1),
+                tag_array.get(2),
+                tag_array.get(3),
+                tag_array.get(4)
         );
     }
 
     public int createBeerCategory(
             String cookie,
-            String category_name,
-            String hex_color
+            String name,
+            String hex_color,
+            String description
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
         this.validateHexColor(hex_color);
+        this.validateString(name, "name");
         // Initialize model and create data.
         BeerModel beerModel = new BeerModel();
         return beerModel.createBeerCategory(
                 cookie,
-                category_name,
-                hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
     public boolean updateBeerCategory(
             String cookie,
             int id,
-            String new_category_name,
-            String new_hex_color
+            String name,
+            String hex_color,
+            String description
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateString(new_category_name, "new_category_name.");
-        this.validateHexColor(new_hex_color);
+        this.validateString(name, "new_category_name.");
+        this.validateHexColor(hex_color);
         // Initialize model and create data.
         BeerModel beerModel = new BeerModel();
         return beerModel.updateBeerCategory(
                 cookie,
                 id,
-                new_category_name,
-                new_hex_color
+                name,
+                hex_color,
+                description
         );
     }
 
@@ -301,7 +324,7 @@ public class BeerController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(id, "beer_tag_id");
+        this.validateID(id, "id");
         this.validateString(new_name, "new_name");
         this.validateHexColor(new_hex_color);
         this.validateMenuItemTagType(new_tag_type);
@@ -322,7 +345,7 @@ public class BeerController extends AbstractController {
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(id, "beer_tag_id");
+        this.validateID(id, "id");
         // Initialize model and return model response.
         BeerModel beerModel = new BeerModel();
         return beerModel.deleteBeerTag(

@@ -1,5 +1,6 @@
 package com.VendorAccounts;
 
+import com.Common.Color;
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
 import com.VendorAccounts.General.GeneralController;
@@ -18,7 +19,8 @@ public class VendorAccountsHandler {
     public String Testing(
             @WebParam(name="something") String something
     ) {
-        return "VALUE:" + something;
+        Color color = new Color();
+        return color.getInverseBW(something);
     }
 
     /**

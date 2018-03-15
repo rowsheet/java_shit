@@ -3,6 +3,7 @@ package com.PublicBrewery.Drink;
 import com.Common.AbstractController;
 import com.Common.VendorDrink;
 import java.util.HashMap;
+import com.Common.PublicVendor.DrinkMenu;
 
 public class DrinkController extends AbstractController {
     public String loadDrinkMenu(
@@ -15,11 +16,10 @@ public class DrinkController extends AbstractController {
         // Load the data structure we're loading.
         HashMap<Integer, VendorDrink> drinkHashMap = new HashMap<Integer, VendorDrink>();
         // Load the data using the model.
-        drinkHashMap = drinkModel.loadDrinkMenu(
-                brewery_id
-        );
+        DrinkMenu drinkMenu = new DrinkMenu();
+        drinkMenu = drinkModel.loadDrinkMenu(brewery_id);
         // Return JSON or data structure returned by model.
-        return this.returnJSON(drinkHashMap);
+        return this.returnJSON(drinkMenu);
     }
 
     public String loadDrinkMenuPaginated(

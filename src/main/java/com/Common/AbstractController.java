@@ -57,6 +57,7 @@ public class AbstractController {
         }
     }
 
+    // @TODO Fix this regex to only allow 6 char hex inputs
     protected void validateHexColor(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {
@@ -849,5 +850,37 @@ public class AbstractController {
                 ) {
             throw new InvalidParameterException("Invalid menu_item_tag_type");
         }
+    }
+
+    protected ArrayList<Integer> filterTagArray(
+            int tag_id_one,
+            int tag_id_two,
+            int tag_id_three,
+            int tag_id_four,
+            int tag_id_five
+    ) {
+        // Remove duplicate tags. Add them to a filtered set without
+        // duplicates, only if they are non-zero.
+        ArrayList<Integer> filtered_tags = new ArrayList<Integer>();
+        if (tag_id_one != 0) {
+            filtered_tags.add(tag_id_one);
+        }
+        if (!filtered_tags.contains(tag_id_two) && tag_id_two != 0) {
+            filtered_tags.add(tag_id_two);
+        }
+        if (!filtered_tags.contains(tag_id_three) && tag_id_three != 0) {
+            filtered_tags.add(tag_id_three);
+        }
+        if (!filtered_tags.contains(tag_id_four) && tag_id_four != 0) {
+            filtered_tags.add(tag_id_four);
+        }
+        if (!filtered_tags.contains(tag_id_five) && tag_id_five != 0) {
+            filtered_tags.add(tag_id_five);
+        }
+        // Pad the rest with zeros up to five.
+        for (int i = filtered_tags.size(); i < 5; i++) {
+            filtered_tags.add(0);
+        }
+        return filtered_tags;
     }
 }

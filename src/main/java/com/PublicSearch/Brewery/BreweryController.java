@@ -1,10 +1,7 @@
 package com.PublicSearch.Brewery;
 
 import com.Common.AbstractController;
-import com.Common.Brewery;
 import com.Common.BrewerySearchResult;
-
-import java.util.HashMap;
 
 /**
  * Created by alexanderkleinhans on 6/30/17.

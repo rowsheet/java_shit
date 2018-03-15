@@ -18,15 +18,17 @@ public class VendorFood {
     public float price;
     public String[] food_sizes;
     public String creation_timestamp;
+    public String creation_days_ago;
     // Comes from other table but basically straight from the DB.
     public VendorFoodCategory vendor_food_category;
+    public VendorNutritionalFact nutritional_facts;
     // Ingredients and tags.
     public ArrayList<VendorFoodIngredient> vendor_food_ingredients;
-    public String tag_one;
-    public String tag_two;
-    public String tag_three;
-    public String tag_four;
-    public String tag_five;
+    public VendorFoodTag tag_one;
+    public VendorFoodTag tag_two;
+    public VendorFoodTag tag_three;
+    public VendorFoodTag tag_four;
+    public VendorFoodTag tag_five;
 
     /**
      * These have to be calculated.
@@ -53,7 +55,9 @@ public class VendorFood {
         this.price = (float)0.0;
         this.food_sizes = null;
         this.creation_timestamp = null;
+        this.creation_days_ago = null;
         this.vendor_food_category = new VendorFoodCategory();
+        this.nutritional_facts = new VendorNutritionalFact();
 
         this.review_count = 0;
         this.review_average = (float) 0.0;
@@ -63,11 +67,11 @@ public class VendorFood {
         this.images = new HashMap<Integer, VendorFoodImage>();
 
         this.vendor_food_ingredients = new ArrayList<VendorFoodIngredient>();
-        this.tag_one = "";
-        this.tag_two = "";
-        this.tag_three = "";
-        this.tag_four = "";
-        this.tag_five = "";
+        this.tag_one = new VendorFoodTag();
+        this.tag_two = new VendorFoodTag();
+        this.tag_three = new VendorFoodTag();
+        this.tag_four = new VendorFoodTag();
+        this.tag_five = new VendorFoodTag();
     }
 
 }
