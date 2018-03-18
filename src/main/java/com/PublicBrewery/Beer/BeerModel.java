@@ -164,25 +164,16 @@ public class BeerModel extends AbstractModel {
 
 
     /**
-     * The file paths for each image take advantage of the fact that you can't have two
-     * images with the same path, therefore, the unique constraints in the DB will give you
-     * paths that are unique and the worst case scenario is that an image is not found.
-     *
-     * Paths go like:
-     *
-     *      /image_resource/vendor_id/item_id/name
-     *
-     * This is because image_resource will cut out most of the images, vendor_id will cut
-     * out the next most.
-     *
-     * This also allows multiple mages per item and multiple item_ids to exist for vendors.
-     *
+     * The file paths for each image are full URLS to S3.
      */
     private String loadBeerMenuSQL_stage3 =
             "SELECT " +
+                    "   bi.id, " +
                     "   bi.beer_id, " +
                     "   bi.display_order, " +
-                    "   bi.filename " +
+                    "   bi.filename, " +
+                    "   bi.creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', bi.creation_timestamp::date)) AS creation_days_ago " +
                     "FROM " +
                     "   vendors v " +
                     "LEFT JOIN " +
@@ -427,9 +418,12 @@ public class BeerModel extends AbstractModel {
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
                 BeerImage beerImage = new BeerImage();
+                beerImage.beer_image_id = stage3Result.getInt("id");
                 beerImage.beer_id = stage3Result.getInt("beer_id");
                 beerImage.display_order = stage3Result.getInt("display_order");
                 beerImage.filename = stage3Result.getString("filename");
+                beerImage.creation_timestamp = stage3Result.getString("creation_timestamp");
+                beerImage.creation_days_ago = stage3Result.getString("creation_days_ago");
                 beerHashMap.get(beerImage.beer_id).images.put(beerImage.display_order, beerImage);
             }
             /*

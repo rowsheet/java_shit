@@ -9,7 +9,8 @@ public class BeerImage {
     public String beer_name;
     public int display_order;
     public String filename;
-    public String upload_date;
+    public String creation_timestamp;
+    public String creation_days_ago;
 
     public BeerImage() {
         this.beer_image_id = 0;
@@ -17,6 +18,7 @@ public class BeerImage {
         this.beer_name = null;
         this.display_order = 0;
         this.filename = null;
-        this.upload_date = null;
+        this.creation_timestamp = null;
+        this.creation_days_ago = null;
     }
 }

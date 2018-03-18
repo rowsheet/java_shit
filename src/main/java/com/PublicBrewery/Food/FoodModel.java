@@ -157,25 +157,16 @@ public class FoodModel extends AbstractModel {
                     "   days_ago ASC";
 
     /**
-     * The file paths for each image take advantage of the fact that you can't have two
-     * images with the same path, therefore, the unique constraints in the DB will give you
-     * paths that are unique and the worst case scenario is that an image is not found.
-     *
-     * Paths go like:
-     *
-     *      /image_resource/vendor_id/item_id/name
-     *
-     * This is because image_resource will cut out most of the images, vendor_id will cut
-     * out the next most.
-     *
-     * This also allows multiple images per item and multiple item_ids to exist for vendors.
-     *
+     * The file paths for each image are full URLS to S3.
      */
     public String loadFoodMenuSQL_stage3 =
             "SELECT " +
+                    "   vfi.id, " +
                     "   vfi.vendor_food_id, " +
                     "   vfi.display_order, " +
-                    "   vfi.filename " +
+                    "   vfi.filename, " +
+                    "   vfi.creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vfi.creation_timestamp::date)) AS creation_days_ago " +
                     "FROM " +
                     "   vendors v " +
                     "LEFT JOIN " +
@@ -359,9 +350,12 @@ public class FoodModel extends AbstractModel {
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
                 VendorFoodImage vendorFoodImage = new VendorFoodImage();
+                vendorFoodImage.food_image_id = stage3Result.getInt("id");
                 vendorFoodImage.food_id = stage3Result.getInt("vendor_food_id");
                 vendorFoodImage.display_order = stage3Result.getInt("display_order");
                 vendorFoodImage.filename = stage3Result.getString("filename");
+                vendorFoodImage.creation_timestamp = stage3Result.getString("creation_timestamp");
+                vendorFoodImage.creation_days_ago = stage3Result.getString("creation_days_ago");
                 vendorFoodHashMap.get(vendorFoodImage.food_id).images.put(vendorFoodImage.display_order, vendorFoodImage);
             }
             /*

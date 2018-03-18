@@ -655,7 +655,7 @@ public class FoodModel extends AbstractModel {
         }
     }
 
-    private String verifyFoodOwnershipSQL =
+    private String verifyVendorFoodOwnershipSQL =
             "SELECT " +
                     "   COUNT(*) AS count_star " +
                     "FROM " +
@@ -665,21 +665,232 @@ public class FoodModel extends AbstractModel {
                     "AND " +
                     "   vendor_id = ?";
 
+    private String verifyVendorFoodImageOwnershipSQL =
+            "SELECT " +
+                    "   COUNT(*) as count_star " +
+                    "FROM " +
+                    "   vendor_food_images " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   vendor_id = ?";
+
     private String uploadVendorFoodImageSQL_stage2 =
             "INSERT INTO " +
-                    "   vendor_food_images" +
+                    "   vendor_food_images " +
                     "(" +
                     "   vendor_food_id, " +
-                    "   filename, " +
+                    "   filename, " + // file_path, filename, same thing...
                     "   feature_id, " +
                     "   vendor_id" +
-                    ") VALUES (" +
-                    "?,?,?,?)";
+                    ") VALUES (?,?,?,?) " +
+                    "RETURNING id";
 
-    public String uploadVendorFoodImage(
+    private String getVendorFoodImageCountSQL =
+            "SELECT " +
+                    "   COUNT(*) AS count_star " +
+                    "FROM " +
+                    "   vendor_food_images " +
+                    "WHERE " +
+                    "   vendor_food_id = ?";
+
+    private String deleteVendorFoodImageSQL_stage2 =
+            "DELETE FROM " +
+                    "   vendor_food_images " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public int uploadVendorFoodImage(
             String cookie,
-            String filename,
+            String file_path,
             int vendor_food_id
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        ResultSet stage3Result = null;
+        try {
+            /*
+            Validate feature permissions.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_food_images");
+            /*
+            Stage 1
+            Validate Resource ownership.
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyVendorFoodOwnershipSQL);
+            stage1.setInt(1, vendor_food_id);
+            stage1.setInt(2, this.vendorCookie.vendorID);
+            stage1Result = stage1.executeQuery();
+            int count_star = 0;
+            while (stage1Result.next()) {
+                count_star = stage1Result.getInt("count_star");
+            }
+            if (count_star == 0) {
+                throw new FoodException("You do not have permission to upload photos for this food item.");
+            }
+            /*
+            Stage 2
+            Verify count of images for that food.
+            */
+            stage2 = this.DAO.prepareStatement(this.getVendorFoodImageCountSQL);
+            stage2.setInt(1, vendor_food_id);
+            stage2Result = stage2.executeQuery();
+            int image_count = 0;
+            while (stage2Result.next()) {
+                image_count = stage2Result.getInt("count_star");
+            }
+            if (image_count > this.vendor_food_image_limit) {
+                throw new FoodException("Maximum " + Integer.toString(this.vendor_food_image_limit) + " images per food reached.");
+            }
+            /*
+            Stage 3
+            Insert new record.
+             */
+            stage3 = this.DAO.prepareStatement(this.uploadVendorFoodImageSQL_stage2);
+            stage3.setInt(1, vendor_food_id);
+            stage3.setString(2, file_path);
+            stage3.setInt(3, this.vendorCookie.requestFeatureID);
+            stage3.setInt(4, this.vendorCookie.vendorID);
+            stage3Result = stage3.executeQuery();
+            int image_id = 0;
+            while (stage3Result.next()) {
+                image_id = stage3Result.getInt("id");
+            }
+            if (image_id == 0) {
+                throw new Exception("Unable to create food image.");
+            }
+            /*
+            Done.
+             */
+            return image_id;
+        } catch (FoodException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            // Try to parse the exception.
+            if (ex.getMessage().contains("vendor_food_images_vendor_food_id_filename_idx")) {
+                throw new Exception("This food already has an image with that name.");
+            }
+            // Unknown reason.
+            throw new Exception("Unable to upload food image.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String updateVendorFoodImageSQL_stage1 =
+            "UPDATE " +
+                    "   vendor_food_images " +
+                    "SET " +
+                    "   display_order = ? " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "RETURNING vendor_id";
+
+    private String updateVendorFoodImageSQL_stage2 =
+            "UPDATE " +
+                    "   vendor_food_images " +
+                    "SET " +
+                    "   display_order = ? " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public boolean updateVendorFoodImages(
+            String cookie,
+            int[] image_ids
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            /*
+            Validate cookie.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_food_images");
+            this.DAO.setAutoCommit(false);
+            /*
+            Ensure ownership of each resource while setting their values to negative
+            to avoid collision on stage2.
+             */
+            int negative_display_order = -1;
+            for (int i = 0; i < image_ids.length; i++) {
+                preparedStatement = this.DAO.prepareStatement(this.updateVendorFoodImageSQL_stage1);
+                preparedStatement.setInt(1, negative_display_order);
+                preparedStatement.setInt(2, image_ids[i]);
+                resultSet = preparedStatement.executeQuery();
+                int vendor_id = 0;
+                while (resultSet.next()) {
+                    vendor_id = resultSet.getInt("vendor_id");
+                }
+                if (vendor_id != this.vendorCookie.vendorID) {
+                    throw new FoodException("You do not have permission to update this food image.");
+                }
+                negative_display_order--;
+            }
+            /*
+            Update the display order.
+            This needs to be done in a transaction.
+             */
+            int display_order = 1;
+            for (int i = 0; i < image_ids.length; i++) {
+                preparedStatement = this.DAO.prepareStatement(this.updateVendorFoodImageSQL_stage2);
+                preparedStatement.setInt(1, display_order);
+                preparedStatement.setInt(2, image_ids[i]);
+                preparedStatement.execute();
+                display_order++;
+            }
+            this.DAO.commit();
+            /*
+            Done.
+             */
+            return true;
+        } catch (FoodException ex) {
+            this.DAO.rollback();
+            System.out.println(ex.getMessage());
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("ROLLING BACK");
+            System.out.println(ex.getMessage());
+            this.DAO.rollback();
+            // Don't know why.
+            throw new Exception("Unable to update food images.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+    }
+
+    public boolean deleteVendorFoodImage (
+            String cookie,
+            int id
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -693,8 +904,8 @@ public class FoodModel extends AbstractModel {
             Stage 1
             Validate Resource ownership.
              */
-            stage1 = this.DAO.prepareStatement(this.verifyFoodOwnershipSQL);
-            stage1.setInt(1, vendor_food_id);
+            stage1 = this.DAO.prepareStatement(this.verifyVendorFoodImageOwnershipSQL);
+            stage1.setInt(1, id);
             stage1.setInt(2, this.vendorCookie.vendorID);
             stage1Result = stage1.executeQuery();
             int count_star = 0;
@@ -702,43 +913,27 @@ public class FoodModel extends AbstractModel {
                 count_star = stage1Result.getInt("count_star");
             }
             if (count_star == 0) {
-                throw new FoodException("You do not have permission to upload photos for this food.");
+                throw new FoodException("You do not have permission to delete photos for this food item.");
             }
             /*
-            Create filepath.
-            right now, it's just going to be:
-                vendor_id/vendor_food_id
-             */
-            String file_path = Integer.toString(vendorCookie.vendorID) + "/" +
-                    Integer.toString(vendor_food_id) + "/" + filename;
-            /*
             Stage 2
-            Insert new record.
+            Delete record.
              */
-            stage2 = this.DAO.prepareStatement(this.uploadVendorFoodImageSQL_stage2);
-            stage2.setInt(1, vendor_food_id);
-            stage2.setString(2, file_path);
-            stage2.setInt(3, this.vendorCookie.requestFeatureID);
-            stage2.setInt(4, this.vendorCookie.vendorID);
+            stage2 = this.DAO.prepareStatement(this.deleteVendorFoodImageSQL_stage2);
+            stage2.setInt(1, id);
             stage2.execute();
             /*
             Done.
              */
-            return file_path;
+            return true;
         } catch (FoodException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
             throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
-            // Try to parse the exception.
-            if (ex.getMessage().contains("vendor_food_id") &&
-                    ex.getMessage().contains("filename") &&
-                    ex.getMessage().contains("already exists")) {
-                throw new Exception("This food already has an image named: " + filename  + ".");
-            }
             // Unknown reason.
-            throw new Exception("Unable to upload food image.");
+            throw new Exception("Unable to delete food image.");
         } finally {
             if (stage1 != null) {
                 stage1.close();
@@ -753,21 +948,6 @@ public class FoodModel extends AbstractModel {
                 this.DAO.close();
             }
         }
-    }
-
-    public boolean updateVendorFoodImage (
-            String cookie,
-            int food_image_id,
-            int display_order
-    ) throws Exception {
-        return true;
-    }
-
-    public String deleteVendorFoodImage (
-            String cookie,
-            int food_image_id
-    ) throws Exception {
-        return "something";
     }
 
     private String validateVendorFoodTagOwnershipSQL =

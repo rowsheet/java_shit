@@ -245,52 +245,53 @@ public class BeerController extends AbstractController {
         );
     }
 
-    public String uploadBeerImage (
+    public int uploadBeerImage (
         String cookie,
-        String filename,
+        String file_path,
         int beer_id
     ) throws Exception {
         // Validate input parameters.
+        this.validateID(beer_id, "beer_id");
         this.validateString(cookie, "cookie");
-        this.validateString(filename, "filename");
+        this.validateString(file_path, "file_path");
         // Initialze model and create data.
         BeerModel beerModel = new BeerModel();
         return beerModel.uploadBeerImage(
                 cookie,
-                filename,
+                file_path,
                 beer_id
         );
     }
 
-    public boolean updateBeerImage (
+    public boolean updateBeerImages (
             String cookie,
-            int beer_image_id,
-            int display_order
+            int[] image_ids
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(beer_image_id, "beer_image_id");
+        for (int i = 0; i < image_ids.length; i++) {
+            this.validateID(image_ids[i], "image_id");
+        }
         // Initialize model and create data.
         BeerModel beerModel = new BeerModel();
-        return beerModel.updateBeerImage(
+        return beerModel.updateBeerImages(
                 cookie,
-                beer_image_id,
-                display_order
+                image_ids
         );
     }
 
-    public String deleteBeerImage (
+    public boolean deleteBeerImage (
             String cookie,
-            int beer_image_id
+            int id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(beer_image_id, "beer_image_id");
+        this.validateID(id, "beer_image_id");
         // Initialize model and create data.
         BeerModel beerModel = new BeerModel();
         return beerModel.deleteBeerImage(
                 cookie,
-                beer_image_id
+                id
         );
     }
 

@@ -210,12 +210,13 @@ public class FoodController extends AbstractController {
         );
     }
 
-    public String uploadVendorFoodImage (
+    public int uploadVendorFoodImage (
            String cookie,
            String filename,
            int vendor_food_id
     ) throws Exception {
         // Validate input parameters.
+        this.validateID(vendor_food_id, "vendor_food_id");
         this.validateString(cookie, "cookie");
         this.validateString(filename, "filename");
         // Initialize model and create data.
@@ -227,35 +228,35 @@ public class FoodController extends AbstractController {
         );
     }
 
-    public boolean updateVendorFoodImage (
+    public boolean updateVendorFoodImages (
             String cookie,
-            int food_image_id,
-            int display_order
+            int[] image_ids
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(food_image_id, "food_image_id");
+        for (int i = 0; i < image_ids.length; i++) {
+            this.validateID(image_ids[i], "image_id");
+        }
         // Initilize model and create data.
         FoodModel foodModel = new FoodModel();
-        return foodModel.updateVendorFoodImage(
+        return foodModel.updateVendorFoodImages(
                 cookie,
-                food_image_id,
-                display_order
+                image_ids
         );
     }
 
-    public String deleteVendorFoodImage (
+    public boolean deleteVendorFoodImage (
             String cookie,
-            int food_image_id
+            int id
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(food_image_id, "food_image_id");
+        this.validateID(id, "food_image_id");
         // Initilize model and create data.
         FoodModel foodModel = new FoodModel();
         return foodModel.deleteVendorFoodImage(
                 cookie,
-                food_image_id
+                id
         );
     }
 

@@ -15,6 +15,13 @@ import sun.security.provider.ConfigFile;
  */
 public class AbstractModel {
 
+    /*
+    Start implementing limits.
+     */
+    protected int vendor_beer_image_limit = 10;
+    protected int vendor_food_image_limit = 10;
+    protected int vendor_drink_image_limit = 10;
+
     private Connection SessionDAO;
     protected Connection DAO;
     protected UserCookie userCookie;

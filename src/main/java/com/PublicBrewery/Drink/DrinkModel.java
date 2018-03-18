@@ -162,25 +162,16 @@ public class DrinkModel extends AbstractModel {
 
 
     /**
-     * The file paths for each image take advantage of the fact that you can't have two
-     * images with the same path, therefore, the unique constraints in the DB will give you
-     * paths that are unique and the worst case scenario is that an image is not found.
-     *
-     * Paths go like:
-     *
-     *      /image_resource/vendor_id/item_id/name
-     *
-     * This is because image_resource will cut out most of the images, vendor_id will cut
-     * out the next most.
-     *
-     * This also allows multiple mages per item and multiple item_ids to exist for vendors.
-     *
+     * The file paths for each image are full URLS to S3.
      */
     private String loadDrinkMenuSQL_stage3 =
             "SELECT " +
-                    "   vdi.vendor_drink_id AS vendor_drink_id, " +
-                    "   vdi.display_order AS vendor_drink_display_order, " +
-                    "   vdi.filename AS vendor_drink_filename " +
+                    "   vdi.id, " +
+                    "   vdi.vendor_drink_id, " +
+                    "   vdi.display_order, " +
+                    "   vdi.filename, " +
+                    "   vdi.creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vdi.creation_timestamp::date)) AS creation_days_ago " +
                     "FROM " +
                     "   vendors v " +
                     "LEFT JOIN " +
@@ -190,7 +181,7 @@ public class DrinkModel extends AbstractModel {
                     "LEFT JOIN " +
                     "   vendor_drink_images vdi " +
                     "ON " +
-                    "   v.id = vdi.vendor_drink_id " +
+                    "   vd.id = vdi.vendor_drink_id " +
                     "WHERE " +
                     "   v.id = ? " +
                     "AND " +
@@ -395,9 +386,12 @@ public class DrinkModel extends AbstractModel {
             stage3Result = stage3.executeQuery();
             while (stage3Result.next()) {
                 VendorDrinkImage vendorDrinkImage = new VendorDrinkImage();
+                vendorDrinkImage.drink_image_id = stage3Result.getInt("id");
                 vendorDrinkImage.drink_id = stage3Result.getInt("vendor_drink_id");
-                vendorDrinkImage.display_order = stage3Result.getInt("vendor_drink_display_order");
-                vendorDrinkImage.filename = stage3Result.getString("vendor_drink_filename");
+                vendorDrinkImage.display_order = stage3Result.getInt("display_order");
+                vendorDrinkImage.filename = stage3Result.getString("filename");
+                vendorDrinkImage.creation_timestamp = stage3Result.getString("creation_timestamp");
+                vendorDrinkImage.creation_days_ago = stage3Result.getString("creation_days_ago");
                 menuItems.get(vendorDrinkImage.drink_id).images.put(vendorDrinkImage.display_order, vendorDrinkImage);
             }
             /*

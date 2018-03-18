@@ -1,6 +1,7 @@
 package com.VendorMenu.Beers;
 
 import com.Common.AbstractModel;
+import com.Common.Beer;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -726,25 +727,52 @@ public class BeerModel extends AbstractModel {
                     "AND " +
                     "   vendor_id = ?";
 
+    private String verifyBeerImageOwnershipSQL =
+            "SELECT " +
+                    "   COUNT(*) as count_star " +
+                    "FROM " +
+                    "   beer_images " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   vendor_id = ?";
+
     private String uploadBeerImageSQL_stage2 =
             "INSERT INTO " +
-                    "   beer_images" +
+                    "   beer_images " +
                     "(" +
                     "   beer_id, " +
-                    "   filename, " +
+                    "   filename, " + // file_path, filename, same thing...
                     "   feature_id, " +
                     "   vendor_id" +
-                    ") VALUES (" +
-                    "?,?,?,?)";
+                    ") VALUES (?,?,?,?) " +
+                    "RETURNING id";
 
-    public String uploadBeerImage(
+    private String getBeerImageCountSQL =
+            "SELECT " +
+                    "   COUNT(*) AS count_star " +
+                    "FROM " +
+                    "   beer_images " +
+                    "WHERE " +
+                    "   beer_id = ?";
+
+    private String deleteBeerImageSQL_stage2 =
+            "DELETE FROM " +
+                    "   beer_images " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public int uploadBeerImage(
             String cookie,
-            String filename,
+            String file_path,
             int beer_id
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
         PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        ResultSet stage3Result = null;
         try {
             /*
             Validate feature permissions.
@@ -766,26 +794,40 @@ public class BeerModel extends AbstractModel {
                 throw new BeerException("You do not have permission to upload photos for this beer.");
             }
             /*
-            Create filepath.
-            right now, it's just going to be:
-                vendor_id/beer_id
-             */
-            String file_path = Integer.toString(vendorCookie.vendorID) + "/" +
-                    Integer.toString(beer_id) + "/" + filename;
-            /*
             Stage 2
+            Verify count of images for that beer.
+            */
+            stage2 = this.DAO.prepareStatement(this.getBeerImageCountSQL);
+            stage2.setInt(1, beer_id);
+            stage2Result = stage2.executeQuery();
+            int image_count = 0;
+            while (stage2Result.next()) {
+                image_count = stage2Result.getInt("count_star");
+            }
+            if (image_count > this.vendor_beer_image_limit) {
+                throw new BeerException("Maximum " + Integer.toString(this.vendor_beer_image_limit) + " images per beer reached.");
+            }
+            /*
+            Stage 3
             Insert new record.
              */
-            stage2 = this.DAO.prepareStatement(this.uploadBeerImageSQL_stage2);
-            stage2.setInt(1, beer_id);
-            stage2.setString(2, file_path);
-            stage2.setInt(3, this.vendorCookie.requestFeatureID);
-            stage2.setInt(4, this.vendorCookie.vendorID);
-            stage2.execute();
+            stage3 = this.DAO.prepareStatement(this.uploadBeerImageSQL_stage2);
+            stage3.setInt(1, beer_id);
+            stage3.setString(2, file_path);
+            stage3.setInt(3, this.vendorCookie.requestFeatureID);
+            stage3.setInt(4, this.vendorCookie.vendorID);
+            stage3Result = stage3.executeQuery();
+            int image_id = 0;
+            while (stage3Result.next()) {
+                image_id = stage3Result.getInt("id");
+            }
+            if (image_id == 0) {
+                throw new Exception("Unable to create beer image.");
+            }
             /*
             Done.
              */
-            return file_path;
+            return image_id;
         } catch (BeerException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
@@ -793,13 +835,167 @@ public class BeerModel extends AbstractModel {
         } catch (Exception ex) {
             System.out.print(ex.getMessage());
             // Try to parse the exception.
-            if (ex.getMessage().contains("beer_id") &&
-                    ex.getMessage().contains("filename") &&
-                    ex.getMessage().contains("already exists")) {
-                throw new Exception("This beer already has an image named: " + filename  + ".");
+            if (ex.getMessage().contains("beer_images_beer_id_filename_idx")) {
+                throw new Exception("This beer already has an image with that name.");
             }
             // Unknown reason.
             throw new Exception("Unable to upload beer image.");
+        } finally {
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String updateBeerImageSQL_stage1 =
+            "UPDATE " +
+                    "   beer_images " +
+                    "SET " +
+                    "   display_order = ? " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "RETURNING vendor_id";
+
+    private String updateBeerImageSQL_stage2 =
+            "UPDATE " +
+                    "   beer_images " +
+                    "SET " +
+                    "   display_order = ? " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public boolean updateBeerImages(
+            String cookie,
+            int[] image_ids
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            /*
+            Validate cookie.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_beer_images");
+            this.DAO.setAutoCommit(false);
+            /*
+            Ensure ownership of each resource while setting their values to negative
+            to avoid collision on stage2.
+             */
+            int negative_display_order = -1;
+            for (int i = 0; i < image_ids.length; i++) {
+                preparedStatement = this.DAO.prepareStatement(this.updateBeerImageSQL_stage1);
+                preparedStatement.setInt(1, negative_display_order);
+                preparedStatement.setInt(2, image_ids[i]);
+                resultSet = preparedStatement.executeQuery();
+                int vendor_id = 0;
+                while (resultSet.next()) {
+                    vendor_id = resultSet.getInt("vendor_id");
+                }
+                if (vendor_id != this.vendorCookie.vendorID) {
+                    throw new BeerException("You do not have permission to update this beer image.");
+                }
+                negative_display_order--;
+            }
+            /*
+            Update the display order.
+            This needs to be done in a transaction.
+             */
+            int display_order = 1;
+            for (int i = 0; i < image_ids.length; i++) {
+                preparedStatement = this.DAO.prepareStatement(this.updateBeerImageSQL_stage2);
+                preparedStatement.setInt(1, display_order);
+                preparedStatement.setInt(2, image_ids[i]);
+                preparedStatement.execute();
+                display_order++;
+            }
+            this.DAO.commit();
+            /*
+            Done.
+             */
+            return true;
+        } catch (BeerException ex) {
+            this.DAO.rollback();
+            System.out.println(ex.getMessage());
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("ROLLING BACK");
+            System.out.println(ex.getMessage());
+            this.DAO.rollback();
+            // Don't know why.
+            throw new Exception("Unable to update beer images.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+    }
+
+    public boolean deleteBeerImage (
+            String cookie,
+            int id
+    ) throws Exception {
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        try {
+            /*
+            Validate feature permissions.
+             */
+            this.validateCookieVendorFeature(cookie, "vendor_beer_images");
+            /*
+            Stage 1
+            Validate Resource ownership.
+             */
+            stage1 = this.DAO.prepareStatement(this.verifyBeerImageOwnershipSQL);
+            stage1.setInt(1, id);
+            stage1.setInt(2, this.vendorCookie.vendorID);
+            stage1Result = stage1.executeQuery();
+            int count_star = 0;
+            while (stage1Result.next()) {
+                count_star = stage1Result.getInt("count_star");
+            }
+            if (count_star == 0) {
+                throw new BeerException("You do not have permission to delete photos for this beer.");
+            }
+            /*
+            Stage 2
+            Delete record.
+             */
+            stage2 = this.DAO.prepareStatement(this.deleteBeerImageSQL_stage2);
+            stage2.setInt(1, id);
+            stage2.execute();
+            /*
+            Done.
+             */
+            return true;
+        } catch (BeerException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+            // Unknown reason.
+            throw new Exception("Unable to delete beer image.");
         } finally {
             if (stage1 != null) {
                 stage1.close();
@@ -814,21 +1010,6 @@ public class BeerModel extends AbstractModel {
                 this.DAO.close();
             }
         }
-    }
-
-    public boolean updateBeerImage(
-            String cookie,
-            int beer_image_id,
-            int display_order
-    ) throws Exception {
-        return true;
-    }
-
-    public String deleteBeerImage (
-            String cookie,
-            int beer_image_id
-    ) throws Exception {
-        return "something";
     }
 
     private String validateBeerTagOwnershipSQL =

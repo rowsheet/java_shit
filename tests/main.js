@@ -1049,6 +1049,7 @@ call_api(vendormenu_url, "createDrinkCategory", {
 	"hex_color": "#ff0010"
 });
 */
+/*
 call_api(vendormenu_url, "updateDrinkCategory", {
 	"module": "VendorMenu",
 	"command": "updateDrinkCategory",
@@ -1057,3 +1058,36 @@ call_api(vendormenu_url, "updateDrinkCategory", {
 	"name": "D1 NEW",
 	"hex_color": "#ff0010"
 });
+*/
+/*
+call_api(vendoraccounts_url, "checkVendorSession", {
+	"module": "VendorAccounts",
+	"command": "checkVendorSession",
+	"session_key": temp_cookie
+});
+*/
+/*
+call_api(vendormenu_url, "uploadBeerImage", {
+	"module": "VendorMenu",
+	"command": "uploadBeerImage",
+	"cookie": temp_cookie,
+	"file_path": "three.png",
+	"beer_id": 96 
+});
+*/
+/*
+call_api(vendormenu_url, "deleteBeerImage", {
+	"module": "VendorMenu",
+	"command": "deleteBeerImage",
+	"cookie": temp_cookie,
+	"id": 163
+});
+*/
+call_api(vendormenu_url, "updateBeerImages", {
+	"module": "VendorMenu",
+	"command": "updateBeerImages",
+	"cookie": temp_cookie,
+//	"image_ids": ["198", "240", "242", "197"]
+	"image_ids": [240, 242, 197, 198]
+});
+

@@ -52,7 +52,6 @@ public class VendorMenuHandler {
             @WebParam(name = "beer_tag_id_four") int beer_tag_id_four,
             @WebParam(name = "beer_tag_id_five") int beer_tag_id_five
     ) throws Exception {
-        System.out.println("SUP");
         BeerController beerController = new BeerController();
         return beerController.createBeer(
                 cookie,
@@ -189,44 +188,41 @@ public class VendorMenuHandler {
     ------------------------------------------------------------*/
 
     @WebMethod
-    public String uploadBeerImage(
+    public int uploadBeerImage(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "filename") String filename,
+            @WebParam(name = "file_path") String file_path,
             @WebParam(name = "beer_id") int beer_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.uploadBeerImage(
                 cookie,
-                filename,
+                file_path,
                 beer_id
         );
     }
 
-    // @TODO Implement in model.
     @WebMethod
-    public boolean updateBeerImage(
+    public boolean updateBeerImages (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_image_id") int beer_image_id,
-            @WebParam(name = "display_order") int display_order
+            @WebParam(name = "image_ids") int[] image_ids
     ) throws Exception {
         BeerController beerController = new BeerController();
-        return beerController.updateBeerImage(
+        return beerController.updateBeerImages(
                 cookie,
-                beer_image_id,
-                display_order
+                image_ids
         );
     }
 
     // @TODO Implement in model.
     @WebMethod
-    public String deleteBeerImage (
+    public boolean deleteBeerImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_image_id") int beer_image_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.deleteBeerImage(
                 cookie,
-                beer_image_id
+                id
         );
     }
 
@@ -428,42 +424,40 @@ public class VendorMenuHandler {
     ------------------------------------------------------------*/
 
     @WebMethod
-    public String uploadVendorFoodImage(
+    public int uploadVendorFoodImage(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "filename") String filename,
+            @WebParam(name = "file_path") String file_path,
             @WebParam(name = "vendor_food_id") int vendor_food_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.uploadVendorFoodImage(
                 cookie,
-                filename,
+                file_path,
                 vendor_food_id
         );
     }
 
     @WebMethod
-    public boolean updateVendorFoodImage(
+    public boolean updateVendorFoodImages(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_image_id") int food_image_id,
-            @WebParam(name = "display_order") int display_order
+            @WebParam(name = "image_ids") int[] image_ids
     ) throws Exception {
         FoodController foodController = new FoodController();
-        return foodController.updateVendorFoodImage(
+        return foodController.updateVendorFoodImages(
                 cookie,
-                food_image_id,
-                display_order
+                image_ids
         );
     }
 
     @WebMethod
-    public String deleteVendorFoodImage (
+    public boolean deleteVendorFoodImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_image_id") int food_image_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.deleteVendorFoodImage(
                 cookie,
-                food_image_id
+                id
         );
     }
 
@@ -688,33 +682,31 @@ public class VendorMenuHandler {
     ------------------------------------------------------------*/
 
     @WebMethod
-    public String uploadVendorDrinkImage(
+    public int uploadVendorDrinkImage(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "filename") String filename,
+            @WebParam(name = "file_path") String file_path,
             @WebParam(name = "vendor_drink_id") int vendor_drink_id
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.uploadVendorDrinkImage(
                 cookie,
-                filename,
+                file_path,
                 vendor_drink_id);
     }
 
     @WebMethod
-    public boolean updateVendorDrinkImage(
+    public boolean updateVendorDrinkImages (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_image_id") int drink_image_id,
-            @WebParam(name = "display_order") int display_order
+            @WebParam(name = "image_ids") int[] image_ids
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
-        return drinkController.updateVendorDrinkImage(
+        return drinkController.updateVendorDrinkImages(
                 cookie,
-                drink_image_id,
-                display_order);
+                image_ids);
     }
 
     @WebMethod
-    public String deleteVendorDrinkImage (
+    public boolean deleteVendorDrinkImage (
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "drink_image_id") int drink_image_id
     ) throws Exception {

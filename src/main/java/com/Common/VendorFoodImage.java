@@ -8,13 +8,15 @@ public class VendorFoodImage {
     public int food_id;
     public int display_order;
     public String filename;
-    public String upload_date;
+    public String creation_timestamp;
+    public String creation_days_ago;
 
     public VendorFoodImage() {
         this.food_image_id = 0;
         this.food_id = 0;
         this.display_order = 0;
         this.filename = null;
-        this.upload_date = null;
+        this.creation_timestamp = null;
+        this.creation_days_ago = null;
     }
 }

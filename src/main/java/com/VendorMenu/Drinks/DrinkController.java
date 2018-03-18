@@ -210,12 +210,13 @@ public class DrinkController extends AbstractController {
                 id);
     }
 
-    public String uploadVendorDrinkImage (
+    public int uploadVendorDrinkImage (
             String cookie,
             String filename,
             int vendor_drink_id
     ) throws Exception {
         // Validate input parameters.
+        this.validateID(vendor_drink_id, "vendor_drink_id");
         this.validateString(cookie, "cookie");
         this.validateString(filename, "filename");
         // Initialize model and create data.
@@ -226,23 +227,23 @@ public class DrinkController extends AbstractController {
                 vendor_drink_id);
     }
 
-    public boolean updateVendorDrinkImage (
+    public boolean updateVendorDrinkImages (
             String cookie,
-            int drink_image_id,
-            int display_order
+            int[] image_ids
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
-        this.validateID(drink_image_id, "drink_image_id");
+        for (int i = 0; i < image_ids.length; i++) {
+            this.validateID(image_ids[i], "image_id");
+        }
         // Initilize model and create data.
         DrinkModel drinkModel = new DrinkModel();
-        return drinkModel.updateVendorDrinkImage(
+        return drinkModel.updateVendorDrinkImages(
                 cookie,
-                drink_image_id,
-                display_order);
+                image_ids);
     }
 
-    public String deleteVendorDrinkImage (
+    public boolean deleteVendorDrinkImage (
             String cookie,
             int drink_image_id
     ) throws Exception {
