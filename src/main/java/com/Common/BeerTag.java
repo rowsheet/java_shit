@@ -11,6 +11,7 @@ public class BeerTag {
     // Don't use them in public, they won't be populated!
     public String creation_timestamp;
     public String creation_days_ago;
+    public int count_star;
 
     public BeerTag() {
         this.vendor_id = 0;
@@ -23,6 +24,7 @@ public class BeerTag {
         // Don't use them in public, they won't be populated!
         this.creation_timestamp = "";
         this.creation_days_ago = "";
+        this.count_star = 0;
     }
 }
 

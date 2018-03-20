@@ -22,6 +22,8 @@ public class VendorNutritionalFact {
     public int iron;
     public int protein;
     public String profile_name;
+    public String creation_timestamp;
+    public String creation_days_ago;
     public VendorNutritionalFact() {
         this.id = 0;
         this.vendor_id = 0;
@@ -44,5 +46,7 @@ public class VendorNutritionalFact {
         this.iron = 0;
         this.protein = 0;
         this.profile_name = null;
+        this.creation_timestamp = "";
+        this.creation_days_ago = "";
     }
 }

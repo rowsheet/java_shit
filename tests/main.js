@@ -16,6 +16,7 @@ var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommu
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
+
 temp_cookie = '{"sessionKey":"P9MprRpQBoCLQyXPhOpZvn+pCTmCPgRAoAzJ4e3xaMBBqdn5wTm0wlcy080z6r4vRuU=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
@@ -654,10 +655,16 @@ call_api(publicbrewery_url, "loadBeerMenu", {
 /*
 call_api(vendormenu_url, "createFoodIngredient", {
 	"cookie": temp_cookie,
-	"name": "Delete Me",
+	"name": "Peanuts",
 	"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin a nisi tortor.",
 	"source": "Organic Farms, LLC.",
-	"key_words": ["Organic", "Gluten-Free", "Free-Range"]
+	"key_words": [],
+	"nutritional_fact_id": 2,
+	"tag_one": 7,
+	"tag_two": 7,
+	"tag_three": 7, 
+	"tag_four": 7,
+	"tag_five": 7
 });
 */
 /*
@@ -1083,6 +1090,7 @@ call_api(vendormenu_url, "deleteBeerImage", {
 	"id": 163
 });
 */
+/*
 call_api(vendormenu_url, "updateBeerImages", {
 	"module": "VendorMenu",
 	"command": "updateBeerImages",
@@ -1090,4 +1098,23 @@ call_api(vendormenu_url, "updateBeerImages", {
 //	"image_ids": ["198", "240", "242", "197"]
 	"image_ids": [240, 242, 197, 198]
 });
-
+*/
+/*
+call_api(vendormenu_url, "loadFoodIngredients", {
+	"module": "VendorMenu",
+	"command": "loadFoodIngredients",
+	"cookie": temp_cookie
+});
+*/
+/*
+call_api(publicbrewery_url, "loadFoodMenu", {
+	"module": "PublicBrewery",
+	"command": "loadFoodMenu",
+	"brewery_id": 21 
+});
+*/
+call_api(publicbrewery_url, "loadBeerMenu", {
+	"module": "PublicBrewery",
+	"command": "loadBeerMenu",
+	"brewery_id": 21
+});

@@ -1,5 +1,4 @@
 package com.VendorMenu;
-
 import com.VendorMenu.Beers.BeerController;
 import com.VendorMenu.Drinks.DrinkController;
 import com.VendorMenu.Extras.ExtrasController;
@@ -785,7 +784,12 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
             @WebParam(name = "key_words") String[] keywords,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "tag_one") int tag_one,
+            @WebParam(name = "tag_two") int tag_two,
+            @WebParam(name = "tag_three") int tag_three,
+            @WebParam(name = "tag_four") int tag_four,
+            @WebParam(name = "tag_five") int tag_five
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createFoodIngredient(
@@ -793,28 +797,45 @@ public class VendorMenuHandler {
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
         );
     }
 
     @WebMethod
     public boolean updateFoodIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") int food_ingredient_id,
+            @WebParam(name = "id") int id,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
             @WebParam(name = "key_words") String[] keywords,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "tag_one") int tag_one,
+            @WebParam(name = "tag_two") int tag_two,
+            @WebParam(name = "tag_three") int tag_three,
+            @WebParam(name = "tag_four") int tag_four,
+            @WebParam(name = "tag_five") int tag_five
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.updateFoodIngredient(
                 cookie,
-                food_ingredient_id,
+                id,
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
         );
     }
 
@@ -857,9 +878,26 @@ public class VendorMenuHandler {
                 vendor_food_id
         );
     }
+
+    /*------------------------------------------------------------
+    FOOD INGREDIENTS (READ)
+    Note: Ingredients reads are vendor-privileged requests.
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public String loadFoodIngredients(
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.loadFoodIngredients(
+                cookie
+        );
+    }
+
     /*------------------------------------------------------------
     DRINK INGREDIENTS
     ------------------------------------------------------------*/
+
     @WebMethod
     public int createDrinkIngredient(
             @WebParam(name = "cookie") String cookie,
@@ -1019,6 +1057,21 @@ public class VendorMenuHandler {
                 cookie,
                 beer_ingredient_id,
                 beer_id
+        );
+    }
+
+    /*------------------------------------------------------------
+    BEER INGREDIENTS (READ)
+    Note: Ingredients reads are vendor-privileged requests.
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public String loadBeerIngredients(
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.loadFoodIngredients(
+                cookie
         );
     }
 

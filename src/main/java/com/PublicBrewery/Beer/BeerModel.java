@@ -189,56 +189,107 @@ public class BeerModel extends AbstractModel {
                     "AND " +
                     "   bi.filename IS NOT NULL";
 
-    private String loadBeerMenuSQL_stage5 =
+    public String loadBeerMenuSQL_stage4 =
             "SELECT " +
-                    "    bi.vendor_id AS beer_vendor_id, " +
-                    "    bi.feature_id AS beer_feature_id, " +
-                    "    bi.name AS beer_name, " +
-                    "    bi.description AS beer_description, " +
-                    "    bi.source AS beer_source, " +
-                    "    bi.keywords AS beer_keywords, " +
-                    "    bi.tag_one AS beer_tag_one, " +
-                    "    bi.tag_two AS beer_tag_two, " +
-                    "    bi.tag_three AS beer_tag_three, " +
-                    "    bi.tag_four AS beer_tag_four, " +
-                    "    bi.tag_five AS beer_tag_five, " +
-                    "    vnf.id AS nf_nutritional_facts_id, " +
-                    "    vnf.vendor_id AS nf_vendor_id, " +
-                    "    vnf.serving_size AS nf_serving_size, " +
-                    "    vnf.calories AS nf_calories, " +
-                    "    vnf.calories_from_fat AS nf_calories_from_fat, " +
-                    "    vnf.total_fat AS nf_total_fat, " +
-                    "    vnf.saturated_fat AS nf_saturated_fat, " +
-                    "    vnf.trans_fat AS nf_trans_fat, " +
-                    "    vnf.cholesterol AS nf_cholesterol, " +
-                    "    vnf.sodium AS nf_sodium, " +
-                    "    vnf.total_carbs AS nf_total_carbs, " +
-                    "    vnf.dietary_fiber AS nf_dietary_fiber, " +
-                    "    vnf.sugar AS nf_sugar, " +
-                    "    vnf.vitamin_a AS nf_vitamin_a, " +
-                    "    vnf.vitamin_b AS nf_vitamin_b, " +
-                    "    vnf.vitamin_c AS nf_vitamin_c, " +
-                    "    vnf.vitamin_d AS nf_vitamin_d, " +
-                    "    vnf.calcium AS nf_calcium, " +
-                    "    vnf.iron AS nf_iron, " +
-                    "    vnf.protein AS nf_protein, " +
-                    "    vnf.profile_name AS nf_profile_name " +
+                    "   b.id AS b_id, " +
+                    "   bi.id AS bi_id, " +
+                    "   bi.vendor_id AS bi_vendor_id, " +
+                    "   bi.feature_id AS bi_feature_id, " +
+                    "   bi.name AS bi_name, " +
+                    "   bi.description AS bi_description, " +
+                    "   bi.source AS bi_source, " +
+                    "   bi.tag_one AS bi_tag_one, " +
+                    "   bi.tag_two AS bi_tag_two, " +
+                    "   bi.tag_three AS bi_tag_three, " +
+                    "   bi.tag_four AS bi_tag_four, " +
+                    "   bi.tag_five AS bi_tag_five, " +
+                    "   bi.nutritional_facts_id AS bi_nutritional_facts_id, " +
+                    "   bi.verified AS bi_verified, " +
+                    "   bi.creation_timestamp AS bi_creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', bi.creation_timestamp::date)) AS bi_creation_days_ago, " +
+                    "   vnf.profile_name AS vnf_profile_name, " +
+                    "   vnf.id AS vnf_id, " +
+                    "   vnf.vendor_id AS vnf_vendor_id, " +
+                    "   vnf.serving_size AS vnf_serving_size, " +
+                    "   vnf.calories AS vnf_calories, " +
+                    "   vnf.calories_from_fat AS vnf_calories_from_fat, " +
+                    "   vnf.total_fat AS vnf_total_fat, " +
+                    "   vnf.saturated_fat AS vnf_saturated_fat, " +
+                    "   vnf.trans_fat AS vnf_trans_fat, " +
+                    "   vnf.cholesterol AS vnf_cholesterol, " +
+                    "   vnf.sodium AS vnf_sodium, " +
+                    "   vnf.total_carbs AS vnf_total_carbs, " +
+                    "   vnf.dietary_fiber AS vnf_dietary_fiber, " +
+                    "   vnf.sugar AS vnf_sugar, " +
+                    "   vnf.vitamin_a AS vnf_vitamin_a, " +
+                    "   vnf.vitamin_b AS vnf_vitamin_b, " +
+                    "   vnf.vitamin_c AS vnf_vitamin_c, " +
+                    "   vnf.vitamin_d AS vnf_vitamin_d, " +
+                    "   vnf.calcium AS vnf_calcium, " +
+                    "   vnf.iron AS vnf_iron, " +
+                    "   vnf.protein AS vnf_protein, " +
+                    "   vnf.creation_timestamp vnf_creation_timestamp," +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vnf.creation_timestamp::date)) AS vnf_creation_days_ago," +
+                    "   bt1.id AS bt1_id, " +
+                    "   bt1.name AS bt1_name, " +
+                    "   bt1.hex_color AS bt1_hex_color, " +
+                    "   bt1.tag_type AS bt1_tag_type, " +
+                    "   bt2.id AS bt2_id, " +
+                    "   bt2.name AS bt2_name, " +
+                    "   bt2.hex_color AS bt2_hex_color, " +
+                    "   bt2.tag_type AS bt2_tag_type, " +
+                    "   bt3.id AS bt3_id, " +
+                    "   bt3.name AS bt3_name, " +
+                    "   bt3.hex_color AS bt3_hex_color, " +
+                    "   bt3.tag_type AS bt3_tag_type, " +
+                    "   bt4.id AS bt4_id, " +
+                    "   bt4.name AS bt4_name, " +
+                    "   bt4.hex_color AS bt4_hex_color, " +
+                    "   bt4.tag_type AS bt4_tag_type, " +
+                    "   bt5.id AS bt5_id, " +
+                    "   bt5.name AS bt5_name, " +
+                    "   bt5.hex_color AS bt5_hex_color, " +
+                    "   bt5.tag_type AS bt5_tag_type " +
                     "FROM " +
-                    "    beers b " +
+                    "   vendors v " +
                     "LEFT JOIN " +
-                    "    beer_ingredient_associations bia " +
+                    "   beers b " +
                     "ON " +
-                    "    bia.beer_id = b.id " +
+                    "   v.id = b.vendor_id " +
+                    "LEFT JOIN" +
+                    "   beer_ingredient_associations bia " +
+                    "ON " +
+                    "   b.id = bia.beer_id " +
                     "LEFT JOIN " +
-                    "    beer_ingredients bi " +
+                    "   beer_ingredients bi " +
                     "ON " +
-                    "    bia.beer_ingredient_id = bi.id " +
+                    "   bia.beer_ingredient_id = bi.id " +
                     "LEFT JOIN " +
-                    "    vendor_nutritional_facts vnf " +
+                    "   vendor_nutritional_facts vnf " +
                     "ON " +
-                    "    bi.nutritional_facts_id = vnf.id " +
+                    "   bi.nutritional_facts_id = vnf.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags bt1 " +
+                    "ON " +
+                    "   bi.tag_one = bt1.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags bt2 " +
+                    "ON " +
+                    "   bi.tag_two = bt2.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags bt3 " +
+                    "ON " +
+                    "   bi.tag_three = bt3.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags bt4 " +
+                    "ON " +
+                    "   bi.tag_four = bt4.id " +
+                    "LEFT JOIN " +
+                    "   beer_tags bt5 " +
+                    "ON " +
+                    "   bi.tag_five = bt5.id " +
                     "WHERE " +
-                    "    b.id = ?";
+                    "   v.id = ?";
 
     public BeerModel() throws Exception {
     }
@@ -252,8 +303,8 @@ public class BeerModel extends AbstractModel {
      * 1) Load all beers (as map by id).
      * 2) Load all review for all beers.
      * 3) Load all image urls (has map by display order).
-     * 4) Calculate review averages for all the beers.
-     * 5) Load all ingredients (and associated nutritional facts).
+     * 4) Load all ingredients (and associated nutritional facts).
+     * 5) Calculate review averages for all the beers.
      * 6) Load all drop-downs.
      *
      * @param brewery_id
@@ -269,6 +320,8 @@ public class BeerModel extends AbstractModel {
         ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
+        PreparedStatement stage4 = null;
+        ResultSet stage4Result = null;
         try {
             // Initialize variables.
             BeerMenu beerMenu = new BeerMenu();
@@ -426,8 +479,109 @@ public class BeerModel extends AbstractModel {
                 beerImage.creation_days_ago = stage3Result.getString("creation_days_ago");
                 beerHashMap.get(beerImage.beer_id).images.put(beerImage.display_order, beerImage);
             }
-            /*
+             /*
             Stage 4
+            Load all ingredients.
+             */
+            stage4 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage4);
+            stage4.setInt(1, brewery_id);
+            stage4Result = stage4.executeQuery();
+            while (stage4Result.next()) {
+                Color color = new Color();
+                BeerIngredient beerIngredient = new BeerIngredient();
+                BeerTag tag_one = new BeerTag();
+                BeerTag tag_two = new BeerTag();
+                BeerTag tag_three = new BeerTag();
+                BeerTag tag_four = new BeerTag();
+                BeerTag tag_five = new BeerTag();
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                int beer_id = stage4Result.getInt("b_id");
+                beerIngredient.vendor_id = this.vendorCookie.vendorID;
+                beerIngredient.id = stage4Result.getInt("bi_id");
+                beerIngredient.feature_id = stage4Result.getInt("bi_feature_id");
+                beerIngredient.name = stage4Result.getString("bi_name");
+                beerIngredient.description = stage4Result.getString("bi_description");
+                beerIngredient.source = stage4Result.getString("bi_source");
+                beerIngredient.verified = stage4Result.getBoolean("bi_verified");
+                beerIngredient.creation_timestamp = stage4Result.getString("bi_creation_timestamp");
+                beerIngredient.creation_days_ago = stage4Result.getString("bi_creation_days_ago");
+                vendorNutritionalFact.profile_name = stage4Result.getString("vnf_profile_name");
+                vendorNutritionalFact.id = stage4Result.getInt("vnf_id");
+                vendorNutritionalFact.vendor_id = stage4Result.getInt("vnf_vendor_id");
+                vendorNutritionalFact.serving_size = stage4Result.getInt("vnf_serving_size");
+                vendorNutritionalFact.calories = stage4Result.getInt("vnf_calories");
+                vendorNutritionalFact.calories_from_fat = stage4Result.getInt("vnf_calories_from_fat");
+                vendorNutritionalFact.total_fat = stage4Result.getInt("vnf_total_fat");
+                vendorNutritionalFact.saturated_fat = stage4Result.getInt("vnf_saturated_fat");
+                vendorNutritionalFact.trans_fat = stage4Result.getInt("vnf_trans_fat");
+                vendorNutritionalFact.cholesterol = stage4Result.getInt("vnf_cholesterol");
+                vendorNutritionalFact.sodium = stage4Result.getInt("vnf_sodium");
+                vendorNutritionalFact.total_carbs = stage4Result.getInt("vnf_total_carbs");
+                vendorNutritionalFact.dietary_fiber = stage4Result.getInt("vnf_dietary_fiber");
+                vendorNutritionalFact.sugar = stage4Result.getInt("vnf_sugar");
+                vendorNutritionalFact.vitamin_a = stage4Result.getInt("vnf_vitamin_a");
+                vendorNutritionalFact.vitamin_b = stage4Result.getInt("vnf_vitamin_b");
+                vendorNutritionalFact.vitamin_c = stage4Result.getInt("vnf_vitamin_c");
+                vendorNutritionalFact.vitamin_d = stage4Result.getInt("vnf_vitamin_d");
+                vendorNutritionalFact.calcium = stage4Result.getInt("vnf_calcium");
+                vendorNutritionalFact.iron = stage4Result.getInt("vnf_iron");
+                vendorNutritionalFact.protein = stage4Result.getInt("vnf_protein");
+                vendorNutritionalFact.profile_name = stage4Result.getString("vnf_profile_name");
+                if (vendorNutritionalFact.id != 0) {
+                    beerIngredient.nutritional_fact_profile = vendorNutritionalFact;
+                }
+                tag_one.vendor_id = this.vendorCookie.vendorID;
+                tag_one.id = stage4Result.getInt("bt1_id");
+                tag_one.name = stage4Result.getString("bt1_name");
+                tag_one.hex_color = stage4Result.getString("bt1_hex_color");
+                tag_one.tag_type = stage4Result.getString("bt1_tag_type");
+                if (tag_one.id != 0) {
+                    tag_one.text_color = color.getInverseBW(tag_one.hex_color);
+                    beerIngredient.tag_one = tag_one;
+                }
+                tag_two.vendor_id = this.vendorCookie.vendorID;
+                tag_two.id = stage4Result.getInt("bt2_id");
+                tag_two.name = stage4Result.getString("bt2_name");
+                tag_two.hex_color = stage4Result.getString("bt2_hex_color");
+                tag_two.tag_type = stage4Result.getString("bt2_tag_type");
+                if (tag_two.id != 0) {
+                    tag_two.text_color = color.getInverseBW(tag_two.hex_color);
+                    beerIngredient.tag_two = tag_two;
+                }
+                tag_three.vendor_id = this.vendorCookie.vendorID;
+                tag_three.id = stage4Result.getInt("bt3_id");
+                tag_three.name = stage4Result.getString("bt3_name");
+                tag_three.hex_color = stage4Result.getString("bt3_hex_color");
+                tag_three.tag_type = stage4Result.getString("bt3_tag_type");
+                if (tag_three.id != 0) {
+                    tag_three.text_color = color.getInverseBW(tag_three.hex_color);
+                    beerIngredient.tag_three = tag_three;
+                }
+                tag_four.vendor_id = this.vendorCookie.vendorID;
+                tag_four.id = stage4Result.getInt("bt4_id");
+                tag_four.name = stage4Result.getString("bt4_name");
+                tag_four.hex_color = stage4Result.getString("bt4_hex_color");
+                tag_four.tag_type = stage4Result.getString("bt4_tag_type");
+                if (tag_four.id != 0) {
+                    tag_four.text_color = color.getInverseBW(tag_four.hex_color);
+                    beerIngredient.tag_four = tag_four;
+                }
+                tag_five.vendor_id = this.vendorCookie.vendorID;
+                tag_five.id = stage4Result.getInt("bt5_id");
+                tag_five.name = stage4Result.getString("bt5_name");
+                tag_five.hex_color = stage4Result.getString("bt5_hex_color");
+                tag_five.tag_type = stage4Result.getString("bt5_tag_type");
+                if (tag_five.id != 0) {
+                    tag_five.text_color = color.getInverseBW(tag_five.hex_color);
+                    beerIngredient.tag_five = tag_five;
+                }
+                if (beerIngredient.id != 0) {
+                    beerHashMap.get(beer_id).beer_ingredients.add(beerIngredient);
+                }
+            }
+
+            /*
+            Stage 5
              */
             // Go through each beer and calculate the review star averages.
             for (Beer beer : beerHashMap.values()) {
@@ -438,73 +592,6 @@ public class BeerModel extends AbstractModel {
                     }
                     beer.review_average = total / (float) beer.reviews.size();
                     beer.review_count = beer.reviews.size();
-                }
-            }
-            /*
-            Stage 5
-             */
-            // Load all ingredients and associated nutritional facts.
-            // Go through the beer_hash_map. It has all the ids for the beers.
-            for (Beer beer : beerHashMap.values()) {
-                PreparedStatement preparedStatement = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage5);
-                preparedStatement.setInt(1, beer.beer_id);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                ArrayList ingredients_array = new ArrayList<BeerIngredient>();
-                while(resultSet.next()) {
-                    // Initialize for beer ingredient and nutritional fact profile.
-                    BeerIngredient beerIngredient = new BeerIngredient();
-                    VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
-                    // Assign all beer ingredient values.
-                    beerIngredient.vendor_id = resultSet.getInt("beer_vendor_id");
-                    beerIngredient.feature_id = resultSet.getInt("beer_feature_id");
-                    beerIngredient.name = resultSet.getString("beer_name");
-                    beerIngredient.description = resultSet.getString("beer_description");
-                    beerIngredient.source = resultSet.getString("beer_source");
-                    Array keywords_array = resultSet.getArray("beer_keywords");
-                    // This conversion will throw a null pointer if keywords_array is null,
-                    // which will occur if there are no ingredients associated with this beer.
-                    if (keywords_array != null) {
-                        beerIngredient.keywords = (String[]) keywords_array.getArray();
-                    }
-                    beerIngredient.tag_one = resultSet.getString("beer_tag_one");
-                    beerIngredient.tag_two = resultSet.getString("beer_tag_two");
-                    beerIngredient.tag_three = resultSet.getString("beer_tag_three");
-                    beerIngredient.tag_four = resultSet.getString("beer_tag_four");
-                    beerIngredient.tag_five = resultSet.getString("beer_tag_five");
-                    // Assign all nutritional fact values.
-                    vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
-                    vendorNutritionalFact.id = resultSet.getShort("nf_nutritional_facts_id");
-                    vendorNutritionalFact.vendor_id = resultSet.getInt("nf_vendor_id");
-                    vendorNutritionalFact.serving_size = resultSet.getInt("nf_serving_size");
-                    vendorNutritionalFact.calories = resultSet.getInt("nf_calories");
-                    vendorNutritionalFact.calories_from_fat = resultSet.getInt("nf_calories_from_fat");
-                    vendorNutritionalFact.total_fat = resultSet.getInt("nf_total_fat");
-                    vendorNutritionalFact.saturated_fat = resultSet.getInt("nf_saturated_fat");
-                    vendorNutritionalFact.trans_fat = resultSet.getInt("nf_trans_fat");
-                    vendorNutritionalFact.cholesterol = resultSet.getInt("nf_cholesterol");
-                    vendorNutritionalFact.sodium = resultSet.getInt("nf_sodium");
-                    vendorNutritionalFact.total_carbs = resultSet.getInt("nf_total_carbs");
-                    vendorNutritionalFact.dietary_fiber = resultSet.getInt("nf_dietary_fiber");
-                    vendorNutritionalFact.sugar = resultSet.getInt("nf_sugar");
-                    vendorNutritionalFact.vitamin_a = resultSet.getInt("nf_vitamin_a");
-                    vendorNutritionalFact.vitamin_b = resultSet.getInt("nf_vitamin_b");
-                    vendorNutritionalFact.vitamin_c = resultSet.getInt("nf_vitamin_c");
-                    vendorNutritionalFact.vitamin_d = resultSet.getInt("nf_vitamin_d");
-                    vendorNutritionalFact.calcium = resultSet.getInt("nf_calcium");
-                    vendorNutritionalFact.iron = resultSet.getInt("nf_iron");
-                    vendorNutritionalFact.protein = resultSet.getInt("nf_protein");
-                    vendorNutritionalFact.profile_name = resultSet.getString("nf_profile_name");
-                    // Link the nutritional fact to the to the ingredient data-structure.
-                    beerIngredient.nutritional_fact_profile = vendorNutritionalFact;
-                    // Finally add the ingredients to the total array list.
-                    ingredients_array.add(beerIngredient);
-                }
-                // Associate the ingredients array to the beer.
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (resultSet != null) {
-                    resultSet.close();
                 }
             }
             /*
