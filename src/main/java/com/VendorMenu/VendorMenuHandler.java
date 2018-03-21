@@ -905,7 +905,12 @@ public class VendorMenuHandler {
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
             @WebParam(name = "key_words") String[] keywords,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "tag_one") int tag_one,
+            @WebParam(name = "tag_two") int tag_two,
+            @WebParam(name = "tag_three") int tag_three,
+            @WebParam(name = "tag_four") int tag_four,
+            @WebParam(name = "tag_five") int tag_five
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.createDrinkIngredient(
@@ -913,28 +918,45 @@ public class VendorMenuHandler {
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
         );
     }
 
     @WebMethod
     public boolean updateDrinkIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id,
+            @WebParam(name = "id") int id,
             @WebParam(name = "name") String name,
             @WebParam(name = "description") String description,
             @WebParam(name = "source") String source,
             @WebParam(name = "key_words") String[] keywords,
-            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id
+            @WebParam(name = "nutritional_fact_id") int nutritional_fact_id,
+            @WebParam(name = "tag_one") int tag_one,
+            @WebParam(name = "tag_two") int tag_two,
+            @WebParam(name = "tag_three") int tag_three,
+            @WebParam(name = "tag_four") int tag_four,
+            @WebParam(name = "tag_five") int tag_five
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.updateDrinkIngredient(
                 cookie,
-                drink_ingredient_id,
+                id,
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
         );
     }
 
@@ -957,7 +979,7 @@ public class VendorMenuHandler {
             @WebParam(name = "vendor_drink_id") int vendor_drink_id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
-        return  ingredientsController.createDrinkIngredientAssociation(
+        return ingredientsController.createDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
                 vendor_drink_id
@@ -975,6 +997,21 @@ public class VendorMenuHandler {
                 cookie,
                 drink_ingredient_id,
                 vendor_drink_id
+        );
+    }
+
+    /*------------------------------------------------------------
+    DRINK INGREDIENTS (READ)
+    Note: Ingredients reads are vendor-privileged requests.
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public String loadDrinkIngredients(
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        IngredientsController ingredientsController = new IngredientsController();
+        return ingredientsController.loadDrinkIngredients(
+                cookie
         );
     }
 

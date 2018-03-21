@@ -1120,8 +1120,15 @@ call_api(publicbrewery_url, "loadBeerMenu", {
 	"brewery_id": 21
 });
 */
+/*
 call_api(vendormenu_url, "loadBeerIngredients", {
 	"module": "VendorMenu",
 	"command": "loadBeerIngredients",
+	"cookie": temp_cookie
+});
+*/
+call_api(vendormenu_url, "loadDrinkIngredients", {
+	"module": "VendorMenu",
+	"command": "loadDrinkIngredients",
 	"cookie": temp_cookie
 });

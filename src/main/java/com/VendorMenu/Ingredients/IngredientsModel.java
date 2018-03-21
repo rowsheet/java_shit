@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class IngredientsModel extends AbstractModel {
 
     public IngredientsModel() throws Exception {}
+
     /*------------------------------------------------------------
     ███████╗ ██████╗  ██████╗ ██████╗ ███████╗
     ██╔════╝██╔═══██╗██╔═══██╗██╔══██╗██╔════╝
@@ -723,6 +724,7 @@ public class IngredientsModel extends AbstractModel {
     ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
     DRINK INGREDIENTS
     ------------------------------------------------------------*/
+
     private String confirmDrinkIngredientSQL =
             "SELECT " +
                     "   vendor_id " +
@@ -753,8 +755,14 @@ public class IngredientsModel extends AbstractModel {
                     "   source, " +
                     "   keywords, " +
                     "   vendor_id," +
-                    "   feature_id" +
-                    ") VALUES (?,?,?,?::varchar[],?,?) " +
+                    "   feature_id," +
+                    "   tag_one, " +
+                    "   tag_two, " +
+                    "   tag_three, " +
+                    "   tag_four, " +
+                    "   tag_five, " +
+                    "   nutritional_facts_id " +
+                    ") VALUES (?,?,?,?::varchar[],?,?,?,?,?,?,?,?) " +
                     "RETURNING id";
 
     private String updateDrinkIngredientSQL =
@@ -765,7 +773,13 @@ public class IngredientsModel extends AbstractModel {
                     "   source = ?, " +
                     "   keywords = ?::varchar[]," +
                     "   vendor_id = ?, " +
-                    "   feature_id = ? " +
+                    "   feature_id = ?, " +
+                    "   tag_one = ?, " +
+                    "   tag_two = ?, " +
+                    "   tag_three = ?, " +
+                    "   tag_four = ?, " +
+                    "   tag_five = ?, " +
+                    "   nutritional_facts_id = ? " +
                     "WHERE " +
                     "   id = ?";
 
@@ -773,8 +787,9 @@ public class IngredientsModel extends AbstractModel {
             "INSERT INTO " +
                     "vendor_drink_ingredient_associations( " +
                     "   vendor_drink_id, " +
-                    "   vendor_drink_ingredient_id" +
-                    ") VALUES (?,?) " +
+                    "   vendor_drink_ingredient_id, " +
+                    "   vendor_id " +
+                    ") VALUES (?,?,?) " +
                     "RETURNING id";
 
 
@@ -791,7 +806,13 @@ public class IngredientsModel extends AbstractModel {
             String name,
             String description,
             String source,
-            String[] keywords
+            String[] keywords,
+            int nutritional_fact_id,
+            int tag_one,
+            int tag_two,
+            int tag_three,
+            int tag_four,
+            int tag_five
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -806,6 +827,39 @@ public class IngredientsModel extends AbstractModel {
             preparedStatement.setArray(4, this.DAO.createArrayOf("varchar", keywords));
             preparedStatement.setInt(5, this.vendorCookie.vendorID);
             preparedStatement.setInt(6, this.vendorCookie.requestFeatureID);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (tag_one == 0) {
+                preparedStatement.setNull(7, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(7, tag_one);
+            }
+            if (tag_two == 0) {
+                preparedStatement.setNull(8, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(8, tag_two);
+            }
+            if (tag_three == 0) {
+                preparedStatement.setNull(9, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(9, tag_three);
+            }
+            if (tag_four == 0) {
+                preparedStatement.setNull(10, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(10, tag_four);
+            }
+            if (tag_five == 0) {
+                preparedStatement.setNull(11, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(11, tag_five);
+            }
+            if (nutritional_fact_id == 0) {
+                preparedStatement.setNull(12, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(12, nutritional_fact_id);
+            }
+            System.out.println(nutritional_fact_id);
             resultSet = preparedStatement.executeQuery();
             int id = 0;
             while (resultSet.next()) {
@@ -842,11 +896,17 @@ public class IngredientsModel extends AbstractModel {
 
     public boolean updateDrinkIngredient(
             String cookie,
-            int drink_ingredient_id,
+            int id,
             String name,
             String description,
             String source,
-            String[] keywords
+            String[] keywords,
+            int nutritional_fact_id,
+            int tag_one,
+            int tag_two,
+            int tag_three,
+            int tag_four,
+            int tag_five
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -858,7 +918,7 @@ public class IngredientsModel extends AbstractModel {
             this.validateCookieVendorFeature(cookie, "vendor_drink_ingredients");
             // Ensure resource ownership.
             stage1 = this.DAO.prepareStatement(this.confirmDrinkIngredientSQL);
-            stage1.setInt(1, drink_ingredient_id);
+            stage1.setInt(1, id);
             stage1Result = stage1.executeQuery();
             int vendor_id = 0;
             while (stage1Result.next()) {
@@ -875,7 +935,39 @@ public class IngredientsModel extends AbstractModel {
             stage2.setArray(4, this.DAO.createArrayOf("varchar", keywords));
             stage2.setInt(5, this.vendorCookie.vendorID);
             stage2.setInt(6, this.vendorCookie.requestFeatureID);
-            stage2.setInt(7, drink_ingredient_id);
+            // Since the IDs are possible null, we will have to deal with zeros given for empty
+            // entries by JAVA SOAP. I know this is ugly.
+            if (tag_one == 0) {
+                stage2.setNull(7, Types.INTEGER);
+            } else {
+                stage2.setInt(7, tag_one);
+            }
+            if (tag_two == 0) {
+                stage2.setNull(8, Types.INTEGER);
+            } else {
+                stage2.setInt(8, tag_two);
+            }
+            if (tag_three == 0) {
+                stage2.setNull(9, Types.INTEGER);
+            } else {
+                stage2.setInt(9, tag_three);
+            }
+            if (tag_four == 0) {
+                stage2.setNull(10, Types.INTEGER);
+            } else {
+                stage2.setInt(10, tag_four);
+            }
+            if (tag_five == 0) {
+                stage2.setNull(11, Types.INTEGER);
+            } else {
+                stage2.setInt(11, tag_five);
+            }
+            if (nutritional_fact_id == 0) {
+                stage2.setNull(12, Types.INTEGER);
+            } else {
+                stage2.setInt(12, nutritional_fact_id);
+            }
+            stage2.setInt(13, id);
             stage2.execute();
             // Commit and return.
             this.DAO.commit();
@@ -958,6 +1050,218 @@ public class IngredientsModel extends AbstractModel {
         }
     }
 
+    private String loadDrinkIngredientsSQL =
+            "SELECT " +
+                    "   vdi.id AS vdi_id, " +
+                    "   vdi.vendor_id AS vdi_vendor_id, " +
+                    "   vdi.name AS vdi_name, " +
+                    "   vdi.description AS vdi_description, " +
+                    "   vdi.source AS vdi_source, " +
+                    "   vdi.keywords AS vdi_keywords, " +
+                    "   vdi.tag_one AS vdi_tag_one, " +
+                    "   vdi.tag_two AS vdi_tag_two, " +
+                    "   vdi.tag_three AS vdi_tag_three, " +
+                    "   vdi.tag_four AS vdi_tag_four, " +
+                    "   vdi.tag_five AS vdi_tag_five, " +
+                    "   vdi.nutritional_facts_id AS vdi_nutritional_facts_id," +
+                    "   vdi.verified AS vdi_verified, " +
+                    "   vdi.creation_timestamp vdi_creation_timestamp," +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vdi.creation_timestamp::date)) AS vdi_creation_days_ago," +
+                    "   vnf.profile_name AS vnf_profile_name, " +
+                    "   vnf.id AS vnf_id, " +
+                    "   vnf.vendor_id AS vnf_vendor_id, " +
+                    "   vnf.serving_size AS vnf_serving_size, " +
+                    "   vnf.calories AS vnf_calories, " +
+                    "   vnf.calories_from_fat AS vnf_calories_from_fat, " +
+                    "   vnf.total_fat AS vnf_total_fat, " +
+                    "   vnf.saturated_fat AS vnf_saturated_fat, " +
+                    "   vnf.trans_fat AS vnf_trans_fat, " +
+                    "   vnf.cholesterol AS vnf_cholesterol, " +
+                    "   vnf.sodium AS vnf_sodium, " +
+                    "   vnf.total_carbs AS vnf_total_carbs, " +
+                    "   vnf.dietary_fiber AS vnf_dietary_fiber, " +
+                    "   vnf.sugar AS vnf_sugar, " +
+                    "   vnf.vitamin_a AS vnf_vitamin_a, " +
+                    "   vnf.vitamin_b AS vnf_vitamin_b, " +
+                    "   vnf.vitamin_c AS vnf_vitamin_c, " +
+                    "   vnf.vitamin_d AS vnf_vitamin_d, " +
+                    "   vnf.calcium AS vnf_calcium, " +
+                    "   vnf.iron AS vnf_iron, " +
+                    "   vnf.protein AS vnf_protein, " +
+                    "   vnf.creation_timestamp vnf_creation_timestamp," +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vnf.creation_timestamp::date)) AS vnf_creation_days_ago," +
+                    "   vdt1.id AS vdt1_id, " +
+                    "   vdt1.name AS vdt1_name, " +
+                    "   vdt1.hex_color AS vdt1_hex_color, " +
+                    "   vdt1.tag_type AS vdt1_tag_type, " +
+                    "   vdt2.id AS vdt2_id, " +
+                    "   vdt2.name AS vdt2_name, " +
+                    "   vdt2.hex_color AS vdt2_hex_color, " +
+                    "   vdt2.tag_type AS vdt2_tag_type, " +
+                    "   vdt3.id AS vdt3_id, " +
+                    "   vdt3.name AS vdt3_name, " +
+                    "   vdt3.hex_color AS vdt3_hex_color, " +
+                    "   vdt3.tag_type AS vdt3_tag_type, " +
+                    "   vdt4.id AS vdt4_id, " +
+                    "   vdt4.name AS vdt4_name, " +
+                    "   vdt4.hex_color AS vdt4_hex_color, " +
+                    "   vdt4.tag_type AS vdt4_tag_type, " +
+                    "   vdt5.id AS vdt5_id, " +
+                    "   vdt5.name AS vdt5_name, " +
+                    "   vdt5.hex_color AS vdt5_hex_color, " +
+                    "   vdt5.tag_type AS vdt5_tag_type " +
+                    "FROM " +
+                    "   vendor_drink_ingredients vdi " +
+                    "LEFT JOIN " +
+                    "   vendor_nutritional_facts vnf " +
+                    "ON " +
+                    "   vdi.nutritional_facts_id = vnf.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt1 " +
+                    "ON " +
+                    "   vdi.tag_one = vdt1.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt2 " +
+                    "ON " +
+                    "   vdi.tag_two = vdt2.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt3 " +
+                    "ON " +
+                    "   vdi.tag_three = vdt3.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt4 " +
+                    "ON " +
+                    "   vdi.tag_four = vdt4.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt5 " +
+                    "ON " +
+                    "   vdi.tag_five = vdt5.id " +
+                    "WHERE " +
+                    "   vdi.vendor_id = ?";
+
+    public ArrayList<VendorDrinkIngredient> loadDrinkIngredients(
+            String cookie
+    ) throws Exception {
+        ArrayList<VendorDrinkIngredient> drinkIngredients = new ArrayList<VendorDrinkIngredient>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Validate request.
+            this.validateCookieVendorFeature(cookie, "vendor_drink_ingredients");
+            // Get the data.
+            preparedStatement = this.DAO.prepareStatement(this.loadDrinkIngredientsSQL);
+            preparedStatement.setInt(1, this.vendorCookie.vendorID);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Color color = new Color();
+                VendorDrinkIngredient vendorDrinkIngredient = new VendorDrinkIngredient();
+                vendorDrinkIngredient.id = resultSet.getInt("vdi_id");
+                vendorDrinkIngredient.vendor_id = this.vendorCookie.vendorID;
+                vendorDrinkIngredient.name = resultSet.getString("vdi_name");
+                vendorDrinkIngredient.description = resultSet.getString("vdi_description");
+                vendorDrinkIngredient.source = resultSet.getString("vdi_source");
+                Array keywordsArray = resultSet.getArray("vdi_keywords");
+                String[] keywords = (String[]) keywordsArray.getArray();
+                vendorDrinkIngredient.keywords = keywords;
+                VendorDrinkTag tag_one = new VendorDrinkTag();
+                VendorDrinkTag tag_two = new VendorDrinkTag();
+                VendorDrinkTag tag_three = new VendorDrinkTag();
+                VendorDrinkTag tag_four = new VendorDrinkTag();
+                VendorDrinkTag tag_five = new VendorDrinkTag();
+                tag_one.vendor_id = this.vendorCookie.vendorID;
+                tag_one.id = resultSet.getInt("vdt1_id");
+                tag_one.name = resultSet.getString("vdt1_name");
+                tag_one.hex_color = resultSet.getString("vdt1_hex_color");
+                tag_one.tag_type = resultSet.getString("vdt1_tag_type");
+                if (tag_one.id != 0) {
+                    tag_one.text_color = color.getInverseBW(tag_one.hex_color);
+                }
+                vendorDrinkIngredient.tag_one = tag_one;
+                tag_two.vendor_id = this.vendorCookie.vendorID;
+                tag_two.id = resultSet.getInt("vdt2_id");
+                tag_two.name = resultSet.getString("vdt2_name");
+                tag_two.hex_color = resultSet.getString("vdt2_hex_color");
+                tag_two.tag_type = resultSet.getString("vdt2_tag_type");
+                if (tag_two.id != 0) {
+                    tag_two.text_color = color.getInverseBW(tag_two.hex_color);
+                }
+                vendorDrinkIngredient.tag_two = tag_two;
+                tag_three.vendor_id = this.vendorCookie.vendorID;
+                tag_three.id = resultSet.getInt("vdt3_id");
+                tag_three.name = resultSet.getString("vdt3_name");
+                tag_three.hex_color = resultSet.getString("vdt3_hex_color");
+                tag_three.tag_type = resultSet.getString("vdt3_tag_type");
+                if (tag_three.id != 0) {
+                    tag_three.text_color = color.getInverseBW(tag_three.hex_color);
+                }
+                vendorDrinkIngredient.tag_three = tag_three;
+                tag_four.vendor_id = this.vendorCookie.vendorID;
+                tag_four.id = resultSet.getInt("vdt4_id");
+                tag_four.name = resultSet.getString("vdt4_name");
+                tag_four.hex_color = resultSet.getString("vdt4_hex_color");
+                tag_four.tag_type = resultSet.getString("vdt4_tag_type");
+                if (tag_four.id != 0) {
+                    tag_four.text_color = color.getInverseBW(tag_four.hex_color);
+                }
+                vendorDrinkIngredient.tag_four = tag_four;
+                tag_five.vendor_id = this.vendorCookie.vendorID;
+                tag_five.id = resultSet.getInt("vdt5_id");
+                tag_five.name = resultSet.getString("vdt5_name");
+                tag_five.hex_color = resultSet.getString("vdt5_hex_color");
+                tag_five.tag_type = resultSet.getString("vdt5_tag_type");
+                if (tag_five.id != 0) {
+                    tag_five.text_color = color.getInverseBW(tag_five.hex_color);
+                }
+                vendorDrinkIngredient.tag_five = tag_five;
+                vendorDrinkIngredient.verified = resultSet.getBoolean("vdi_verified");
+                vendorDrinkIngredient.creation_timestamp = resultSet.getString("vdi_creation_timestamp");
+                vendorDrinkIngredient.creation_days_ago = resultSet.getString("vdi_creation_days_ago");
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                vendorNutritionalFact.id = resultSet.getInt("vnf_id");
+                vendorNutritionalFact.profile_name = resultSet.getString("vnf_profile_name");
+                vendorNutritionalFact.vendor_id = this.vendorCookie.vendorID;
+                vendorNutritionalFact.serving_size = resultSet.getInt("vnf_serving_size");
+                vendorNutritionalFact.calories = resultSet.getInt("vnf_calories");
+                vendorNutritionalFact.calories_from_fat = resultSet.getInt("vnf_calories_from_fat");
+                vendorNutritionalFact.total_fat = resultSet.getInt("vnf_total_fat");
+                vendorNutritionalFact.saturated_fat = resultSet.getInt("vnf_saturated_fat");
+                vendorNutritionalFact.trans_fat = resultSet.getInt("vnf_trans_fat");
+                vendorNutritionalFact.cholesterol = resultSet.getInt("vnf_cholesterol");
+                vendorNutritionalFact.sodium = resultSet.getInt("vnf_sodium");
+                vendorNutritionalFact.total_carbs = resultSet.getInt("vnf_total_carbs");
+                vendorNutritionalFact.dietary_fiber = resultSet.getInt("vnf_dietary_fiber");
+                vendorNutritionalFact.sugar = resultSet.getInt("vnf_sugar");
+                vendorNutritionalFact.vitamin_a = resultSet.getInt("vnf_vitamin_a");
+                vendorNutritionalFact.vitamin_b = resultSet.getInt("vnf_vitamin_b");
+                vendorNutritionalFact.vitamin_c = resultSet.getInt("vnf_vitamin_c");
+                vendorNutritionalFact.vitamin_d = resultSet.getInt("vnf_vitamin_d");
+                vendorNutritionalFact.calcium = resultSet.getInt("vnf_calcium");
+                vendorNutritionalFact.iron = resultSet.getInt("vnf_iron");
+                vendorNutritionalFact.protein = resultSet.getInt("vnf_protein");
+                vendorNutritionalFact.creation_timestamp = resultSet.getString("vnf_creation_timestamp");
+                vendorNutritionalFact.creation_days_ago = resultSet.getString("vnf_creation_days_ago");
+                vendorDrinkIngredient.nutritional_fact_profile = vendorNutritionalFact;
+                drinkIngredients.add(vendorDrinkIngredient);
+            }
+            // Done.
+            return drinkIngredients;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to load drink ingredients.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
     public boolean createDrinkIngredientAssociation(
             String cookie,
             int drink_ingredient_id,
@@ -999,6 +1303,7 @@ public class IngredientsModel extends AbstractModel {
             stage3 = this.DAO.prepareStatement(this.createDrinkIngredientAssociationSQL);
             stage3.setInt(1, vendor_drink_id);
             stage3.setInt(2, drink_ingredient_id);
+            stage3.setInt(3, this.vendorCookie.vendorID);
             stage3.execute();
             // Commit and return.
             this.DAO.commit();
@@ -1010,6 +1315,11 @@ public class IngredientsModel extends AbstractModel {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             // Don't know why.
+            if (ex.getMessage().contains("already exists.")) {
+                // It already exists. Don't raise an exception.
+                // Just return true.
+                return true;
+            }
             throw new Exception("Unable to add drink ingredient to drink.");
         } finally {
             if (stage1 != null) {
@@ -1107,6 +1417,7 @@ public class IngredientsModel extends AbstractModel {
             }
         }
     }
+
     /*------------------------------------------------------------
     ██████╗ ███████╗███████╗██████╗ ███████╗
     ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝

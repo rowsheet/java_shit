@@ -1,13 +1,11 @@
 package com.VendorMenu.Ingredients;
 
 import com.Common.AbstractController;
-import com.Common.AbstractModel;
 import com.Common.BeerIngredient;
 import com.Common.VendorFoodIngredient;
+import com.Common.VendorDrinkIngredient;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class IngredientsController extends AbstractController {
     /*------------------------------------------------------------
@@ -174,45 +172,95 @@ public class IngredientsController extends AbstractController {
             String name,
             String description,
             String source,
-            String[] keywords
+            String[] keywords,
+            int nutritional_fact_id,
+            int tag_one,
+            int tag_two,
+            int tag_three,
+            int tag_four,
+            int tag_five
     ) throws Exception {
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
         this.validateString(description, "description");
         this.validateString(source, "source");
         this.validateKeywordString(keywords);
+        this.validateNullID(tag_one, "tag_one");
+        this.validateNullID(tag_two, "tag_two");
+        this.validateNullID(tag_three, "tag_three");
+        this.validateNullID(tag_four, "tag_four");
+        this.validateNullID(tag_five, "tag_five");
+        // Remove possible duplicate tags.
+        ArrayList<Integer> tag_array = this.filterTagArray(
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
+        );
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.createDrinkIngredient(
                 cookie,
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_array.get(0),
+                tag_array.get(1),
+                tag_array.get(2),
+                tag_array.get(3),
+                tag_array.get(4)
         );
     }
 
     public boolean updateDrinkIngredient(
             String cookie,
-            int drink_ingredient_id,
+            int id,
             String name,
             String description,
             String source,
-            String[] keywords
+            String[] keywords,
+            int nutritional_fact_id,
+            int tag_one,
+            int tag_two,
+            int tag_three,
+            int tag_four,
+            int tag_five
     ) throws Exception {
-        this.validateID(drink_ingredient_id, "drink_ingredient_id");
+        this.validateID(id, "id");
         this.validateString(cookie, "cookie");
         this.validateString(name, "name");
         this.validateString(description, "description");
         this.validateString(source, "source");
         this.validateKeywordString(keywords);
+        this.validateNullID(tag_one, "tag_one");
+        this.validateNullID(tag_two, "tag_two");
+        this.validateNullID(tag_three, "tag_three");
+        this.validateNullID(tag_four, "tag_four");
+        this.validateNullID(tag_five, "tag_five");
+        // Remove possible duplicate tags.
+        ArrayList<Integer> tag_array = this.filterTagArray(
+                tag_one,
+                tag_two,
+                tag_three,
+                tag_four,
+                tag_five
+        );
         IngredientsModel ingredientsModel = new IngredientsModel();
         return ingredientsModel.updateDrinkIngredient(
                 cookie,
-                drink_ingredient_id,
+                id,
                 name,
                 description,
                 source,
-                keywords
+                keywords,
+                nutritional_fact_id,
+                tag_array.get(0),
+                tag_array.get(1),
+                tag_array.get(2),
+                tag_array.get(3),
+                tag_array.get(4)
         );
     }
 
@@ -238,7 +286,7 @@ public class IngredientsController extends AbstractController {
         this.validateID(drink_ingredient_id, "drink_ingredient_id");
         this.validateID(vendor_drink_id, "vendor_drink_id");
         IngredientsModel ingredientsModel = new IngredientsModel();
-        return  ingredientsModel.createDrinkIngredientAssociation(
+        return ingredientsModel.createDrinkIngredientAssociation(
                 cookie,
                 drink_ingredient_id,
                 vendor_drink_id
@@ -259,6 +307,18 @@ public class IngredientsController extends AbstractController {
                 drink_ingredient_id,
                 vendor_drink_id
         );
+    }
+
+    public String loadDrinkIngredients(
+            String cookie
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        IngredientsModel ingredientsModel = new IngredientsModel();
+        ArrayList<VendorDrinkIngredient> drinkIngredients = new ArrayList<VendorDrinkIngredient>();
+        drinkIngredients = ingredientsModel.loadDrinkIngredients(
+                cookie
+        );
+        return this.returnJSON(drinkIngredients);
     }
     /*------------------------------------------------------------
     BEER INGREDIENTS

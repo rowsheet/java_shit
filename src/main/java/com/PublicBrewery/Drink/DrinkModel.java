@@ -207,8 +207,107 @@ public class DrinkModel extends AbstractModel {
                     "WHERE " +
                     "   vd.id = ?";
 
-    private String loadDrinkMenuSQL_stage6 =
-            "";
+    private String loadDrinkMenuSQL_stage5 =
+            "SELECT " +
+                    "   vd.id AS vd_id, " +
+                    "   vdi.id AS vdi_id, " +
+                    "   vdi.vendor_id AS vdi_vendor_id, " +
+                    "   vdi.feature_id AS vdi_feature_id, " +
+                    "   vdi.name AS vdi_name, " +
+                    "   vdi.description AS vdi_description, " +
+                    "   vdi.source AS vdi_source, " +
+                    "   vdi.tag_one AS vdi_tag_one, " +
+                    "   vdi.tag_two AS vdi_tag_two, " +
+                    "   vdi.tag_three AS vdi_tag_three, " +
+                    "   vdi.tag_four AS vdi_tag_four, " +
+                    "   vdi.tag_five AS vdi_tag_five, " +
+                    "   vdi.nutritional_facts_id AS vdi_nutritional_facts_id, " +
+                    "   vdi.verified AS vdi_verified, " +
+                    "   vdi.creation_timestamp AS vdi_creation_timestamp, " +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vdi.creation_timestamp::date)) AS vdi_creation_days_ago, " +
+                    "   vnf.profile_name AS vnf_profile_name, " +
+                    "   vnf.id AS vnf_id, " +
+                    "   vnf.vendor_id AS vnf_vendor_id, " +
+                    "   vnf.serving_size AS vnf_serving_size, " +
+                    "   vnf.calories AS vnf_calories, " +
+                    "   vnf.calories_from_fat AS vnf_calories_from_fat, " +
+                    "   vnf.total_fat AS vnf_total_fat, " +
+                    "   vnf.saturated_fat AS vnf_saturated_fat, " +
+                    "   vnf.trans_fat AS vnf_trans_fat, " +
+                    "   vnf.cholesterol AS vnf_cholesterol, " +
+                    "   vnf.sodium AS vnf_sodium, " +
+                    "   vnf.total_carbs AS vnf_total_carbs, " +
+                    "   vnf.dietary_fiber AS vnf_dietary_fiber, " +
+                    "   vnf.sugar AS vnf_sugar, " +
+                    "   vnf.vitamin_a AS vnf_vitamin_a, " +
+                    "   vnf.vitamin_b AS vnf_vitamin_b, " +
+                    "   vnf.vitamin_c AS vnf_vitamin_c, " +
+                    "   vnf.vitamin_d AS vnf_vitamin_d, " +
+                    "   vnf.calcium AS vnf_calcium, " +
+                    "   vnf.iron AS vnf_iron, " +
+                    "   vnf.protein AS vnf_protein, " +
+                    "   vnf.creation_timestamp vnf_creation_timestamp," +
+                    "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vnf.creation_timestamp::date)) AS vnf_creation_days_ago," +
+                    "   vdt1.id AS vdt1_id, " +
+                    "   vdt1.name AS vdt1_name, " +
+                    "   vdt1.hex_color AS vdt1_hex_color, " +
+                    "   vdt1.tag_type AS vdt1_tag_type, " +
+                    "   vdt2.id AS vdt2_id, " +
+                    "   vdt2.name AS vdt2_name, " +
+                    "   vdt2.hex_color AS vdt2_hex_color, " +
+                    "   vdt2.tag_type AS vdt2_tag_type, " +
+                    "   vdt3.id AS vdt3_id, " +
+                    "   vdt3.name AS vdt3_name, " +
+                    "   vdt3.hex_color AS vdt3_hex_color, " +
+                    "   vdt3.tag_type AS vdt3_tag_type, " +
+                    "   vdt4.id AS vdt4_id, " +
+                    "   vdt4.name AS vdt4_name, " +
+                    "   vdt4.hex_color AS vdt4_hex_color, " +
+                    "   vdt4.tag_type AS vdt4_tag_type, " +
+                    "   vdt5.id AS vdt5_id, " +
+                    "   vdt5.name AS vdt5_name, " +
+                    "   vdt5.hex_color AS vdt5_hex_color, " +
+                    "   vdt5.tag_type AS vdt5_tag_type " +
+                    "FROM " +
+                    "   vendors v " +
+                    "LEFT JOIN " +
+                    "   vendor_drinks vd " +
+                    "ON " +
+                    "   v.id = vd.vendor_id " +
+                    "LEFT JOIN" +
+                    "   vendor_drink_ingredient_associations vdia " +
+                    "ON " +
+                    "   vd.id = vdia.vendor_drink_id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_ingredients vdi " +
+                    "ON " +
+                    "   vdia.vendor_drink_ingredient_id = vdi.id " +
+                    "LEFT JOIN " +
+                    "   vendor_nutritional_facts vnf " +
+                    "ON " +
+                    "   vdi.nutritional_facts_id = vnf.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt1 " +
+                    "ON " +
+                    "   vdi.tag_one = vdt1.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt2 " +
+                    "ON " +
+                    "   vdi.tag_two = vdt2.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt3 " +
+                    "ON " +
+                    "   vdi.tag_three = vdt3.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt4 " +
+                    "ON " +
+                    "   vdi.tag_four = vdt4.id " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_tags vdt5 " +
+                    "ON " +
+                    "   vdi.tag_five = vdt5.id " +
+                    "WHERE " +
+                    "   v.id = ?";
 
     public DrinkModel() throws Exception {
     }
@@ -223,8 +322,8 @@ public class DrinkModel extends AbstractModel {
      * 2) Load all review for all drinks.
      * 3) Load all image urls (has map by display order).
      * 4) Get all spirits-associations for drink.
-     * 5) Calculate review averages for all the drinks.
-     * 6) Load all ingredients.
+     * 5) Load all ingredients.
+     * 6) Calculate review averages for all the drinks.
      * 7) Load all drop-downs.
      *
      * @param brewery_id
@@ -242,6 +341,8 @@ public class DrinkModel extends AbstractModel {
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
         ResultSet stage4Result = null;
+        PreparedStatement stage5 = null;
+        ResultSet stage5Result = null;
         try {
             // Initialize variables.
             DrinkMenu drinkMenu = new DrinkMenu();
@@ -416,8 +517,108 @@ public class DrinkModel extends AbstractModel {
             }
             /*
             Stage 5
+            Load all ingredients.
              */
-            // Go through each drink and calculate the review star averages.
+            stage5 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage5);
+            stage5.setInt(1, brewery_id);
+            stage5Result = stage5.executeQuery();
+            while (stage5Result.next()) {
+                Color color = new Color();
+                VendorDrinkIngredient vendorDrinkIngredient = new VendorDrinkIngredient();
+                VendorDrinkTag tag_one = new VendorDrinkTag();
+                VendorDrinkTag tag_two = new VendorDrinkTag();
+                VendorDrinkTag tag_three = new VendorDrinkTag();
+                VendorDrinkTag tag_four = new VendorDrinkTag();
+                VendorDrinkTag tag_five = new VendorDrinkTag();
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                int vendor_drink_id = stage5Result.getInt("vd_id");
+                vendorDrinkIngredient.vendor_id = this.vendorCookie.vendorID;
+                vendorDrinkIngredient.id = stage5Result.getInt("vdi_id");
+                vendorDrinkIngredient.feature_id = stage5Result.getInt("vdi_feature_id");
+                vendorDrinkIngredient.name = stage5Result.getString("vdi_name");
+                vendorDrinkIngredient.description = stage5Result.getString("vdi_description");
+                vendorDrinkIngredient.source = stage5Result.getString("vdi_source");
+                vendorDrinkIngredient.verified = stage5Result.getBoolean("vdi_verified");
+                vendorDrinkIngredient.creation_timestamp = stage5Result.getString("vdi_creation_timestamp");
+                vendorDrinkIngredient.creation_days_ago = stage5Result.getString("vdi_creation_days_ago");
+                vendorNutritionalFact.profile_name = stage5Result.getString("vnf_profile_name");
+                vendorNutritionalFact.id = stage5Result.getInt("vnf_id");
+                vendorNutritionalFact.vendor_id = stage5Result.getInt("vnf_vendor_id");
+                vendorNutritionalFact.serving_size = stage5Result.getInt("vnf_serving_size");
+                vendorNutritionalFact.calories = stage5Result.getInt("vnf_calories");
+                vendorNutritionalFact.calories_from_fat = stage5Result.getInt("vnf_calories_from_fat");
+                vendorNutritionalFact.total_fat = stage5Result.getInt("vnf_total_fat");
+                vendorNutritionalFact.saturated_fat = stage5Result.getInt("vnf_saturated_fat");
+                vendorNutritionalFact.trans_fat = stage5Result.getInt("vnf_trans_fat");
+                vendorNutritionalFact.cholesterol = stage5Result.getInt("vnf_cholesterol");
+                vendorNutritionalFact.sodium = stage5Result.getInt("vnf_sodium");
+                vendorNutritionalFact.total_carbs = stage5Result.getInt("vnf_total_carbs");
+                vendorNutritionalFact.dietary_fiber = stage5Result.getInt("vnf_dietary_fiber");
+                vendorNutritionalFact.sugar = stage5Result.getInt("vnf_sugar");
+                vendorNutritionalFact.vitamin_a = stage5Result.getInt("vnf_vitamin_a");
+                vendorNutritionalFact.vitamin_b = stage5Result.getInt("vnf_vitamin_b");
+                vendorNutritionalFact.vitamin_c = stage5Result.getInt("vnf_vitamin_c");
+                vendorNutritionalFact.vitamin_d = stage5Result.getInt("vnf_vitamin_d");
+                vendorNutritionalFact.calcium = stage5Result.getInt("vnf_calcium");
+                vendorNutritionalFact.iron = stage5Result.getInt("vnf_iron");
+                vendorNutritionalFact.protein = stage5Result.getInt("vnf_protein");
+                vendorNutritionalFact.profile_name = stage5Result.getString("vnf_profile_name");
+                if (vendorNutritionalFact.id != 0) {
+                    vendorDrinkIngredient.nutritional_fact_profile = vendorNutritionalFact;
+                }
+                tag_one.vendor_id = this.vendorCookie.vendorID;
+                tag_one.id = stage5Result.getInt("vdt1_id");
+                tag_one.name = stage5Result.getString("vdt1_name");
+                tag_one.hex_color = stage5Result.getString("vdt1_hex_color");
+                tag_one.tag_type = stage5Result.getString("vdt1_tag_type");
+                if (tag_one.id != 0) {
+                    tag_one.text_color = color.getInverseBW(tag_one.hex_color);
+                    vendorDrinkIngredient.tag_one = tag_one;
+                }
+                tag_two.vendor_id = this.vendorCookie.vendorID;
+                tag_two.id = stage5Result.getInt("vdt2_id");
+                tag_two.name = stage5Result.getString("vdt2_name");
+                tag_two.hex_color = stage5Result.getString("vdt2_hex_color");
+                tag_two.tag_type = stage5Result.getString("vdt2_tag_type");
+                if (tag_two.id != 0) {
+                    tag_two.text_color = color.getInverseBW(tag_two.hex_color);
+                    vendorDrinkIngredient.tag_two = tag_two;
+                }
+                tag_three.vendor_id = this.vendorCookie.vendorID;
+                tag_three.id = stage5Result.getInt("vdt3_id");
+                tag_three.name = stage5Result.getString("vdt3_name");
+                tag_three.hex_color = stage5Result.getString("vdt3_hex_color");
+                tag_three.tag_type = stage5Result.getString("vdt3_tag_type");
+                if (tag_three.id != 0) {
+                    tag_three.text_color = color.getInverseBW(tag_three.hex_color);
+                    vendorDrinkIngredient.tag_three = tag_three;
+                }
+                tag_four.vendor_id = this.vendorCookie.vendorID;
+                tag_four.id = stage5Result.getInt("vdt4_id");
+                tag_four.name = stage5Result.getString("vdt4_name");
+                tag_four.hex_color = stage5Result.getString("vdt4_hex_color");
+                tag_four.tag_type = stage5Result.getString("vdt4_tag_type");
+                if (tag_four.id != 0) {
+                    tag_four.text_color = color.getInverseBW(tag_four.hex_color);
+                    vendorDrinkIngredient.tag_four = tag_four;
+                }
+                tag_five.vendor_id = this.vendorCookie.vendorID;
+                tag_five.id = stage5Result.getInt("vdt5_id");
+                tag_five.name = stage5Result.getString("vdt5_name");
+                tag_five.hex_color = stage5Result.getString("vdt5_hex_color");
+                tag_five.tag_type = stage5Result.getString("vdt5_tag_type");
+                if (tag_five.id != 0) {
+                    tag_five.text_color = color.getInverseBW(tag_five.hex_color);
+                    vendorDrinkIngredient.tag_five = tag_five;
+                }
+                if (vendorDrinkIngredient.id != 0) {
+                    menuItems.get(vendor_drink_id).vendor_drink_ingredients.add(vendorDrinkIngredient);
+                }
+            }
+            /*
+            Stage 6
+            Go through each drink and calculate the review star averages.
+             */
             for (VendorDrink vendorDrink : menuItems.values()) {
                 if (vendorDrink.reviews.size() > 0) {
                     float total = 0;
@@ -429,15 +630,8 @@ public class DrinkModel extends AbstractModel {
                 }
             }
             /*
-            Stage 6
-             */
-            // YOU LEFT OFF HERE
-            // Load all ingredients for all drinks.
-            // @TODO implement
-            /*
-            /*
             Stage 7
-            // Load drop-downs.
+            Load drop-downs.
              */
             dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
             /*
@@ -473,6 +667,12 @@ public class DrinkModel extends AbstractModel {
             }
             if (stage4Result != null) {
                 stage4Result.close();
+            }
+            if (stage5 != null) {
+                stage5.close();
+            }
+            if (stage5Result != null) {
+                stage5Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
