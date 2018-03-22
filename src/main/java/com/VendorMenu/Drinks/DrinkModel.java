@@ -1259,9 +1259,28 @@ public class DrinkModel extends AbstractModel {
         }
     }
 
+    private String deleteVendorFoodTagReferencesSQL =
+            "UPDATE " +
+                    "   vendor_drinks " +
+                    "SET " +
+                    "   tag_one = (CASE WHEN tag_one = ? THEN NULL ELSE tag_one END)::INTEGER, " +
+                    "   tag_two = (CASE WHEN tag_two = ? THEN NULL ELSE tag_two END)::INTEGER, " +
+                    "   tag_three = (CASE WHEN tag_three = ? THEN NULL ELSE tag_three END)::INTEGER, " +
+                    "   tag_four = (CASE WHEN tag_four = ? THEN NULL ELSE tag_four END)::INTEGER, " +
+                    "   tag_five = (CASE WHEN tag_five = ? THEN NULL ELSE tag_five END)::INTEGER " +
+                    "WHERE " +
+                    "   tag_one = ? OR tag_two = ? OR tag_three = ? OR tag_four = ? OR tag_five = ?";
+
     /**
+     * Note: Tags are optional (default NULL) and vendor_id owned. There is a compound foreign
+     * key constraint for vendor_id and tag_id with UPDATE CASCADE and DELETE NO ACTION.
+     * If this tag exists anywhere it is referenced, the delete will fail, so we must first
+     * delete all references of it (that are default NULL, five columns), then remove the tag,
+     * all in a transaction.
+     *
      * 1) Validate cookie (using "drink_menu" permission).
-     * 2) Delete vendor_drink_tag.
+     * 2) Delete references.
+     * 3) Delete vendor_drink_tag.
      *
      * @param cookie
      * @param id
@@ -1275,6 +1294,7 @@ public class DrinkModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement validationPreparedStatement = null;
         ResultSet validationResultSet = null;
+        PreparedStatement deleteReferencesStatement = null;
         PreparedStatement preparedStatement = null;
         try {
             this.DAO.setAutoCommit(false);
@@ -1295,6 +1315,21 @@ public class DrinkModel extends AbstractModel {
             }
             /*
             Stage 2
+             */
+            deleteReferencesStatement = this.DAO.prepareStatement(this.deleteVendorFoodTagReferencesSQL);
+            deleteReferencesStatement.setInt(1, id);
+            deleteReferencesStatement.setInt(2, id);
+            deleteReferencesStatement.setInt(3, id);
+            deleteReferencesStatement.setInt(4, id);
+            deleteReferencesStatement.setInt(5, id);
+            deleteReferencesStatement.setInt(6, id);
+            deleteReferencesStatement.setInt(7, id);
+            deleteReferencesStatement.setInt(8, id);
+            deleteReferencesStatement.setInt(9, id);
+            deleteReferencesStatement.setInt(10, id);
+            deleteReferencesStatement.execute();
+            /*
+            Stage 3
              */
             preparedStatement = this.DAO.prepareStatement(this.deleteVendorDrinkTagSQL);
             preparedStatement.setInt(1, id);
@@ -1318,6 +1353,9 @@ public class DrinkModel extends AbstractModel {
             }
             if (validationResultSet != null) {
                 validationResultSet.close();
+            }
+            if (deleteReferencesStatement != null) {
+                deleteReferencesStatement.close();
             }
             if (preparedStatement != null) {
                 preparedStatement.close();

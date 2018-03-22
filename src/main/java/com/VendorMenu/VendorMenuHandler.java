@@ -1336,4 +1336,19 @@ public class VendorMenuHandler {
         );
     }
 
+    /*------------------------------------------------------------
+    NUTRITIONAL FACTS (READ)
+    Note: Nutritional facts reads are vendor-privileged requests.
+    ------------------------------------------------------------*/
+
+    @WebMethod
+    public String loadNutritionalFacts(
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.loadNutritionalFacts(
+                cookie
+        );
+    }
+
 }

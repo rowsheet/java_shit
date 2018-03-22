@@ -1,6 +1,11 @@
 package com.VendorMenu.Extras;
 
 import com.Common.AbstractController;
+import com.Common.VendorNutritionalFact;
+import jnr.ffi.annotations.In;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ExtrasController extends AbstractController {
     public int createNutritionalFact(
@@ -26,6 +31,7 @@ public class ExtrasController extends AbstractController {
             int iron
     ) throws Exception {
         this.validateString(cookie, "cookie");
+        this.validateString(profile_name, "profile_name");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.createNutritionalFact(
                 cookie,
@@ -75,6 +81,7 @@ public class ExtrasController extends AbstractController {
             int iron
     ) throws Exception {
         this.validateString(cookie,"cookie");
+        this.validateString(profile_name, "profile_name");
         ExtrasModel extrasModel = new ExtrasModel();
         return extrasModel.updateNutritionalFact(
                 cookie,
@@ -199,5 +206,17 @@ public class ExtrasController extends AbstractController {
                 cookie,
                 beer_id
         );
+    }
+
+    public String loadNutritionalFacts(
+            String cookie
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        ExtrasModel extrasModel = new ExtrasModel();
+        HashMap<Integer, VendorNutritionalFact> vendorNutritionalFactHashMap = new HashMap<Integer, VendorNutritionalFact>();
+        vendorNutritionalFactHashMap = extrasModel.loadNutritionalFacts(
+                cookie
+        );
+        return this.returnJSON(vendorNutritionalFactHashMap);
     }
 }

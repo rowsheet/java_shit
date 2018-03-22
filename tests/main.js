@@ -1127,8 +1127,16 @@ call_api(vendormenu_url, "loadBeerIngredients", {
 	"cookie": temp_cookie
 });
 */
+/*
 call_api(vendormenu_url, "loadDrinkIngredients", {
 	"module": "VendorMenu",
 	"command": "loadDrinkIngredients",
 	"cookie": temp_cookie
+});
+*/
+call_api(vendormenu_url, "deleteFoodTag", {
+	"module": "VendorMenu",
+	"command": "deleteFoodTag",
+	"cookie": temp_cookie,
+	"id": 19
 });

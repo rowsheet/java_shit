@@ -1,10 +1,12 @@
 package com.VendorMenu.Extras;
 
 import com.Common.AbstractModel;
+import com.Common.VendorNutritionalFact;
 import com.sun.org.apache.regexp.internal.RE;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
 
 public class ExtrasModel extends AbstractModel {
 
@@ -752,6 +754,92 @@ public class ExtrasModel extends AbstractModel {
             }
             if (disassociate != null) {
                 disassociate.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String loadNutritionalFactsSQL =
+        "SELECT " +
+                "   id, " +
+                "   vendor_id, " +
+                "   serving_size, " +
+                "   calories, " +
+                "   calories_from_fat, " +
+                "   total_fat, " +
+                "   saturated_fat, " +
+                "   trans_fat, " +
+                "   cholesterol, " +
+                "   sodium, " +
+                "   total_carbs, " +
+                "   dietary_fiber, " +
+                "   sugar, " +
+                "   vitamin_a, " +
+                "   vitamin_b, " +
+                "   vitamin_c, " +
+                "   vitamin_d, " +
+                "   calcium, " +
+                "   iron, " +
+                "   protein, " +
+                "   profile_name, " +
+                "   creation_timestamp, " +
+                "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', creation_timestamp::date)) AS creation_days_ago " +
+                "FROM " +
+                "   vendor_nutritional_facts " +
+                "WHERE " +
+                "   vendor_id = ?";
+
+    public HashMap<Integer, VendorNutritionalFact> loadNutritionalFacts(
+            String cookie
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            this.validateCookieVendorFeature(cookie, "nutritional_facts");
+            preparedStatement = this.DAO.prepareStatement(this.loadNutritionalFactsSQL);
+            preparedStatement.setInt(1, this.vendorCookie.vendorID);
+            resultSet = preparedStatement.executeQuery();
+            HashMap<Integer, VendorNutritionalFact> vendorNutritionalFactHashMap = new HashMap<Integer, VendorNutritionalFact>();
+            while (resultSet.next()) {
+                VendorNutritionalFact vendorNutritionalFact = new VendorNutritionalFact();
+                vendorNutritionalFact.id = resultSet.getInt("id");
+                vendorNutritionalFact.vendor_id = this.vendorCookie.vendorID;
+                vendorNutritionalFact.serving_size = resultSet.getInt("serving_size");
+                vendorNutritionalFact.calories = resultSet.getInt("calories");
+                vendorNutritionalFact.calories_from_fat = resultSet.getInt("calories_from_fat");
+                vendorNutritionalFact.total_fat = resultSet.getInt("total_fat");
+                vendorNutritionalFact.saturated_fat = resultSet.getInt("saturated_fat");
+                vendorNutritionalFact.trans_fat = resultSet.getInt("trans_fat");
+                vendorNutritionalFact.cholesterol = resultSet.getInt("cholesterol");
+                vendorNutritionalFact.sodium = resultSet.getInt("sodium");
+                vendorNutritionalFact.total_carbs = resultSet.getInt("total_carbs");
+                vendorNutritionalFact.dietary_fiber = resultSet.getInt("dietary_fiber");
+                vendorNutritionalFact.sugar = resultSet.getInt("sugar");
+                vendorNutritionalFact.vitamin_a = resultSet.getInt("vitamin_a");
+                vendorNutritionalFact.vitamin_b = resultSet.getInt("vitamin_b");
+                vendorNutritionalFact.vitamin_c = resultSet.getInt("vitamin_c");
+                vendorNutritionalFact.vitamin_d = resultSet.getInt("vitamin_d");
+                vendorNutritionalFact.calcium = resultSet.getInt("calcium");
+                vendorNutritionalFact.iron = resultSet.getInt("iron");
+                vendorNutritionalFact.protein = resultSet.getInt("protein");
+                vendorNutritionalFact.profile_name = resultSet.getString("profile_name");
+                vendorNutritionalFact.creation_timestamp = resultSet.getString("creation_timestamp");
+                vendorNutritionalFact.creation_days_ago = resultSet.getString("creation_days_ago");
+                vendorNutritionalFactHashMap.put(vendorNutritionalFact.id, vendorNutritionalFact);
+            }
+            return vendorNutritionalFactHashMap;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to load nutritional facts");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
