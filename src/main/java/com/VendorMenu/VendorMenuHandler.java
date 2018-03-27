@@ -544,7 +544,6 @@ public class VendorMenuHandler {
             @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
             @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
-        Thread.sleep(2000);
         DrinkController drinkController = new DrinkController();
         return drinkController.createDrink(
                 cookie,
@@ -842,12 +841,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteFoodIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "food_ingredient_id") int food_ingredient_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteFoodIngredient(
                 cookie,
-                food_ingredient_id
+                id
         );
     }
 
@@ -963,12 +962,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteDrinkIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_ingredient_id") int drink_ingredient_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredient(
                 cookie,
-                drink_ingredient_id
+                id
         );
     }
 
@@ -1083,12 +1082,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteBeerIngredient(
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "beer_ingredient_id") int beer_ingredient_id
+            @WebParam(name = "id") int id
     ) throws Exception {
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteBeerIngredient(
                 cookie,
-                beer_ingredient_id
+                id
         );
     }
 

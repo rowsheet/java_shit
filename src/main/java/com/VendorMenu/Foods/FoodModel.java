@@ -1125,7 +1125,7 @@ public class FoodModel extends AbstractModel {
         }
     }
 
-    private String deleteVendorFoodTagReferencesSQL =
+    private String deleteFoodReferencesSQL =
             "UPDATE " +
                     "   vendor_foods " +
                     "SET " +
@@ -1136,6 +1136,18 @@ public class FoodModel extends AbstractModel {
                     "   tag_five = (CASE WHEN tag_five = ? THEN NULL ELSE tag_five END)::INTEGER " +
                     "WHERE " +
                     "   tag_one = ? OR tag_two = ? OR tag_three = ? OR tag_four = ? OR tag_five = ?";
+
+    private String deleteIngredientReferencesSQL =
+            "UPDATE " +
+                    "   vendor_food_ingredients " +
+                    "SET " +
+                            "   tag_one = (CASE WHEN tag_one = ? THEN NULL ELSE tag_one END)::INTEGER, " +
+                            "   tag_two = (CASE WHEN tag_two = ? THEN NULL ELSE tag_two END)::INTEGER, " +
+                            "   tag_three = (CASE WHEN tag_three = ? THEN NULL ELSE tag_three END)::INTEGER, " +
+                            "   tag_four = (CASE WHEN tag_four = ? THEN NULL ELSE tag_four END)::INTEGER, " +
+                            "   tag_five = (CASE WHEN tag_five = ? THEN NULL ELSE tag_five END)::INTEGER " +
+                            "WHERE " +
+                            "   tag_one = ? OR tag_two = ? OR tag_three = ? OR tag_four = ? OR tag_five = ?";
 
     /**
      * Note: Tags are optional (default NULL) and vendor_id owned. There is a compound foreign
@@ -1160,7 +1172,8 @@ public class FoodModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement validationPreparedStatement = null;
         ResultSet validationResultSet = null;
-        PreparedStatement deleteReferencesStatement = null;
+        PreparedStatement deleteFoodReferencesStatement = null;
+        PreparedStatement deleteIngredientReferencesStatement = null;
         PreparedStatement preparedStatement = null;
         try {
             this.DAO.setAutoCommit(false);
@@ -1182,18 +1195,30 @@ public class FoodModel extends AbstractModel {
             /*
             Stage 2
              */
-            deleteReferencesStatement = this.DAO.prepareStatement(this.deleteVendorFoodTagReferencesSQL);
-            deleteReferencesStatement.setInt(1, id);
-            deleteReferencesStatement.setInt(2, id);
-            deleteReferencesStatement.setInt(3, id);
-            deleteReferencesStatement.setInt(4, id);
-            deleteReferencesStatement.setInt(5, id);
-            deleteReferencesStatement.setInt(6, id);
-            deleteReferencesStatement.setInt(7, id);
-            deleteReferencesStatement.setInt(8, id);
-            deleteReferencesStatement.setInt(9, id);
-            deleteReferencesStatement.setInt(10, id);
-            deleteReferencesStatement.execute();
+            deleteFoodReferencesStatement = this.DAO.prepareStatement(this.deleteFoodReferencesSQL);
+            deleteFoodReferencesStatement.setInt(1, id);
+            deleteFoodReferencesStatement.setInt(2, id);
+            deleteFoodReferencesStatement.setInt(3, id);
+            deleteFoodReferencesStatement.setInt(4, id);
+            deleteFoodReferencesStatement.setInt(5, id);
+            deleteFoodReferencesStatement.setInt(6, id);
+            deleteFoodReferencesStatement.setInt(7, id);
+            deleteFoodReferencesStatement.setInt(8, id);
+            deleteFoodReferencesStatement.setInt(9, id);
+            deleteFoodReferencesStatement.setInt(10, id);
+            deleteFoodReferencesStatement.execute();
+            deleteIngredientReferencesStatement = this.DAO.prepareStatement(this.deleteIngredientReferencesSQL);
+            deleteIngredientReferencesStatement.setInt(1, id);
+            deleteIngredientReferencesStatement.setInt(2, id);
+            deleteIngredientReferencesStatement.setInt(3, id);
+            deleteIngredientReferencesStatement.setInt(4, id);
+            deleteIngredientReferencesStatement.setInt(5, id);
+            deleteIngredientReferencesStatement.setInt(6, id);
+            deleteIngredientReferencesStatement.setInt(7, id);
+            deleteIngredientReferencesStatement.setInt(8, id);
+            deleteIngredientReferencesStatement.setInt(9, id);
+            deleteIngredientReferencesStatement.setInt(10, id);
+            deleteIngredientReferencesStatement.execute();
             /*
             Stage 3
              */
@@ -1220,8 +1245,11 @@ public class FoodModel extends AbstractModel {
             if (validationResultSet != null) {
                 validationResultSet.close();
             }
-            if (deleteReferencesStatement != null) {
-                deleteReferencesStatement.close();
+            if (deleteFoodReferencesStatement != null) {
+                deleteFoodReferencesStatement.close();
+            }
+            if (deleteIngredientReferencesStatement != null) {
+                deleteFoodReferencesStatement.close();
             }
             if (preparedStatement != null) {
                 preparedStatement.close();
