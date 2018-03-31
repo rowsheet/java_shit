@@ -1273,7 +1273,7 @@ public class DrinkModel extends AbstractModel {
 
     private String deleteDrinkIngredientTagReferencesSQL =
             "UPDATE " +
-                    "   vendor_drinks_ingredient " +
+                    "   vendor_drink_ingredients " +
                     "SET " +
                     "   tag_one = (CASE WHEN tag_one = ? THEN NULL ELSE tag_one END)::INTEGER, " +
                     "   tag_two = (CASE WHEN tag_two = ? THEN NULL ELSE tag_two END)::INTEGER, " +

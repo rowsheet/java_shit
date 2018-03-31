@@ -1,6 +1,7 @@
 package com.VendorMenu.Extras;
 
 import com.Common.AbstractController;
+import com.Common.VendorDropdownContainer;
 import com.Common.VendorNutritionalFact;
 import jnr.ffi.annotations.In;
 
@@ -218,5 +219,17 @@ public class ExtrasController extends AbstractController {
                 cookie
         );
         return this.returnJSON(vendorNutritionalFactHashMap);
+    }
+
+    public String loadVendorDropdowns(
+            String cookie
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        ExtrasModel extrasModel = new ExtrasModel();
+        VendorDropdownContainer vendorDropdownContainer = new VendorDropdownContainer();
+        vendorDropdownContainer = extrasModel.loadVendorDropdowns(
+                cookie
+        );
+        return this.returnJSON(vendorDropdownContainer);
     }
 }

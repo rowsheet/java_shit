@@ -1,6 +1,7 @@
 package com.VendorMenu.Extras;
 
 import com.Common.AbstractModel;
+import com.Common.VendorDropdownContainer;
 import com.Common.VendorNutritionalFact;
 import com.sun.org.apache.regexp.internal.RE;
 
@@ -846,4 +847,28 @@ public class ExtrasModel extends AbstractModel {
             }
         }
     }
+
+    /**
+    Things in python were calling entire menus when they just needed dropdowns.
+    This will save bandwidth.
+     */
+    public VendorDropdownContainer loadVendorDropdowns(
+            String cookie
+    ) throws Exception {
+        try {
+            // Validate vendor cookie.
+            this.validateVendorCookie(cookie);
+            // Return dropdowns from abstract model.
+            return this.getVendorDropdowns(this.vendorCookie.vendorID, this.DAO);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // I don't know.
+            throw new Exception("Unable to get vendor dropdowns.");
+        } finally {
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
 }

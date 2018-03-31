@@ -1,7 +1,10 @@
 package com.VendorMenu;
+import com.Common.AbstractModel;
+import com.Common.VendorDropdownContainer;
 import com.VendorMenu.Beers.BeerController;
 import com.VendorMenu.Drinks.DrinkController;
 import com.VendorMenu.Extras.ExtrasController;
+import com.VendorMenu.Extras.ExtrasException;
 import com.VendorMenu.Extras.ExtrasModel;
 import com.VendorMenu.Foods.FoodController;
 import com.VendorMenu.Ingredients.IngredientsController;
@@ -591,7 +594,6 @@ public class VendorMenuHandler {
             @WebParam(name = "drink_tag_id_four") int drink_tag_id_four,
             @WebParam(name = "drink_tag_id_five") int drink_tag_id_five
     ) throws Exception {
-        Thread.sleep(2000);
         DrinkController drinkController = new DrinkController();
         return drinkController.updateDrink(
                 cookie,
@@ -964,6 +966,7 @@ public class VendorMenuHandler {
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "id") int id
     ) throws Exception {
+        System.out.println("called here");
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredient(
                 cookie,
@@ -1142,6 +1145,16 @@ public class VendorMenuHandler {
     ███████╗██╔╝ ██╗   ██║   ██║  ██║██║  ██║███████║
     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
     ------------------------------------------------------------*/
+
+    @WebMethod
+    public String loadVendorDropdowns(
+            @WebParam(name="cookie") String cookie
+    ) throws Exception {
+        ExtrasController extrasController = new ExtrasController();
+        return extrasController.loadVendorDropdowns(
+                cookie
+        );
+    }
 
     /*------------------------------------------------------------
     NUTRITIONAL FACTS

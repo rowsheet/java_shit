@@ -1201,7 +1201,7 @@ public class BeerModel extends AbstractModel {
 
     private String deleteBeerIngredientsTagReferencesSQL =
             "UPDATE " +
-                    "   beers_ingredients " +
+                    "   beer_ingredients " +
                     "SET " +
                     "   tag_one = (CASE WHEN tag_one = ? THEN NULL ELSE tag_one END)::INTEGER, " +
                     "   tag_two = (CASE WHEN tag_two = ? THEN NULL ELSE tag_two END)::INTEGER, " +

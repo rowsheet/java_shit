@@ -12,6 +12,7 @@ import sun.security.provider.ConfigFile;
 
 /**
  * Created by alexanderkleinhans on 5/30/17.
+ * not actually abstract...
  */
 public class AbstractModel {
 
@@ -369,7 +370,7 @@ public class AbstractModel {
                     "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vfc.creation_timestamp::date)) AS creation_days_ago, " +
                     "   ROUND(AVG(vf.price)::numeric, 2) AS price_average, " +
                     "   COALESCE(ROUND(AVG(vfr.stars)::numeric, 2), 0.0) AS review_average, " +
-                    "   COUNT(*) AS count_star " +
+                    "   COUNT(vf.*) AS count_star " +
                     "FROM " +
                     "   vendor_food_categories vfc " +
                     "LEFT JOIN " +
@@ -394,7 +395,7 @@ public class AbstractModel {
                     "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', bc.creation_timestamp::date)) AS creation_days_ago, " +
                     "   ROUND(AVG(b.price)::numeric, 2) AS price_average, " +
                     "   COALESCE(ROUND(AVG(br.stars)::numeric, 2), 0.0) AS review_average, " +
-                    "   COUNT(*) AS count_star " +
+                    "   COUNT(b.*) AS count_star " +
                     "FROM " +
                     "   beer_categories bc " +
                     "LEFT JOIN " +
@@ -419,7 +420,7 @@ public class AbstractModel {
                     "   ABS(DATE_PART('day', now()::date) - DATE_PART('day', vdc.creation_timestamp::date)) AS creation_days_ago, " +
                     "   ROUND(AVG(vd.price)::numeric, 2) AS price_average, " +
                     "   COALESCE(ROUND(AVG(vdr.stars)::numeric, 2), 0.0) AS review_average, " +
-                    "   COUNT(*) AS count_star " +
+                    "   COUNT(vd.*) AS count_star " +
                     "FROM " +
                     "   vendor_drink_categories vdc " +
                     "LEFT JOIN " +
