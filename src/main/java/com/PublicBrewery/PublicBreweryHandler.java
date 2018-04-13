@@ -7,6 +7,7 @@ import com.PublicBrewery.Drink.DrinkModel;
 import com.PublicBrewery.Food.FoodController;
 import com.PublicBrewery.Events.EventController;
 import com.PublicBrewery.Reviews.ReviewController;
+import com.PublicBrewery.VendorMedia.VendorMediaController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -233,4 +234,25 @@ public class PublicBreweryHandler {
                 offset
         );
     }
+
+    @WebMethod
+    public String loadVendorMedia (
+            @WebParam(name="vendor_id") int vendor_id
+    ) throws Exception {
+        VendorMediaController vendorMediaController = new VendorMediaController();
+        return vendorMediaController.loadVendorMedia(
+                vendor_id
+        );
+    }
+
+    @WebMethod
+    public String loadVendorPageImageGallery (
+            @WebParam(name="gallery_id") int gallery_id
+    ) throws Exception {
+        VendorMediaController vendorMediaController = new VendorMediaController();
+        return vendorMediaController.loadVendorPageImageGallery(
+            gallery_id
+        );
+    }
+
 }

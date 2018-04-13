@@ -1,6 +1,7 @@
 package com.VendorAccounts.VendorAuthentication;
 
 import com.Common.AbstractController;
+import com.Common.VendorCookie;
 
 /**
  * Created by alexanderkleinhans on 6/3/17.

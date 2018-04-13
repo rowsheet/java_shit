@@ -5,6 +5,8 @@ import jnr.ffi.annotations.In;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.Common.VendorMedia.VendorPageImage;
+import com.Common.VendorMedia.VendorPageImageGallery;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.
@@ -15,7 +17,6 @@ public class Brewery {
      * General Info
      */
     public String display_name;
-    public HashMap<Integer, VendorPageImage> page_images;
     /**
      * About Info
      */
@@ -64,6 +65,16 @@ public class Brewery {
     public String official_business_name;
 
     /**
+     * Nice formatting info.
+     */
+    public String short_type_description;
+    public String short_text_description;
+    public int main_gallery_id;
+    public int main_image_id;
+    public VendorPageImage main_image;
+    public VendorPageImageGallery main_gallery;
+
+    /**
      * Owned Info
      */
 //    public HashMap<Integer, Beer> beerMenu;
@@ -76,9 +87,15 @@ public class Brewery {
     public HashMap<Integer, VendorReview> reviews;
 
     public Brewery() {
+        this.short_text_description = null;
+        this.short_type_description = null;
+        this.main_gallery_id = 0;
+        this.main_image_id = 0;
+        this.main_image = new VendorPageImage();
+        this.main_gallery = new VendorPageImageGallery();
+        // nice format things.
         this.vendor_id = 0;
         this.display_name = null;
-        this.page_images = new HashMap<Integer, VendorPageImage>();
         this.about_text = null;
         this.mon_open = null;
         this.mon_close = null;

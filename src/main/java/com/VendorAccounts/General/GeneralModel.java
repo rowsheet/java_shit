@@ -283,7 +283,8 @@ public class GeneralModel extends AbstractModel {
      */
     public String uploadVendorPageImage(
         String cookie,
-        String filename
+        String filename,
+        String gallery
     ) throws Exception {
         // Initialize prepared statements because we're going to need
         // to clean them up in the finally block.
@@ -553,6 +554,254 @@ public class GeneralModel extends AbstractModel {
             System.out.println(ex.getMessage());
             // Unknown reason.
             throw new Exception("Unable to update google maps address at this time.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String loadVendorAccountProfile_sql =
+            "SELECT " +
+                "   ai.first_name, " +
+                "   ai.last_name, " +
+                "   a.creation_timestamp, " +
+                "   DATE_PART('day', now()::date) - DATE_PART('day', a.creation_timestamp::date) AS creation_days_ago, " +
+                "   ai.profile_picture, " +
+                "   ai.about_me, " +
+                "   a.id AS account_id, " +
+                "   a.email_address, " +
+                "   a.account_type, " +
+                "   a.status , " +
+                "   v.verified, " +
+                "   v.account_id AS primary_account_id," +
+                "   v.primary_contact_first_name, " +
+                "   v.primary_contact_last_name " +
+                "FROM " +
+                "   vendor_account_associations vaa " +
+                "LEFT JOIN " +
+                "   accounts a " +
+                "ON " +
+                "   vaa.account_id = a.id " +
+                "LEFT JOIN " +
+                "   user_account_info ai " +
+                "ON " +
+                "   a.id = ai.account_id " +
+                "LEFT JOIN " +
+                "   vendors v " +
+                "ON " +
+                "   vaa.vendor_id = v.id " +
+                "WHERE " +
+                "   vaa.account_id = ? ";
+
+    public VendorAccount loadVendorAccountProfile(
+            String cookie
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Validate the cookie.
+            this.validateVendorCookie(cookie);
+            VendorAccount vendorAccount = new VendorAccount();
+            preparedStatement = this.DAO.prepareStatement(this.loadVendorAccountProfile_sql);
+            preparedStatement.setInt(1, this.vendorCookie.accountID);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                vendorAccount.account.first_name = resultSet.getString("first_name");
+                vendorAccount.account.last_name = resultSet.getString("last_name");
+                vendorAccount.account.creation_timestamp = resultSet.getString("creation_timestamp");
+                vendorAccount.account.creation_days_ago = resultSet.getInt("creation_days_ago");
+                vendorAccount.account.profile_picture = resultSet.getString("profile_picture");
+                vendorAccount.account.about_me = resultSet.getString("about_me");
+                vendorAccount.account.email_address = resultSet.getString("email_address");
+                vendorAccount.account.account_type = resultSet.getString("account_type");
+                vendorAccount.account.account_status = resultSet.getString("status");
+                vendorAccount.verified = resultSet.getBoolean("verified");
+                if (vendorAccount.account.first_name == null) {
+                    vendorAccount.account.first_name = "NA";
+                }
+                if (vendorAccount.account.last_name == null) {
+                    vendorAccount.account.last_name = "NA";
+                }
+                if (vendorAccount.account.profile_picture == null) {
+                    vendorAccount.account.profile_picture = "NA";
+                }
+                if (vendorAccount.account.about_me == null) {
+                    vendorAccount.account.about_me = "NA";
+                }
+                int primary_account_id = resultSet.getInt("primary_account_id");
+                if (vendorCookie.accountID == primary_account_id) {
+                    vendorAccount.is_primary_account = true;
+                }
+                vendorAccount.primary_contact_first_name = resultSet.getString("primary_contact_first_name");
+                vendorAccount.primary_contact_last_name = resultSet.getString("primary_contact_last_name");
+                vendorAccount.account.account_id = this.vendorCookie.accountID;
+                vendorAccount.vendor_id = this.vendorCookie.vendorID;
+            }
+            return vendorAccount;
+        } catch (Exception ex) {
+            this.checkDNR(ex);
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to load vendor account profile");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    // If account_id doesn't collide, profile picture couldn't have
+    // been set because account_id is required, so it won't overwrite.
+    private String updateVendorAccountInfo_sql =
+            "INSERT INTO " +
+                    "   user_account_info " + // Yeah, I know it says "user" account info.
+                    "( " +
+                    "   first_name, " +
+                    "   last_name, " +
+                    "   about_me, " +
+                    "   account_id " +
+                    ") VALUES (?,?,?,?) " +
+                    "ON CONFLICT " +
+                    "   (account_id) " +
+                    "DO UPDATE " +
+                    "SET " +
+                    "   first_name = ?, " +
+                    "   last_name = ?, " +
+                    "   about_me = ?";
+
+    public boolean updateVendorAccountInfo (
+            String cookie,
+            String public_first_name,
+            String public_last_name,
+            String about_me
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateVendorCookie(cookie);
+            // Presist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.updateVendorAccountInfo_sql);
+            preparedStatement.setString(1, public_first_name);
+            preparedStatement.setString(2, public_last_name);
+            preparedStatement.setString(3, about_me);
+            preparedStatement.setInt(4, this.vendorCookie.accountID);
+            preparedStatement.setString(5, public_first_name);
+            preparedStatement.setString(6, public_last_name);
+            preparedStatement.setString(7, about_me);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to update vendor profile info.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String uploadVendorAccountProfilePicture_sql =
+        "INSERT INTO " +
+            "user_account_info " +
+            "( " +
+            "    profile_picture, " +
+            "    account_id, " +
+            "    first_name, " +
+            "    last_name " +
+            ") VALUES ( " +
+            "    ?,?, " +
+            "    (select first_name from user_account_info where account_id = ?), " +
+            "    (select last_name from user_account_info where account_id = ?) " +
+            ") " +
+            "ON CONFLICT " +
+            "    (account_id) " +
+            "DO UPDATE " +
+            "SET " +
+            "    profile_picture = ?, " +
+            "    first_name = user_account_info.first_name, " +
+            "    last_name = user_account_info.last_name, " +
+            "    about_me = user_account_info.about_me";
+
+    /**
+     * 1) Fetch user info from user where account matchs.
+     * 2) If no user info, fuck off, otherwise insert data.
+      * @param cookie
+     * @param filename
+     * @return
+     * @throws Exception
+     */
+    public boolean uploadVendorAccountProfilePicture(
+            String cookie,
+            String filename
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateVendorCookie(cookie);
+            // Persist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.uploadVendorAccountProfilePicture_sql);
+            preparedStatement.setString(1, filename);
+            preparedStatement.setInt(2, this.vendorCookie.accountID);
+            preparedStatement.setInt(3, this.vendorCookie.accountID);
+            preparedStatement.setInt(4, this.vendorCookie.accountID);
+            preparedStatement.setString(5, filename);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to upload vendor account profile picture.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String deleteVendorAccountProfilePicture_sql =
+        "UPDATE " +
+                "   user_account_info " +
+                "SET " +
+                "   profile_picture = NULL " +
+                "WHERE " +
+                "   account_id = ?";
+
+    public boolean deleteVendorAccountProfilePicture(
+            String cookie
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateVendorCookie(cookie);
+            // Persist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.deleteVendorAccountProfilePicture_sql);
+            preparedStatement.setInt(1, this.vendorCookie.accountID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to upload vendor account profile picture.");
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();

@@ -2,6 +2,7 @@ package com.PublicBrewery.Drink;
 
 import com.Common.*;
 import com.Common.PublicVendor.DrinkMenu;
+import com.PublicBrewery.VendorMedia.VendorMediaModel;
 import jnr.ffi.annotations.In;
 import sun.security.provider.ConfigFile;
 
@@ -309,6 +310,14 @@ public class DrinkModel extends AbstractModel {
                     "WHERE " +
                     "   v.id = ?";
 
+    public String loadDrinkMenuSQL_stage8 =
+            "SELECT " +
+                    "   main_drink_gallery_id " +
+                    "FROM " +
+                    "   vendor_info " +
+                    "WHERE " +
+                    "   vendor_id = ?";
+
     public DrinkModel() throws Exception {
     }
 
@@ -325,6 +334,7 @@ public class DrinkModel extends AbstractModel {
      * 5) Load all ingredients.
      * 6) Calculate review averages for all the drinks.
      * 7) Load all drop-downs.
+     * 8) Load main gallery.
      *
      * @param brewery_id
      * @return HashMap<vendor_drink_id, vendor_drink_data_structure>
@@ -343,6 +353,8 @@ public class DrinkModel extends AbstractModel {
         ResultSet stage4Result = null;
         PreparedStatement stage5 = null;
         ResultSet stage5Result = null;
+        PreparedStatement stage8 = null;
+        ResultSet stage8Result = null;
         try {
             // Initialize variables.
             DrinkMenu drinkMenu = new DrinkMenu();
@@ -635,6 +647,21 @@ public class DrinkModel extends AbstractModel {
              */
             dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
             /*
+            Stage 8
+            Load main gallery.
+             */
+            stage8 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage8);
+            stage8.setInt(1, brewery_id);
+            stage8Result = stage8.executeQuery();
+            int main_gallery_id = 0;
+            while (stage8Result.next()) {
+                main_gallery_id = stage8Result.getInt("main_drink_gallery_id");
+            }
+            if (main_gallery_id != 0) {
+                VendorMediaModel vendorMediaModel = new VendorMediaModel();
+                drinkMenu.mainGallery = vendorMediaModel.loadVendorPageImageGallery(main_gallery_id);
+            }
+            /*
             Assemble final component.
              */
             drinkMenu.dropDowns = dropDowns;
@@ -673,6 +700,12 @@ public class DrinkModel extends AbstractModel {
             }
             if (stage5Result != null) {
                 stage5Result.close();
+            }
+            if (stage8 != null) {
+                stage8.close();
+            }
+            if (stage8Result != null) {
+                stage8Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

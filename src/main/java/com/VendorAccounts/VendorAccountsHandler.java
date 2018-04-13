@@ -4,7 +4,6 @@ import com.Common.Color;
 import com.VendorAccounts.BreweryRegistration.BreweryRegistrationController;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationController;
 import com.VendorAccounts.General.GeneralController;
-import com.sun.tools.javah.Gen;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -21,6 +20,22 @@ public class VendorAccountsHandler {
     ) {
         Color color = new Color();
         return color.getInverseBW(something);
+    }
+
+    /**
+     * 1) Creates a vendor account with status "verified" and email address [Provider] + guid.
+     * 2) Creates and account owning that vendor with status "email_verified".
+     *
+     */
+    public String oauthVendorAuthorize (
+            @WebParam(name = "oauth_guid") String oauth_guid,
+            @WebParam(name = "oauth_provider") String oauth_provider
+    ) throws Exception {
+        BreweryRegistrationController breweryRegistrationController = new BreweryRegistrationController();
+        return breweryRegistrationController.OauthVendorAuthorize(
+                oauth_guid,
+                oauth_provider
+        );
     }
 
     /**
@@ -69,6 +84,22 @@ public class VendorAccountsHandler {
                 city,
                 state,
                 zip
+        );
+    }
+
+    @WebMethod
+    public boolean updateVendorAccountInfo (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "public_first_name") String public_first_name,
+            @WebParam(name = "public_last_name") String public_last_name,
+            @WebParam(name = "about_me") String about_me
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.updateVendorAccountInfo(
+                cookie,
+                public_first_name,
+                public_last_name,
+                about_me
         );
     }
 
@@ -226,12 +257,14 @@ public class VendorAccountsHandler {
     @WebMethod
     public String uploadVendorPageImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "filename") String filename
+            @WebParam(name = "filename") String filename,
+            @WebParam(name = "gallery") String gallery
     ) throws Exception {
         GeneralController generalController = new GeneralController();
         return generalController.uploadVendorPageImage(
                 cookie,
-                filename
+                filename,
+                gallery
         );
     }
 
@@ -313,4 +346,37 @@ public class VendorAccountsHandler {
             google_maps_zoom
         );
     }
+
+    @WebMethod
+    public String loadVendorAccountProfile (
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.loadVendorAccountProfile(
+                cookie
+        );
+    }
+
+    @WebMethod
+    public boolean uploadVendorAccountProfilePicture (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "filename") String filename
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.uploadVendorAccountProfilePicture(
+                cookie,
+                filename
+        );
+    }
+
+    @WebMethod
+    public boolean deleteVendorAccountProfilePicture (
+            @WebParam(name = "cookie") String cookie
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.deleteVendorAccountProfilePicture(
+                cookie
+        );
+    }
+
 }

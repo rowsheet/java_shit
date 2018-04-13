@@ -112,8 +112,9 @@ public class AbstractController {
         Change this when something better comes along. 01:00 AM is valide 1:00 AM is not valid.
         needs to parse to sql time.
          */
-        Pattern pattern = Pattern.compile("([0][1-9]|[1][0-2]):([0-5][0-9]) (AM|PM)");
+        Pattern pattern = Pattern.compile("(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(AM|PM)");
         if (!pattern.matcher(input).matches()) {
+            System.out.println(input);
             throw new InvalidParameterException("Invalid " + input_name);
         }
     }

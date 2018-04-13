@@ -131,12 +131,11 @@ public class NativeAuthModel extends AbstractModel {
                     "   user_account_info " +
                     "(" +
                     "   account_id, " +
-                    "   account_type, " +
                     "   first_name, " +
                     "   last_name, " +
                     "   confirmation_code " +
                     ") VALUES (" +
-                    "?,?::account_type,?,?,?)";
+                    "?,?,?,?)";
 
     private String userLogoutSQL_stage1 =
             "DELETE FROM" +
@@ -155,6 +154,84 @@ public class NativeAuthModel extends AbstractModel {
 
     public NativeAuthModel() throws Exception {}
 
+    private String OauthUserAuthorize_sql =
+            "SELECT " +
+                    "   confirmation_code " +
+                    "FROM " +
+                    "   user_account_info " +
+                    "WHERE " +
+                    "   account_id = ?";
+
+    public UserCookie OAuthUserAuthorize(
+            String oauth_guid,
+            String oauth_provider
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            /*
+            1) Register
+            2) "Confirm"
+            3) Login
+             */
+            // Step 1)
+            // Register
+            int account_id = this.registerUserAccount(
+                    "Enter First Name",
+                    "Enter Last Name",
+                    oauth_guid, // for oauth, guid is email.
+                    "", // Doesn't matter
+                    true,
+                    oauth_provider
+            );
+            // Step 2)
+            // "Confirm"
+            preparedStatement = this.DAO.prepareStatement(this.OauthUserAuthorize_sql);
+            preparedStatement.setInt(1, account_id);
+            resultSet = preparedStatement.executeQuery();
+            String confirmation_code = "";
+            while (resultSet.next()) {
+                confirmation_code = resultSet.getString("confirmation_code");
+            }
+            account_id = this.confirmUserAccount(confirmation_code);
+            // Step 3)
+            // Login
+            // This is a bad hack, but confirmation will close the DAO. Just create a new instance
+            // of yourself and login.
+            NativeAuthModel nativeAuthModel = new NativeAuthModel();
+            return nativeAuthModel.userLogin(
+                    oauth_guid,
+                    "", // Doesn't matter.
+                    "OAUTH", // Can't get it because it's from ouath callback, also doesn't matter because
+                    // brute force will hit the ouath provider first. Not our problem.
+                    true
+            );
+        } catch (Exception ex) {
+            // Check for error about email address collision. This means it just needs to be
+            // logged in.
+            if (ex.getMessage().contains("email address already exists")) {
+                return this.userLogin(
+                        oauth_guid,
+                        "", // Doesn't matter.
+                        "OAUTH", // Can't get it because it's from ouath callback, also doesn't matter because
+                        // brute force will hit the ouath provider first. Not our problem.
+                        true
+                );
+            }
+            throw new Exception("Unable to authenticate user oauth account.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
     /**
      * Register the user account, then register it's info with a confirmation code.
      * Ensure when first registering, the account has a status "email_verification_pending".
@@ -171,11 +248,32 @@ public class NativeAuthModel extends AbstractModel {
      * @return
      * @throws Exception
      */
+
     public int registerUserAccount(
             String first_name,
             String last_name,
             String email_address,
             String password
+    ) throws Exception {
+        boolean is_oauth = false; // Set this default as false. Maybe true if called from overloaded function.
+        String provider = "NO OAUTH"; // Doesn't matter.
+        return this.registerUserAccount(
+                first_name,
+                last_name,
+                email_address,
+                password,
+                is_oauth,
+                provider
+        );
+    }
+
+    public int registerUserAccount(
+            String first_name,
+            String last_name,
+            String email_address,
+            String password,
+            boolean is_oauth,
+            String oauth_provider
     ) throws Exception {
         // Generate a new salt for this new account.
         SecureRandom random = new SecureRandom();
@@ -205,12 +303,21 @@ public class NativeAuthModel extends AbstractModel {
             Stage 1
             Create the account.
              */
+            if (is_oauth) {
+                pash_hash = "OAUTH_" + oauth_provider;
+                salt = "OAUTH_" + oauth_provider;
+            }
             stage1 = this.DAO.prepareStatement(this.registerUserAccountSQL_stage1);
             stage1.setString(1, email_address);
             stage1.setString(2, pash_hash);
             stage1.setString(3, salt);
             stage1.setString(4, "user");
-            stage1.setString(5, "email_verification_pending");
+            // Note: If this was done with oauth, set the status to "email_verified".
+            if (is_oauth) {
+                stage1.setString(5, "email_verified");
+            } else {
+                stage1.setString(5, "email_verification_pending");
+            }
             stage1Result = stage1.executeQuery();
             int account_id = 0;
             while (stage1Result.next()) {
@@ -222,10 +329,9 @@ public class NativeAuthModel extends AbstractModel {
              */
             stage2 = this.DAO.prepareStatement(this.registerUserAccountSQL_stage2);
             stage2.setInt(1, account_id);
-            stage2.setString(2, "user");
-            stage2.setString(3, first_name);
-            stage2.setString(4, last_name);
-            stage2.setString(5, confimration_code);
+            stage2.setString(2, first_name);
+            stage2.setString(3, last_name);
+            stage2.setString(4, confimration_code);
             stage2.execute();
             /*
              Send email.
@@ -250,7 +356,9 @@ public class NativeAuthModel extends AbstractModel {
             /*
             Done. Commit it.
              */
-            this.DAO.commit();
+            if (!is_oauth) { // Don't commit if oauth because confimration also needs to be done.
+                this.DAO.commit();
+            }
             return account_id;
         } catch (Exception ex) {
             // Roll back if something goes wrong.
@@ -277,8 +385,10 @@ public class NativeAuthModel extends AbstractModel {
             if (stage2 != null) {
                 stage2.close();
             }
-            if (this.DAO != null) {
-                this.DAO.close();
+            if (!is_oauth) { // Don't close this if oauth because there are other steps that will need it.
+                if (this.DAO != null) {
+                    this.DAO.close();
+                }
             }
         }
     }
@@ -307,49 +417,29 @@ public class NativeAuthModel extends AbstractModel {
                 email_address,
                 ip_address,
                 password,
-                false,
-                0
+                false
         );
     }
 
-    /**
-     * Logs the user in for a Passport user where no password is known. With this method,
-     * a session is created, but the account_id must be known.
-     *
-     * This should only be used by Passport classes that extend the native auth model.
-     *
-     * @param email_address
-     * @param ip_address
-     * @param account_id
-     * @return
-     * @throws Exception
-     */
-    protected UserCookie userLogin(
-           String email_address,
-           String ip_address,
-           int account_id
-    ) throws Exception {
-        return this.userLogin(
-                email_address,
-                ip_address,
-                null,
-                true,
-                account_id
-        );
-    }
+    private String oauth_stage1_sql =
+        "SELECT " +
+            "   id " +
+            "FROM " +
+            "   accounts " +
+            "WHERE " +
+            "   email_address = ?";
 
     /**
      * Logs the user in if they are a Native Auth  user or Passport user.
      * In the case they are a passport user, skip password is passed as true.
      * If this happens, the account_id MUST already be known.
      *
-     * Exception is thrown if skip_password is true and account_id = 0
+     * Exception is thrown if is_oauth is true and account_id = 0
      *
      * @param email_address
      * @param ip_address
      * @param password
-     * @param skip_password
-     * @param account_id
+     * @param is_oauth
      * @return
      * @throws Exception
      */
@@ -357,11 +447,12 @@ public class NativeAuthModel extends AbstractModel {
             String email_address,
             String ip_address,
             String password,
-            boolean skip_password,
-            int account_id
+            boolean is_oauth
     ) throws Exception {
         PreparedStatement stage1 = null;
+        PreparedStatement oauth_stage1 = null;
         ResultSet stage1Result = null;
+        ResultSet oauth_stage1_result = null;
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
@@ -370,7 +461,8 @@ public class NativeAuthModel extends AbstractModel {
             Disable auto-commit.
              */
             this.DAO.setAutoCommit(false);
-            if (!skip_password) {
+            int account_id = 0;
+            if (!is_oauth) {
                 /*
                 Stage 1
                 Fetch pass-hasn and salt and ensure correct email and password.
@@ -381,7 +473,6 @@ public class NativeAuthModel extends AbstractModel {
                 stage1Result = stage1.executeQuery();
                 String pass_hash = null;
                 String salt = null;
-                account_id = 0;
                 String status = null;
                 while (stage1Result.next()) {
                     pass_hash = stage1Result.getString("pass_hash");
@@ -403,11 +494,14 @@ public class NativeAuthModel extends AbstractModel {
                     throw new NativeAuthException("Invalid password!");
                 }
             } else {
-                // If we are skipping the password, this means this method is being used
-                // by a Passport stratagy, which means the account_id must already be known.
-                // Make sure it is.
+                oauth_stage1 = this.DAO.prepareStatement(this.oauth_stage1_sql);
+                oauth_stage1.setString(1, email_address);
+                oauth_stage1_result = oauth_stage1.executeQuery();
+                while (oauth_stage1_result.next()) {
+                    account_id = oauth_stage1_result.getInt("id");
+                }
                 if (account_id == 0) {
-                    throw new Exception("Unable to log in user using passport stragey.");
+                    throw new Exception("Unable to log in oauth user.");
                 }
             }
             /*
@@ -477,6 +571,12 @@ public class NativeAuthModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
+            if (oauth_stage1 != null)  {
+                oauth_stage1.close();
+            }
+            if (oauth_stage1_result != null) {
+                oauth_stage1_result.close();
+            }
             if (stage2 != null) {
                 stage2.close();
             }
@@ -493,65 +593,16 @@ public class NativeAuthModel extends AbstractModel {
     }
 
     /**
-     * Set the status of the account ot "email_verified" where confirmation_code matches.
-     *
-     * @param confirmation_code
-     * @return account_id
-     * @throws Exception
-     */
-    public int confirmUserAccount(
-            String confirmation_code
-    ) throws Exception {
-        // Don't skip the confirmation code because we're actually going to check it. Since
-        // we check it, we don't need to pass an account_id since the account_id is fetched
-        // where the confirmation code matches to insert permissions for that account.
-        return this.confirmUserAccount(
-                confirmation_code,
-                false,
-                0
-        );
-    }
-
-    /**
-     * Confirms a user account (meaning also inserting all of their permissions) when a confirmation
-     * code is not known (because it's a Passport stratagey).
-     *
-     * In this case, only the account_id is known.
-     *
-     * Should only be used in Passport strategy objects that extend this class.
-     *
-     * @param accont_id
-     * @return
-     * @throws Exception
-     */
-    protected void confirmUserAccount(
-            int accont_id
-    ) throws Exception {
-        // Since this is not public facing, the extending class already knows the account_id
-        // and it does not need to be returned.
-        int account_id = 0;
-        account_id = this.confirmUserAccount(
-                null,
-                true,
-                accont_id
-        );
-    }
-
-    /**
      * Confirms a user account, usually with a confirmation code, but with the option of skipping this
      * for Passport Stratagey accounts where no confirmation code exists.
      *
      * In either case, finally inserts all permissions for this account.
      * @param confirmation_code
-     * @param skip_confirmation_code
-     * @param account_id
      * @return
      * @throws Exception
      */
-    private int confirmUserAccount(
-            String confirmation_code,
-            boolean skip_confirmation_code,
-            int account_id
+    public int confirmUserAccount(
+            String confirmation_code
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
@@ -563,28 +614,22 @@ public class NativeAuthModel extends AbstractModel {
             this.DAO.setAutoCommit(false);
             /*
             Stage 1
+            Set status for account = "email_verified".
              */
-            if (!skip_confirmation_code) {
-                stage1 = this.DAO.prepareStatement(this.confirmUserAccountSQL_stage1);
-                stage1.setString(1, "email_verified");
-                stage1.setString(2, confirmation_code);
-                stage1Result = stage1.executeQuery();
-                account_id = 0;
-                while (stage1Result.next()) {
-                    account_id = stage1Result.getInt("id");
-                }
-                if (account_id == 0) {
-                    throw new NativeAuthException("Unknown confirmation code.");
-                }
-            } else {
-                // If skip_confirmation_code is set, the account_id MUST be known.
-                // Throw an exception if it's not valid such as 0 or something.
-                if (account_id == 0) {
-                    throw new Exception("Unable to perform user account and permissions with passport strategy.");
-                }
+            stage1 = this.DAO.prepareStatement(this.confirmUserAccountSQL_stage1);
+            stage1.setString(1, "email_verified");
+            stage1.setString(2, confirmation_code);
+            stage1Result = stage1.executeQuery();
+            int account_id = 0;
+            while (stage1Result.next()) {
+                account_id = stage1Result.getInt("id");
+            }
+            if (account_id == 0) {
+                throw new NativeAuthException("Unknown confirmation code.");
             }
             /*
             Stage 2
+            Set all permissions for the account.
              */
             stage2 = this.DAO.prepareStatement(this.confirmUserAccountSQL_stage2);
             // @TODO Make this a map somewhere, probably in abstract model.
@@ -660,28 +705,13 @@ public class NativeAuthModel extends AbstractModel {
             /*
             Done. Commit.
              */
-            // If this method was called from a passport class, don't commit because it needs
-            // to be part of the passport process transaction, so only commit if the skip_confirmation
-            // is false.
-            if (!skip_confirmation_code) {
-                this.DAO.commit();
-            }
+            this.DAO.commit();
             return account_id;
         } catch (NativeAuthException ex) {
             System.out.print(ex);
-            // Just roll back and throw back up the chain.
-            if (this.DAO != null) {
-                System.out.println("ROLLING BACK!");
-                this.DAO.rollback();
-            }
             throw new NativeAuthException(ex.getMessage());
         } catch (Exception ex) {
             System.out.print(ex);
-            if (this.DAO != null) {
-                System.out.println("ROLLING BACK!");
-                this.DAO.rollback();
-            }
-            // Try to parse the exception.
             if (ex.getMessage().contains("duplicate key") &&
                     ex.getMessage().contains("user_account_permissions_account_id_user_permission_id_idx")) {
                 throw new Exception("The email address for this account has already been verified!");
@@ -694,14 +724,8 @@ public class NativeAuthModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
-            // If we are skipping confirmation code, this means this is being used
-            // in an extending class as a stage for Passport login so don't close the
-            // DAO because we are still going to need it. It will get cleaned up in the
-            // extending object.
-            if (!skip_confirmation_code) {
-                if (this.DAO != null) {
-                    this.DAO.close();
-                }
+            if (this.DAO != null) {
+                this.DAO.close();
             }
         }
     }

@@ -8,7 +8,9 @@ import java.sql.*;
 import java.util.UUID;
 import java.security.SecureRandom;
 
+import com.Common.VendorCookie;
 import com.Email.EmailTemplates;
+import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
 import com.sendgrid.*;
 
 /**
@@ -78,7 +80,7 @@ public class BreweryRegistrationModel extends AbstractModel {
 
     private String registerBreweryAccountSQL_stage4_B =
             "INSERT INTO " +
-                    "   food_categories " +
+                    "   vendor_food_categories " +
                     "(" +
                     "   vendor_id, " +
                     "   name, " +
@@ -88,7 +90,7 @@ public class BreweryRegistrationModel extends AbstractModel {
 
     private String registerBreweryAccountSQL_stage4_C =
             "INSERT INTO " +
-                    "   drink_categories " +
+                    "   vendor_drink_categories " +
                     "(" +
                     "   vendor_id, " +
                     "   name, " +
@@ -104,6 +106,16 @@ public class BreweryRegistrationModel extends AbstractModel {
                     "   name, " +
                     "   hex_color " +
                     ") VALUES (?,'default','#ffffff') " +
+                    "RETURNING id";
+
+    private String registerBreweryAccountSQL_stage4_E =
+            "INSERT INTO " +
+                    "   vendor_page_image_galleries " +
+                    "(" +
+                    "   vendor_id, " +
+                    "   name, " +
+                    "   hex_color " +
+                    ") VALUES (?,'default','#000000') " +
                     "RETURNING id";
 
     /*
@@ -171,6 +183,119 @@ public class BreweryRegistrationModel extends AbstractModel {
     public BreweryRegistrationModel() throws Exception {
     }
 
+    private String OauthVendorAuthorize_sql =
+    "SELECT " +
+            "   confirmation_code " +
+            "FROM " +
+            "   vendors " +
+            "WHERE " +
+            "   id = ?";
+
+    /**
+     * Register a brewery account like normal (with fake values and blank passwords).
+     * Confirm the brewery account.
+     *
+     * This will be almost like registering an account normally, except that primary_email_address
+     * of the vendor (also used as account email address and used in login) will be the oauth_guid.
+     *
+     * Instead of something like a registration for ExampleBrewing@gmail.com => password:1234
+     *
+     * accounts:
+     *      email: example_brewing@gmail.com
+     *      password: 1234
+     * vendors:
+     *      primary_email: example_brewing@gmail.com
+     *
+     * You will use oauth_guid instead.
+     *
+     * accounts:
+     *      email: twitter_oauth_123241242342342
+     *      password: [doesn't matter, never used, so never hashed, and none will match]
+     * vendors:
+     *      primary_email: twitter_oauth_123241242342342
+     *
+     * Note that the account record will never change the oauth_guid as email since that is used to authenticate (and
+     * should only be called from the web-server, never as a publically open API), but it is possible for the
+     * vendor table record for "primary_email" to be changed (although this is never used in authentication).
+     * @param oauth_guid
+     * @return
+     * @throws Exception
+     */
+    public String OauthVendorAuthorize(
+        String oauth_guid,
+        String oauth_provider
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            /*
+            1) Register
+            2) "Confirm"
+            3) Login
+             */
+            // Step 1)
+            // Register
+            int vendor_id = this.registerBreweryAccount(
+                    "Enter Official Business Name",
+                    "Enter First Name",
+                    "Enter Last Name",
+                    oauth_guid, // for oauth, guid is email.
+                    "", // Doesn't matter.
+                    "", // Doesn't matter.
+                    "Enter Street Address",
+                    "Enter City",
+                    "CO", // will have to do something about this.
+                    "Enter ZIP",
+                    true, // is oauth.
+                    oauth_provider);
+            // Step 2)
+            // "Confirm"
+            preparedStatement = this.DAO.prepareStatement(OauthVendorAuthorize_sql);
+            preparedStatement.setInt(1, vendor_id);
+            resultSet = preparedStatement.executeQuery();
+            String confirmation_code = "";
+            while (resultSet.next()) {
+                confirmation_code = resultSet.getString("confirmation_code");
+            }
+            vendor_id = this.confirmBreweryAccount(confirmation_code);
+            // Step 3)
+            // Login
+            VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
+            return vendorAuthenticationModel.vendorLogin(
+                    oauth_guid,
+                    "", // Doesn't matter.
+                    "OAUTH", // Can't get it because it's from ouath callback, also doesn't matter because
+                    // brute force will hit the ouath provider first. Not our problem.
+                    true
+            );
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Check for error about email address collision. This means it just needs to be
+            // logged in.
+            if (ex.getMessage().contains("email already exists")) {
+                VendorAuthenticationModel vendorAuthenticationModel = new VendorAuthenticationModel();
+                return vendorAuthenticationModel.vendorLogin(
+                        oauth_guid,
+                        "", // Doesn't matter.
+                        "OAUTH", // Can't get it because it's from ouath callback, also doesn't matter because
+                        // brute force will hit the ouath provider first. Not our problem.
+                        true
+                );
+            }
+            throw new Exception("Unable to authenticate vendor oauth account.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
     /**
      * Register a new brewery vendor account (or a request for one).
      *
@@ -228,6 +353,39 @@ public class BreweryRegistrationModel extends AbstractModel {
             String state,
             String zip
     ) throws Exception {
+        boolean is_oauth = false; // Set this default as false. Maybe true if called from overloaded function.
+        String provider = "NO OAUTH"; // Doesn't matter.
+        return this.registerBreweryAccount(
+                official_business_name,
+                primary_contact_first_name,
+                primary_contact_last_name,
+                primary_email,
+                password,
+                confirm_password,
+                street_address,
+                city,
+                state,
+                zip,
+                is_oauth,
+                provider
+        );
+    }
+
+
+    public int registerBreweryAccount(
+            String official_business_name,
+            String primary_contact_first_name,
+            String primary_contact_last_name,
+            String primary_email,
+            String password,
+            String confirm_password,
+            String street_address,
+            String city,
+            String state,
+            String zip,
+            boolean is_oauth,
+            String oauth_provider // defaults to false in non-overloaded function.
+    ) throws Exception {
         // Generate a new salt for this new account.
         SecureRandom random = new SecureRandom();
         byte random_bytes[] = new byte[50];
@@ -251,6 +409,8 @@ public class BreweryRegistrationModel extends AbstractModel {
         ResultSet stage4_C_result_set = null;
         PreparedStatement stage4_D = null;
         ResultSet stage4_D_result_set = null;
+        PreparedStatement stage4_E = null;
+        ResultSet stage4_E_result_set = null;
         try {
             /*
             Four things need to happen in a transaction, otherwise the entire
@@ -270,15 +430,27 @@ public class BreweryRegistrationModel extends AbstractModel {
             stage4_B = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_B);
             stage4_C = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_C);
             stage4_D = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_D);
+            stage4_E = this.DAO.prepareStatement(this.registerBreweryAccountSQL_stage4_E);
             /*
             Stage 1)
              */
             // Prepare and execute the first statement to get the account_id.
+            // Note: If this was done with oauth, passwords are not a thing. Do not hash anything. Just enter
+            // plaintext "OAUTH" for hash and salt so hash will never match. It won't be able to authetnicate.
+            if (is_oauth) {
+                pash_hash = "OAUTH_" + oauth_provider;
+                salt = "OAUTH_" + oauth_provider;
+            }
             stage1.setString(1, primary_email);
             stage1.setString(2, pash_hash);
             stage1.setString(3, salt);
             stage1.setString(4, "vendor");
-            stage1.setString(5, "email_verification_pending");
+            // Note: If this was done with oauth, set the status to "email_verified".
+            if (is_oauth) {
+                stage1.setString(5, "email_verified");
+            } else {
+                stage1.setString(5, "email_verification_pending");
+            }
             ResultSet stage1Result = stage1.executeQuery();
             int account_id = 0;
             while (stage1Result.next()) {
@@ -355,6 +527,16 @@ public class BreweryRegistrationModel extends AbstractModel {
             if (event_category_id == 0) {
                 throw new BreweryRegistrationException("Registration failure: Unable to create default event category. Aborting.");
             }
+            // Default image gallery.
+            int image_gallery_id = 0;
+            stage4_E.setInt(1, vendor_id);
+            stage4_E_result_set = stage4_E.executeQuery();
+            while(stage4_E_result_set.next()) {
+                image_gallery_id = stage4_E_result_set.getInt("id");
+            }
+            if (image_gallery_id == 0) {
+                throw new BreweryRegistrationException("Registration failure: Unable to create default image gallery. Aborting.");
+            }
             /*
             Stage 5)
             Send email.
@@ -379,17 +561,13 @@ public class BreweryRegistrationModel extends AbstractModel {
             /*
             Commmit and return
              */
-            this.DAO.commit();
+            if (!is_oauth) { // Don't commit if oauth because confimration also needs to be done.
+                this.DAO.commit();
+            }
             // Return the new vendor_id.
             return vendor_id;
         } catch (Exception ex) {
-            // Roll back the transaction if anything has cone wrong.
-            // Clean up.
-            if (this.DAO != null) {
-                System.out.println(ex);
-                System.out.println("ROLLING BACK");
-                this.DAO.rollback();
-            }
+            System.out.println(ex.getMessage());
             // Try to parse error.
             if (ex.getMessage().contains("accounts_email_address_key") &&
                     ex.getMessage().contains("already exists.")) {
@@ -431,10 +609,17 @@ public class BreweryRegistrationModel extends AbstractModel {
             if (stage4_D_result_set != null) {
                 stage4_D_result_set.close();
             }
-            if (this.DAO != null) {
-                this.DAO.close();
+            if (stage4_E != null) {
+                stage4_E.close();
             }
-            this.DAO.setAutoCommit(true);
+            if (stage4_E_result_set != null) {
+                stage4_E_result_set.close();
+            }
+            if (!is_oauth) { // Don't close this if oauth because there are other steps that will need it.
+                if (this.DAO != null) {
+                    this.DAO.close();
+                }
+            }
         }
     }
 
@@ -584,21 +769,11 @@ public class BreweryRegistrationModel extends AbstractModel {
             // Return the vendor_id.
             return vendor_id;
         } catch (BreweryRegistrationException ex) {
-            // Roll back the transaction if anything has gone wrong.
             System.out.println(ex);
-            if (this.DAO != null) {
-                this.DAO.rollback();
-            }
             // This exception needs to bubble up.
             throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             System.out.println(ex);
-            // Roll back the transaction if anything has gone wrong.
-            // Clean up.
-            if (this.DAO != null) {
-                System.out.println(ex);
-                this.DAO.rollback();
-            }
             // Try to parse exception.
             if (ex.getMessage().contains("vendor_feature_associations_venodr_id_feature_id_idx") &&
                 ex.getMessage().contains("already exists.")) {
@@ -618,7 +793,6 @@ public class BreweryRegistrationModel extends AbstractModel {
             if (this.DAO != null) {
                 this.DAO.close();
             }
-            this.DAO.setAutoCommit(true);
         }
     }
 }

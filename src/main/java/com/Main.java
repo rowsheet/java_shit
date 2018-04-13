@@ -17,6 +17,7 @@ import com.VendorAccounts.VendorAccountsHandler;
 import com.VendorBlogging.VendorBloggingHandler;
 import com.VendorMemberships.VendorMembershipHandler;
 import com.VendorMenu.VendorMenuHandler;
+import com.VendorMedia.VendorMediaHandler;
 import com.VendorEvents.VendorEventsHandler;
 import com.UserVendorCommunication.UserVendorCommunicationHandler;
 import com.VendorThirdPartyCommunication.VendorThirdPartyCommunicationHandler;
@@ -46,6 +47,7 @@ import javax.xml.ws.Endpoint;
  *   6)   Vendor Blogging
  *   7)   Vendor Memberships
  *   8)   Vendor Menu
+ *   8)   Vendor Media (actually #9, whatever)
  *
  *   Third Party Systems:
  *
@@ -140,6 +142,13 @@ public class Main {
     Endpoint.publish(
             base_url + "VendorMenu",
             vendorMenuHandler);
+    /**
+     * Vendor Media
+     */
+    VendorMediaHandler vendorMediaHandler = new VendorMediaHandler();
+    Endpoint.publish(
+            base_url + "VendorMedia",
+            vendorMediaHandler);
     /**
      * Vendor Events
      */

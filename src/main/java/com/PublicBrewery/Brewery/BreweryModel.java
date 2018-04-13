@@ -15,12 +15,15 @@ package com.PublicBrewery.Brewery;
 import com.Common.AbstractModel;
 
 import com.Common.PublicVendor.Brewery;
-import com.Common.VendorPageImage;
+import com.Common.VendorMedia.VendorMedia;
+import com.Common.VendorMedia.VendorPageImageGallery;
 import com.PublicBrewery.Beer.BeerModel;
 import com.PublicBrewery.Food.FoodModel;
 import com.PublicBrewery.Events.EventModel;
 import com.PublicBrewery.Reviews.ReviewModel;
 import com.PublicBrewery.Drink.DrinkModel;
+import com.Common.VendorMedia.VendorPageImage;
+import com.PublicBrewery.VendorMedia.VendorMediaModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,27 +65,25 @@ public class BreweryModel extends AbstractModel {
                     "   COALESCE(v.longitude, 0.0) AS longitude, " +
                     "   COALESCE(v.google_maps_zoom, 0) AS google_maps_zoom," +
                     "   vi.brewery_has," +
-                    "   vi.brewery_friendly " +
+                    "   vi.brewery_friendly," +
+                    "   vi.short_type_description, " +
+                    "   vi.short_text_description, " +
+                    "   vi.main_image_id, " +
+                    "   vi.main_gallery_id," +
+                    "   vpi.filename AS main_image_filename, " +
+                    "   vpi.display_order AS main_image_display_order, " +
+                    "   vpi.gallery_id AS main_image_gallery_id " +
                     " FROM " +
                     "   vendors v " +
                     "LEFT JOIN " +
                     "   vendor_info vi " +
                     "ON " +
                     "   v.id = vi.vendor_id " +
+                    "LEFT JOIN " +
+                    "   vendor_page_images vpi " +
+                    "ON " +
+                    "   vi.main_image_id = vpi.id " +
                     "WHERE v.id = ?";
-
-    private String loadBreweryInfo_stage2 =
-            "SELECT " +
-                    "   display_order, " +
-                    "   filename, " +
-                    "   TO_CHAR(creation_timestamp, 'MM-DD-YYYY HH24:MI:SS') AS upload_date, " +
-                    "   id as image_id," +
-                    "   show_in_main_gallery, " +
-                    "   show_in_main_slider " +
-                    "FROM " +
-                    "   vendor_page_images " +
-                    "WHERE " +
-                    "   vendor_id = ?";
 
     public BreweryModel() throws Exception {}
 
@@ -205,12 +206,9 @@ public class BreweryModel extends AbstractModel {
         // Create statments.
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
-        PreparedStatement stage2 = null;
-        ResultSet stage2Result = null;
         try {
             // Prepare statments.
             stage1 = this.DAO.prepareStatement(this.loadBreweryInfo_stage1);
-            stage2 = this.DAO.prepareStatement(this.loadBreweryInfo_stage2);
             /*
             Stage 1
              */
@@ -249,6 +247,10 @@ public class BreweryModel extends AbstractModel {
                 brewery.latitude = stage1Result.getFloat("latitude");
                 brewery.longitude = stage1Result.getFloat("longitude");
                 brewery.google_maps_zoom = stage1Result.getInt("google_maps_zoom");
+                brewery.short_type_description = stage1Result.getString("short_type_description");
+                brewery.short_text_description = stage1Result.getString("short_text_description");
+                brewery.main_image_id = stage1Result.getInt("main_image_id");
+                brewery.main_gallery_id = stage1Result.getInt("main_gallery_id");
                 // Brewery "has" items are an array of enums in postgres.
                 Array brewery_has = stage1Result.getArray("brewery_has");
                 String [] str_brewery_has = new String[]{};
@@ -263,22 +265,20 @@ public class BreweryModel extends AbstractModel {
                     str_brewery_friendly = (String[]) brewery_friendly.getArray();
                     brewery.brewery_friendly = str_brewery_friendly;
                 }
+                // Get the page image.
+                VendorPageImage vendorPageImage = new VendorPageImage();
+                vendorPageImage.id = brewery.main_image_id;
+                vendorPageImage.filename = stage1Result.getString("main_image_filename");
+                vendorPageImage.gallery_id = stage1Result.getShort("main_image_gallery_id");
+                vendorPageImage.display_order = stage1Result.getInt("main_image_display_order");
+                vendorPageImage.vendor_id = brewery.vendor_id;
+                brewery.main_image = vendorPageImage;
             }
             /*
             Stage 2
              */
-            stage2.setInt(1, brewry_id);
-            stage2Result = stage2.executeQuery();
-            while (stage2Result.next()) {
-                VendorPageImage vendorPageImage = new VendorPageImage();
-                vendorPageImage.filename = stage2Result.getString("filename");
-                vendorPageImage.upload_date = stage2Result.getString("upload_date");
-                vendorPageImage.image_id = stage2Result.getInt("image_id");
-                vendorPageImage.display_order = stage2Result.getInt("display_order");
-                vendorPageImage.show_in_main_slider = stage2Result.getBoolean("show_in_main_slider");
-                vendorPageImage.show_in_main_gallery = stage2Result.getBoolean("show_in_main_gallery");
-                brewery.page_images.put(vendorPageImage.display_order, vendorPageImage);
-            }
+            VendorMediaModel vendorMediaModel = new VendorMediaModel();
+            brewery.main_gallery = vendorMediaModel.loadVendorPageImageGallery(brewery.main_gallery_id);
             /*
             Stage 3
              */
@@ -326,12 +326,6 @@ public class BreweryModel extends AbstractModel {
             }
             if (stage1Result != null) {
                 stage1Result.close();
-            }
-            if (stage2 != null) {
-                stage2.close();
-            }
-            if (stage2Result != null) {
-                stage2Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

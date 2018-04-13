@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import com.google.gson.*;
 import com.sun.org.apache.regexp.internal.RE;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import sun.security.provider.ConfigFile;
 
 /**
@@ -58,7 +59,8 @@ public class AbstractModel {
     // @TODO (cont.) tracking for security).
     private String checkVendorSessionSQL =
             "SELECT " +
-                    "   vaa.vendor_id " +
+                    "   vaa.vendor_id, " +
+                    "   vaa.account_id " +
                     "FROM " +
                     "   sessions s " +
                     "LEFT JOIN " +
@@ -68,11 +70,23 @@ public class AbstractModel {
                     "WHERE " +
                     "   s.session_key = ?";
 
-    protected void cleanupDatabase() {
-        if (this.DAO != null) {
-            this.DAO = null;
-        }
-    }
+    // Blacklist like things.
+    // @TODO maybe ad CVE links?
+    private String registerAsshole_sql =
+            "INSERT INTO " +
+                    "   assholes (" +
+                    "   ip_address, " +
+                    "   said_vendor_id, " +
+                    "   said_account_id, " +
+                    "   offense, " +
+                    "   request_info, " +
+                    "   blacklist_me, " +
+                    "   watchlist_me, " +
+                    "   said_cookie, " +
+                    "   port, " +
+                    "   code_source " +
+                    "VALUES " +
+                    "   (?,?,?,?,?,?,?,?,?,?,?)";
 
     protected void validateUserCookie(String cookie)
         throws Exception {
@@ -149,6 +163,14 @@ public class AbstractModel {
         }
     }
 
+    // Do not respond.
+    protected void checkDNR(Exception ex)
+        throws Exception {
+        if (ex.getMessage().contains("DNR")) {
+            throw new Exception("--DNR302--"); // Flask looks for this.
+        }
+    }
+
     /**
      * Takes a cookie as a JSON string and just retuns the
      * vendorID. If there is no userID, and exception will
@@ -179,12 +201,29 @@ public class AbstractModel {
             resultSet = preparedStatement.executeQuery();
             int rows_of_session_found = 0;
             int vendor_id = 0;
+            int account_id = 0;
             while (resultSet.next()) {
                 vendor_id = resultSet.getInt("vendor_id");
+                account_id = resultSet.getInt("account_id");
                 rows_of_session_found++;
             }
             if (rows_of_session_found == 0) {
+                // If there is a vendor_id, there should also be an account_id since
+                // both fields are required in the DB.
                 throw new Exception("Invalid session.");
+            }
+            // Set the VendorCookie.vendorID value to what was in the session store.
+            int vendor_id_before = this.vendorCookie.vendorID;
+            int account_id_before = this.vendorCookie.accountID;
+            this.vendorCookie.vendorID = vendor_id;
+            this.vendorCookie.accountID = account_id;
+            if ((this.vendorCookie.vendorID != vendor_id_before) || (this.vendorCookie.accountID != account_id_before)) {
+                // The client just spoofied either their account_id or
+                // their vendor_id. Probably a made-up request.
+                // @TODO REGISTER THIS.
+                System.out.println("ASSHOLE");
+                // Do not respond to client.
+                throw new Exception("DNR");
             }
             // Return the vendor_id.
             return vendor_id;
@@ -239,7 +278,6 @@ public class AbstractModel {
 //        System.out.println("feature_name");
 //        System.out.println(feature_name);
 //        System.out.println("vendor_id");
-        System.out.println(this.vendorCookie.vendorID);
         this.validateVendorCookie(cookie);
         VendorFeature vendorFeature = this.vendorCookie.vendorFeatures.get(feature_name);
         if (vendorFeature == null) {
@@ -314,8 +352,8 @@ public class AbstractModel {
 
     protected String getHash(String password, String salt) throws Exception {
         if (salt.length() < 50) {
-            System.out.println(salt);
-            System.out.println(salt.length());
+//            System.out.println(salt);
+//            System.out.println(salt.length());
             throw new Exception("Salt is too short.");
         }
         String salt_pass = salt + password;

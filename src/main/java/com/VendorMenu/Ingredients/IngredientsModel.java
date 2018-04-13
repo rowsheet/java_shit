@@ -1247,6 +1247,7 @@ public class IngredientsModel extends AbstractModel {
             return drinkIngredients;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            this.checkDNR(ex);
             // Don't know why.
             throw new Exception("Unable to load drink ingredients.");
         } finally {

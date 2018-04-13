@@ -75,6 +75,16 @@ public class VendorAuthenticationModel extends AbstractModel {
                     "WHERE " +
                     "   vaa.account_id = ?";
 
+    private String vendorLoginSQL_stage4 =
+            "SELECT " +
+                    "   first_name, " +
+                    "   last_name, " +
+                    "   profile_picture, " +
+                    "   about_me " +
+                    "FROM " +
+                    "   user_account_info " +
+                    "WHERE " +
+                    "   account_id = ?";
 
     private String vendorLogoutSQL_stage1 =
             "DELETE FROM" +
@@ -104,7 +114,7 @@ public class VendorAuthenticationModel extends AbstractModel {
      * @throws Exception
      */
     public String vendorLogout(
-        String cookie
+            String cookie
     ) throws Exception {
         String session_key = this.parseSessionKey(cookie);
         PreparedStatement preparedStatement = this.DAO.prepareStatement(this.vendorLogoutSQL_stage1);
@@ -140,7 +150,9 @@ public class VendorAuthenticationModel extends AbstractModel {
      *
      * 3) Fetch all the features for the vendor associated with that account.
      *
-     * 4) Create a REST cookie with all features, account_id, vendor_id, and drop-downs and return it.
+     * 4) Fetch all user info for that account.
+     *
+     * 5) Create a cookie with all features, account_id, vendor_id, and drop-downs and return it.
      *
      * @param email_address
      * @param password
@@ -153,50 +165,90 @@ public class VendorAuthenticationModel extends AbstractModel {
             String password,
             String ip_address
     ) throws Exception {
+        boolean is_oauth = false;
+        String oauth_guid = "NO OAUTH"; // Doesn't matter.
+        return this.vendorLogin(
+                email_address,
+                password,
+                ip_address,
+                is_oauth
+        );
+    }
+
+    private String oauth_stage1_sql =
+        "SELECT " +
+                "   id " +
+                "FROM " +
+                "   accounts " +
+                "WHERE " +
+                "   email_address = ?";
+
+    public String vendorLogin(
+            String email_address, // This is sometimes the oauth_guid.
+            String password,
+            String ip_address,
+            boolean is_oauth // Skip stage 1 if oauth is being used.
+    ) throws Exception {
         PreparedStatement stage1 = null;
+        PreparedStatement oauth_stage1 = null;
         ResultSet stage1Result = null;
+        ResultSet oauth_stage1_result = null;
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
+        PreparedStatement stage4 = null;
+        ResultSet stage4Result = null;
         ResultSet stage3Result = null;
         try {
             // Disable auto-commit.
             this.DAO.setAutoCommit(false);
             // Create the statements.
             stage1 = this.DAO.prepareStatement(this.vendorLoginSQL_stage1);
+            oauth_stage1 = this.DAO.prepareStatement(this.oauth_stage1_sql);
             stage2 = this.DAO.prepareStatement(this.vendorLoginSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.vendorLoginSQL_stage3);
             /*
             Stage 1A)
              */
-            // Fetches the pass_hash and salt for account where email_address matches and account_type = "vendor".
-            stage1.setString(1, email_address);
-            stage1.setString(2, "vendor");
-            stage1Result = stage1.executeQuery();
-            String pass_hash = null;
-            String salt = null;
             int account_id = 0;
-            String account_status = null;
-            while (stage1Result.next()) {
-                account_id = stage1Result.getInt("id");
-                salt = stage1Result.getString("salt");
-                pass_hash = stage1Result.getString("pass_hash");
-                account_status = stage1Result.getString("status");
-            }
-            if (account_id == 0) {
-                throw new VendorAuthenticationException("No matching vendor account found.");
-            }
-            /*
-            Stage 1B)
-             */
-            String hash_from_provided_password = this.getHash(password, salt);
-            if (!hash_from_provided_password.equals(pass_hash)) {
-                throw new VendorAuthenticationException("Valid account found but invalid password match.");
-            }
-            /*
-            Stage 1C)
-             */
-            if (account_status.equals("email_verification_pending")) {
-                throw new VendorAuthenticationException("Sorry! This email address hasn't been verified yet.");
+            if (!is_oauth) {
+                // Fetches the pass_hash and salt for account where email_address matches and account_type = "vendor".
+                stage1.setString(1, email_address);
+                stage1.setString(2, "vendor");
+                stage1Result = stage1.executeQuery();
+                String pass_hash = null;
+                String salt = null;
+                String account_status = null;
+                while (stage1Result.next()) {
+                    account_id = stage1Result.getInt("id");
+                    salt = stage1Result.getString("salt");
+                    pass_hash = stage1Result.getString("pass_hash");
+                    account_status = stage1Result.getString("status");
+                }
+                if (account_id == 0) {
+                    throw new VendorAuthenticationException("No matching vendor account found.");
+                }
+                /*
+                Stage 1B)
+                 */
+                String hash_from_provided_password = this.getHash(password, salt);
+                if (!hash_from_provided_password.equals(pass_hash)) {
+                    throw new VendorAuthenticationException("Valid account found but invalid password match.");
+                }
+                /*
+                Stage 1C)
+                 */
+                if (account_status.equals("email_verification_pending")) {
+                    throw new VendorAuthenticationException("Sorry! This email address hasn't been verified yet.");
+                }
+            } else {
+                oauth_stage1.setString(1, email_address);
+                oauth_stage1_result = oauth_stage1.executeQuery();
+                while (oauth_stage1_result.next()) {
+                    account_id = oauth_stage1_result.getInt("id");
+                }
+                if (account_id == 0) {
+                    throw new VendorAuthenticationException("Unable to log in oauth user.");
+                }
             }
             /*
             Stage 2)
@@ -233,6 +285,18 @@ public class VendorAuthenticationModel extends AbstractModel {
             Stage 4)
              */
             VendorCookie vendorCookie = new VendorCookie();
+            stage4 = this.DAO.prepareStatement(this.vendorLoginSQL_stage4);
+            stage4.setInt(1, account_id);
+            stage4Result = stage4.executeQuery();
+            while (stage4Result.next()) {
+                vendorCookie.first_name = stage4Result.getString("first_name");
+                vendorCookie.last_name = stage4Result.getString("last_name");
+                vendorCookie.about_me = stage4Result.getString("about_me");
+                vendorCookie.profile_picture = stage4Result.getString("profile_picture");
+            }
+            /*
+            Stage 5)
+             */
             vendorCookie.sessionKey = session_key;
             vendorCookie.accountID = account_id;
             vendorCookie.vendorID = vendor_id;
@@ -268,6 +332,12 @@ public class VendorAuthenticationModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
+            if (oauth_stage1 != null)  {
+                oauth_stage1.close();
+            }
+            if (oauth_stage1_result != null) {
+                oauth_stage1_result.close();
+            }
             if (stage2 != null) {
                 stage2.close();
             }
@@ -277,7 +347,15 @@ public class VendorAuthenticationModel extends AbstractModel {
             if (stage3Result != null) {
                 stage3Result.close();
             }
-            this.DAO.setAutoCommit(true);
+            if (stage4 != null) {
+                stage4.close();
+            }
+            if (stage4Result != null) {
+                stage4Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
         }
     }
 

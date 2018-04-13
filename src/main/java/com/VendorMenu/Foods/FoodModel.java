@@ -563,8 +563,7 @@ public class FoodModel extends AbstractModel {
             System.out.println(ex.getMessage());
             System.out.println("ROLLING BACK");
             this.DAO.rollback();
-            throw new Exception("Unable to update food category.");
-        } finally {
+            throw new Exception("Unable to update food category."); } finally {
             if (stage2 != null) {
                 stage2.close();
             }

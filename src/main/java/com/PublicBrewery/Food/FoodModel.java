@@ -2,6 +2,7 @@ package com.PublicBrewery.Food;
 
 import com.Common.*;
 import com.Common.PublicVendor.FoodMenu;
+import com.PublicBrewery.VendorMedia.VendorMediaModel;
 
 import java.util.HashMap;
 import java.sql.PreparedStatement;
@@ -284,6 +285,14 @@ public class FoodModel extends AbstractModel {
                     "WHERE " +
                     "   v.id = ?";
 
+    public String loadFoodMenuSQL_stage7 =
+        "SELECT " +
+                "   main_food_gallery_id " +
+                "FROM " +
+                "   vendor_info " +
+                "WHERE " +
+                "   vendor_id = ?";
+
     public FoodModel() throws Exception {}
 
     /**
@@ -298,6 +307,7 @@ public class FoodModel extends AbstractModel {
      * 4) Load all ingredients.
      * 5) Calculate review averages for all the vendor_foods.
      * 6) Load the drop-downs.
+     * 7) Load main gallery.
      *
      * @param brewery_id
      * @return HashMap<vendor_food_id, vendor_food_data_structure>
@@ -314,6 +324,8 @@ public class FoodModel extends AbstractModel {
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
         ResultSet stage4Result = null;
+        PreparedStatement stage7 = null;
+        ResultSet stage7Result = null;
         try {
             // Initialize variables.
             FoodMenu foodMenu = new FoodMenu();
@@ -582,6 +594,21 @@ public class FoodModel extends AbstractModel {
              */
             dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
             /*
+            Stage 7
+            Load the gallery.
+             */
+            stage7 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage7);
+            stage7.setInt(1, brewery_id);
+            stage7Result = stage7.executeQuery();
+            int gallery_id = 0;
+            while (stage7Result.next()) {
+                gallery_id = stage7Result.getInt("main_food_gallery_id");
+            }
+            if (gallery_id != 0) {
+                VendorMediaModel vendorMediaModel = new VendorMediaModel();
+                foodMenu.mainGallery = vendorMediaModel.loadVendorPageImageGallery(gallery_id);
+            }
+            /*
             Assemble main return object and be done.
              */
             foodMenu.menuItems = vendorFoodHashMap;
@@ -614,6 +641,12 @@ public class FoodModel extends AbstractModel {
             }
             if (stage4Result != null) {
                 stage4Result.close();
+            }
+            if (stage7 != null) {
+                stage7.close();
+            }
+            if (stage7Result != null) {
+                stage7Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

@@ -966,7 +966,6 @@ public class VendorMenuHandler {
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "id") int id
     ) throws Exception {
-        System.out.println("called here");
         IngredientsController ingredientsController = new IngredientsController();
         return ingredientsController.deleteDrinkIngredient(
                 cookie,

@@ -86,4 +86,20 @@ public class NativeAuthController extends AbstractController {
         NativeAuthModel nativeAuthModel = new NativeAuthModel();
         nativeAuthModel.userLogout(session_key);
     }
+
+    public String OAuthUserAuthorize(
+            String oauth_guid,
+            String oauth_provider
+    ) throws Exception {
+        // Validate input params.
+        this.validateString(oauth_guid, "oauth_guid");
+        this.validateString(oauth_provider, "oauth_provider");
+        // Model things.
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        UserCookie userCookie = nativeAuthModel.OAuthUserAuthorize(
+                oauth_guid,
+                oauth_provider
+        );
+        return this.returnJSON(userCookie);
+    }
 }

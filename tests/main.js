@@ -8,6 +8,7 @@ var vendoraccounts_url = "http://localhost:9000/VendorAccounts?wsdl";
 var vendorblogging_url = "http://localhost:9000/VendorBlogging?wsdl";
 var vendormemberships_url = "http://localhost:9000/VendorMemberships?wsdl";
 var vendormenu_url = "http://localhost:9000/VendorMenu?wsdl";
+var vendormedia_url = "http://localhost:9000/VendorMedia?wsdl";
 var vendorevents_url = "http://localhost:9000/VendorEvents?wsdl";
 var thirdpartyaccounts_url = "http://localhost:9000/ThirdPartyAccounts?wsdl";
 var thirdpartymenu_url = "http://localhost:9000/ThirdPartyMenu?wsdl";
@@ -17,7 +18,7 @@ var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyC
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
 
-temp_cookie = '{"sessionKey":"P9MprRpQBoCLQyXPhOpZvn+pCTmCPgRAoAzJ4e3xaMBBqdn5wTm0wlcy080z6r4vRuU=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+temp_cookie = '{"sessionKey":"hZp2Zz0952Q5fTxHRFjvUFBufbjPQE5CvfmKnk4AhjS/gbFRm7lSfTpFup1NViKSkT4=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
 	soap.createClient(url, function(err, client) {
@@ -1134,9 +1135,145 @@ call_api(vendormenu_url, "loadDrinkIngredients", {
 	"cookie": temp_cookie
 });
 */
+/*
 call_api(vendormenu_url, "deleteFoodTag", {
 	"module": "VendorMenu",
 	"command": "deleteFoodTag",
 	"cookie": temp_cookie,
 	"id": 19
+});
+*/
+/*
+call_api(vendormedia_url, "createVendorPageImageGallery", {
+	"module": "VendorMedia",
+	"command": "createVendorPageImageGallery",
+	"cookie": temp_cookie,
+	"name": "testonemoretime",
+	"hex_color": "#000fff"
+});
+*/
+/*
+call_api(vendormedia_url, "uploadVendorPageImage", {
+	"module": "VendorMedia",
+	"command": "uploadVendorPageImage",
+	"cookie": temp_cookie,
+	"filename": "NEWTHING",
+	"gallery_id": 28,
+});
+*/
+/*
+call_api(publicbrewery_url, "loadVendorMedia", {
+	"module": "PublicBrewery",
+	"command": "loadVendorMedia",
+	"vendor_id": 21
+});
+*/
+/*
+call_api(vendormedia_url, "loadVendorPageImageGalleryTable", {
+	"module": "VendorMedia",
+	"command": "loadVendorPageImageGalleryTable",
+	"cookie": temp_cookie,
+	"gallery_id": 4
+});
+*/
+/*
+call_api(vendormedia_url, "loadVendorPageImageGalleriesTable", {
+	"module": "VendorMedia",
+	"command": "loadVendorPageImageGalleriesTable",
+	"cookie": temp_cookie
+});
+*/
+/*
+call_api(publicbrewery_url, "loadVendorPageImageGallery", {
+	"module": "PublicBrewery",
+	"command": "loadVendorPageImageGallery",
+	"gallery_id": 8
+});
+*/
+other_cookie = '{"sessionKey":"QDknGO8C9f1hqLHzdsp3DavH6WfEDY9lK9WJGg1ZjptXuIPH13Q5RFysUOJeVezAxU8\\u003d","vendorID":21,"requestFeatureID":0,"accountID":230,"vendorFeatures":{"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"vendor_food_ingredients":{"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"nutritional_facts":{"name":"nutritional_facts","feature_id":20,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+/*
+call_api(vendoraccounts_url, "loadVendorAccountProfile", {
+	"module": "VendorAccounts",
+	"command": "loadVendorAccountProfile",
+//	"cookie": temp_cookie
+	"cookie": other_cookie 
+});
+*/
+/*
+call_api(vendoraccounts_url, "updateVendorAccountInfo", {
+	"module": "VendorAccounts",
+	"command": "updateVendorAccountInfo",
+	"cookie": other_cookie,
+	"public_first_name": "Sam", 
+	"public_last_name": "Teng Wong", 
+	"about_me": "I am a hipster." 
+});
+*/
+/*
+call_api(vendoraccounts_url, "uploadVendorAccountProfilePicture", {
+	"module": "VendorAccounts",
+	"command": "uploadVendorAccountProfilePicture",
+	"cookie": temp_cookie,
+	"filename": "fuckyou" 
+});
+*/
+/*
+call_api(vendoraccounts_url, "deleteVendorAccountProfilePicture", {
+	"module": "VendorAccounts",
+	"command": "deleteVendorAccountProfilePicture",
+	"cookie": temp_cookie
+});
+*/
+/*
+call_api(vendoraccounts_url, "registerBreweryAccount", {
+	"module": "VendorAccounts",
+	"command": "registerBreweryAccount",
+	"official_business_name": "DOPEAF",
+	"primary_contact_first_name": "DOPEAF",
+	"primary_contact_last_name": "DOPEAF",
+	"primary_email": "DOPEAF",
+	"password": "DOPEAF12345678",
+	"confirm_password": "DOPEAF12345678",
+	"street_address": "DOPEAF",
+	"city": "DOPEAF",
+	"state": "CO",
+	"zip": 90210,
+});
+*/
+/*
+call_api(vendoraccounts_url, "vendorLogin", {
+	"module": "VendorAccounts",
+	"command": "vendorLogin",
+	"email_address": "DOPEAF",
+	"password": "nahannielenor",
+	"ip_address": "fuckyou",
+});
+*/
+/*
+call_api(vendoraccounts_url, "confirmBreweryAccount", {
+	"module": "VendorAccounts",
+	"command": "confirmBreweryAccount",
+	"confirmation_code": "924d42c3-ea85-4edc-9b53-f3babc77a22e"
+});
+*/
+/*
+call_api(vendoraccounts_url, "oauthVendorAuthorize", {
+	"module": "VendorAccounts",
+	"command": "oauthVendorAuthorize",
+	"oauth_guid": "LMFAO",
+	"oauth_provider": "TWITTER"
+});
+*/
+/*
+call_api(useraccounts_url, "checkUserSession", {
+	"module": "UserAccounts",
+	"command": "checkUserSession",
+	"session_key": "AcEcOM3kQOVo/0ze6r7foUojOz8rz0T9QfFfQvIBizbDNDbt5HBdOIZz8adOiPcbvkA\\u003d"
+});
+*/
+call_api(useraccounts_url, "oauthUserAuthorize", {
+	"module": "UserAccounts",
+	"command": "oauthUserAuthorize",
+	"oauth_guid": "THING",
+	"oauth_provider": "TWITTER"
 });

@@ -7,6 +7,22 @@ import com.Common.AbstractController;
  */
 public class BreweryRegistrationController extends AbstractController {
 
+    public String OauthVendorAuthorize (
+            String oauth_guid,
+            String oauth_provider
+    ) throws Exception {
+        // Validate things.
+        this.validateString(oauth_guid, "oauth_guid");
+        this.validateString(oauth_provider, "oauth_provider");
+        // Model things.
+        BreweryRegistrationModel breweryRegistrationModel = new BreweryRegistrationModel();
+        return breweryRegistrationModel.OauthVendorAuthorize(
+                // Use oauth guid son.
+                oauth_guid,
+                oauth_provider
+        );
+    }
+
     public int registerBreweryAccount (
             String official_business_name,
             String primary_contact_first_name,

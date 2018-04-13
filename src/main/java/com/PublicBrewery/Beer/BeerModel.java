@@ -2,6 +2,8 @@ package com.PublicBrewery.Beer;
 
 import com.Common.*;
 import com.Common.PublicVendor.BeerMenu;
+import com.Common.VendorMedia.VendorMedia;
+import com.PublicBrewery.VendorMedia.VendorMediaModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -291,6 +293,14 @@ public class BeerModel extends AbstractModel {
                     "WHERE " +
                     "   v.id = ?";
 
+    public String loadBeerMenuSQL_stage7 =
+            "SELECT " +
+                    "   main_beer_gallery_id " +
+                    "FROM " +
+                    "   vendor_info " +
+                    "WHERE " +
+                    "   vendor_id = ?";
+
     public BeerModel() throws Exception {
     }
 
@@ -306,6 +316,7 @@ public class BeerModel extends AbstractModel {
      * 4) Load all ingredients (and associated nutritional facts).
      * 5) Calculate review averages for all the beers.
      * 6) Load all drop-downs.
+     * 7) Load main gallery.
      *
      * @param brewery_id
      * @return HashMap<beer_id, beer_data_structure>
@@ -322,6 +333,8 @@ public class BeerModel extends AbstractModel {
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
         ResultSet stage4Result = null;
+        PreparedStatement stage7 = null;
+        ResultSet stage7Result = null;
         try {
             // Initialize variables.
             BeerMenu beerMenu = new BeerMenu();
@@ -600,6 +613,21 @@ public class BeerModel extends AbstractModel {
              */
             dropDowns = this.getVendorDropdowns(brewery_id, this.DAO);
             /*
+            Stage 7
+            Load all galleries.
+             */
+            stage7 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage7);
+            stage7.setInt(1, brewery_id);
+            int main_gallery_id = 0;
+            stage7Result = stage7.executeQuery();
+            while (stage7Result.next()) {
+                main_gallery_id = stage7Result.getInt("main_beer_gallery_id");
+            }
+            if (main_gallery_id != 0) {
+                VendorMediaModel vendorMediaModel = new VendorMediaModel();
+                beerMenu.mainGallery = vendorMediaModel.loadVendorPageImageGallery(main_gallery_id);
+            }
+            /*
             Assemble main return object and be done.
              */
             beerMenu.menuItems = beerHashMap;
@@ -626,6 +654,18 @@ public class BeerModel extends AbstractModel {
             }
             if (stage3Result != null) {
                 stage3Result.close();
+            }
+            if (stage4 != null) {
+                stage4.close();
+            }
+            if (stage4Result != null) {
+                stage4Result.close();
+            }
+            if (stage7 != null) {
+                stage7.close();
+            }
+            if (stage7Result != null) {
+                stage7Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
