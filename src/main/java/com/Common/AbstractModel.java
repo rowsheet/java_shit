@@ -70,6 +70,14 @@ public class AbstractModel {
                     "WHERE " +
                     "   s.session_key = ?";
 
+    private String chekcUserSessionSQL =
+            "SELECT " +
+                    "   account_id " +
+                    "FROM " +
+                    "   sessions " +
+                    "WHERE " +
+                    "   session_key = ?";
+
     // Blacklist like things.
     // @TODO maybe ad CVE links?
     private String registerAsshole_sql =
@@ -88,34 +96,59 @@ public class AbstractModel {
                     "VALUES " +
                     "   (?,?,?,?,?,?,?,?,?,?,?)";
 
-    protected void validateUserCookie(String cookie)
-        throws Exception {
+    /**
+     * Takes a cookie as a JSON string and just retuns the
+     * vendorID. If there is no userID, and exception will
+     * be thrown.
+     * @param cookie
+     * @return
+     */
+
+    protected int validateUserCookie(String cookie)
+            throws Exception {
+        // Parse the cookie string and set the internal userCookie object.
+        // We will need to sessionKey from this data.
+        Gson gson = new Gson();
+        this.userCookie = gson.fromJson(cookie, UserCookie.class);
+        // Fetching session data.
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            // @TODO fetch the session key and look it up, then setting
-            // the account_id to what it was from the session.
-            Gson gson = new Gson();
-            this.userCookie = gson.fromJson(cookie, UserCookie.class);
-            preparedStatement = this.DAO.prepareStatement(this.checkUserSessionSQL);
-            preparedStatement.setString(1, this.userCookie.sessionKey);
+            // Initialize data access object for sesseions.
+            // In the future, this will be ported to Redis.
+            Class.forName("org.postgresql.Driver");
+            this.SessionDAO = DriverManager
+                    .getConnection("jdbc:postgresql://localhost:5432/skiphopp?assumeMinServerVersion=9.0",
+                            this.db_username, this.db_password);
+            String session_key = this.userCookie.sessionKey;
+            preparedStatement = this.SessionDAO.prepareStatement(this.checkUserSessionSQL);
+            preparedStatement.setString(1, session_key);
             resultSet = preparedStatement.executeQuery();
+            int rows_of_session_found = 0;
             int account_id = 0;
             while (resultSet.next()) {
                 account_id = resultSet.getInt("account_id");
+                rows_of_session_found++;
             }
-            if (account_id == 0) {
-                throw new AbstractModelException("Invalid session key.");
+            if (rows_of_session_found == 0) {
+                throw new Exception("Invalid session.");
             }
-            this.userCookie.userID = account_id;
-        } catch (AbstractModelException ex) {
-            System.out.println(ex.getMessage());
-            // This needs to bubble up.
-            throw new Exception(ex.getMessage());
+            // Set the accountID value to what was in the session store, otherwise the user can spoof it.
+            int account_id_before = this.userCookie.userID;
+            this.userCookie.userID= account_id;
+            if (this.userCookie.userID != account_id_before) {
+                // The client just spoofied either their account_id
+                // @TODO REGISTER THIS.
+                System.out.println("ASSHOLE");
+                // Do not respond to client.
+                throw new Exception("DNR");
+            }
+            // Return the account_id.
+            return account_id;
         } catch (Exception ex) {
-            System.out.print(ex.getMessage());
-            // Unknown reason.
-            throw new Exception("Unable to check users session.");
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to validate session.");
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();
@@ -123,8 +156,8 @@ public class AbstractModel {
             if (resultSet != null) {
                 resultSet.close();
             }
-            if (this.DAO != null) {
-                this.DAO.close();
+            if (this.SessionDAO != null) {
+                this.SessionDAO.close();
             }
         }
     }
@@ -149,6 +182,9 @@ public class AbstractModel {
 
     protected void validateCookiePermission(String cookie, String permission_name)
         throws Exception {
+        // Validate the cookie first.
+        this.validateUserCookie(cookie);
+        // Check the permission. Be carful of reads.
         Gson gson = new Gson();
         this.userCookie = gson.fromJson(cookie, UserCookie.class);
         UserPermission userPermission = this.userCookie.userPermissions.get(permission_name);
@@ -212,7 +248,8 @@ public class AbstractModel {
                 // both fields are required in the DB.
                 throw new Exception("Invalid session.");
             }
-            // Set the VendorCookie.vendorID value to what was in the session store.
+            // Set the VendorCookie.vendorID value to what was in the session store, otherwise the user
+            // could spoof it.
             int vendor_id_before = this.vendorCookie.vendorID;
             int account_id_before = this.vendorCookie.accountID;
             this.vendorCookie.vendorID = vendor_id;
@@ -352,8 +389,8 @@ public class AbstractModel {
 
     protected String getHash(String password, String salt) throws Exception {
         if (salt.length() < 50) {
-//            System.out.println(salt);
-//            System.out.println(salt.length());
+            System.out.println(salt);
+            System.out.println(salt.length());
             throw new Exception("Salt is too short.");
         }
         String salt_pass = salt + password;

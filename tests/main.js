@@ -1265,15 +1265,38 @@ call_api(vendoraccounts_url, "oauthVendorAuthorize", {
 });
 */
 /*
+call_api(vendoraccounts_url, "checkVendorSession", {
+	"module": "VendorAccounts",
+	"command": "checkVendorSession",
+	"session_key": 'eaAyDnepIVzc6Pz7zK9AYWvQDJng6DamPtQj/2K4V4zxD6eF3Mo2FfCrFuV9xIAp45k=' 
+});
+*/
+/*
 call_api(useraccounts_url, "checkUserSession", {
 	"module": "UserAccounts",
 	"command": "checkUserSession",
-	"session_key": "AcEcOM3kQOVo/0ze6r7foUojOz8rz0T9QfFfQvIBizbDNDbt5HBdOIZz8adOiPcbvkA\\u003d"
+	"session_key": "mIm9xy4lQtjFG3ivCjNY0FjePFLnPJTZUnADfJbi+beLIFLOmtnvMweSso0nkCWLQ24="
 });
-*/
 call_api(useraccounts_url, "oauthUserAuthorize", {
 	"module": "UserAccounts",
 	"command": "oauthUserAuthorize",
 	"oauth_guid": "THING",
 	"oauth_provider": "TWITTER"
+});
+*/
+user_cookie = '{"userID":314,"requestPermissionID":0,"sessionKey":"0K+6RstTeK8kv8l9W3kDay2nS8tYS0k4o5RyOSsee74WgBaas8YSo8MArQ0UA3et4o0=","emailAddress":"user_google_103274899784322853769","userName":"user_google_103274899784322853769","first_name":"Enter First Name","last_name":"Enter Last Name","about_me":"NA","profile_picture":"NA","userPermissions":{"third_party_food_review":{"name":"third_party_food_review","permission_id":12},"beer_reviews":{"name":"beer_reviews","permission_id":15},"vendor_drink_review":{"name":"vendor_drink_review","permission_id":17},"event_rsvp":{"name":"event_rsvp","permission_id":9},"friends":{"name":"friends","permission_id":4},"vendor_memberships":{"name":"vendor_memberships","permission_id":10},"vendor_review":{"name":"vendor_review","permission_id":14},"vendor_food_review":{"name":"vendor_food_review","permission_id":16},"vendor_blog_comment":{"name":"vendor_blog_comment","permission_id":11},"meetup_rsvp":{"name":"meetup_rsvp","permission_id":8},"recieve_user_messages":{"name":"recieve_user_messages","permission_id":5},"event_notifications":{"name":"event_notifications","permission_id":2},"beer_notifications":{"name":"beer_notifications","permission_id":3},"organize_meetups":{"name":"organize_meetups","permission_id":7},"meetup_notifications":{"name":"meetup_notifications","permission_id":1},"send_user_messages":{"name":"send_user_messages","permission_id":6},"third_party_reviews":{"name":"third_party_reviews","permission_id":13}}}';
+/*
+call_api(useraccounts_url, "loadUserAccountProfile", {
+	"module": "UserAccounts",
+	"command": "loadUserAccountProfile",
+	"cookie": user_cookie 
+});
+*/
+call_api(useraccounts_url, "updateUserAccountInfo", {
+	"module": "UserAccounts",
+	"command": "updateUserAccountInfo",
+	"cookie": user_cookie,
+	"public_first_name": "Mr.", 
+	"public_last_name": "Bean", 
+	"about_me": "Something clever." 
 });

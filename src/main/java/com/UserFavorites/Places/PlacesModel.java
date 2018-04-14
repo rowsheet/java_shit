@@ -32,7 +32,7 @@ public class PlacesModel extends AbstractModel {
             // Just check the session, no permissions here becaues all users can
             // have favorites (it doesn't affect any other accounts) and all breweries
             // can be favorited.
-            this.validateUserCookie(cookie);
+            int account_id = this.validateUserCookie(cookie);
             stage1 = this.DAO.prepareStatement(this.createUserPlaceFavoriteSQL_stage1);
             stage1.setInt(1, this.userCookie.userID);
             stage1.setInt(2, brewery_id);
@@ -75,7 +75,7 @@ public class PlacesModel extends AbstractModel {
             // Just check the session, no permissions here becaues all users can
             // have favorites (it doesn't affect any other accounts) and all breweries
             // can be favorited.
-            this.validateUserCookie(cookie);
+            int account_id = this.validateUserCookie(cookie);
             stage1 = this.DAO.prepareStatement(this.deleteUserPlaceFavoriteSQL_stage1);
             stage1.setInt(1, this.userCookie.userID);
             stage1.setInt(2, brewery_id);

@@ -1,6 +1,7 @@
 package com.UserAccounts.NativeAuth;
 
 import com.Common.AbstractController;
+import com.Common.Account;
 import com.Common.UserCookie;
 
 /**
@@ -101,5 +102,66 @@ public class NativeAuthController extends AbstractController {
                 oauth_provider
         );
         return this.returnJSON(userCookie);
+    }
+
+    public String loadUserAccountProfile(
+            String cookie
+    ) throws Exception {
+        // Validate shit.
+        this.validateString(cookie, "cookie");
+        // Fetch data.
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        Account account = nativeAuthModel.loadUserAccountProfile(
+                cookie
+        );
+        return this.returnJSON(account);
+    }
+
+    public boolean updateUserAccountInfo (
+            String cookie,
+            String public_first_name,
+            String public_last_name,
+            String about_me
+    ) throws Exception {
+        // Validate shit.
+        this.validateString(cookie, "cookie");
+        this.validateString(public_first_name, "public_first_name");
+        this.validateString(public_last_name, "public_last_name");
+        this.validateString(about_me, "about_me");
+        // Model shit.
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        return nativeAuthModel.updateUserAccountInfo(
+                cookie,
+                public_first_name,
+                public_last_name,
+                about_me
+        );
+    }
+
+    public boolean uploadUserAccountProfilePicture(
+            String cookie,
+            String filename
+    ) throws Exception {
+        // Validate shit.
+        this.validateString(cookie, "cookie");
+        this.validateString(filename, "filename");
+        // Model shit.
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        return nativeAuthModel.uploadUserAccountProfilePicture(
+                cookie,
+                filename
+        );
+    }
+
+    public boolean deleteUserAccountProfilePicture(
+            String cookie
+    ) throws Exception {
+        // Validate shit.
+        this.validateString(cookie, "cookie");
+        // Model shit.
+        NativeAuthModel nativeAuthModel = new NativeAuthModel();
+        return nativeAuthModel.deleteUserAccountProfilePicture(
+                cookie
+        );
     }
 }

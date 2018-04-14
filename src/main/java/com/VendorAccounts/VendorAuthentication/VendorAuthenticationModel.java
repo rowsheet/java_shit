@@ -304,7 +304,8 @@ public class VendorAuthenticationModel extends AbstractModel {
             Gson gson = new Gson();
             String cookie = gson.toJson(vendorCookie);
             cookie = gson.toJson(vendorCookie);
-            // Done.
+            // Done. Commit.
+            this.DAO.commit();
             return cookie;
         } catch (VendorAuthenticationException ex) {
             // Roll back the transaction if anything has cone wrong.

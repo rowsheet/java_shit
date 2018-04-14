@@ -1,9 +1,11 @@
 package com.UserAccounts.NativeAuth;
 
 import com.Common.AbstractModel;
+import com.Common.Account;
 import com.Common.UserCookie;
 import com.Common.UserPermission;
 
+import java.awt.peer.SystemTrayPeer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -70,6 +72,19 @@ public class NativeAuthModel extends AbstractModel {
                     "   up.id = uap.user_permission_id " +
                     "WHERE " +
                     "   uap.account_id = ?";
+
+    private String userLoginSQL_stage4 =
+            // coalesce values since names and things aren't
+            // entered in registration for users (like they are for user).
+            "SELECT " +
+                    "   COALESCE(first_name, 'NA') AS first_name, " +
+                    "   COALESCE(last_name, 'NA') AS last_name, " +
+                    "   COALESCE(profile_picture, 'NA') AS profile_picture, " +
+                    "   COALESCE(about_me, 'NA') AS about_me " +
+                    "FROM " +
+                    "   user_account_info " +
+                    "WHERE " +
+                    "   account_id = ?";
 
     private String confirmUserAccountSQL_stage1 =
             "UPDATE " +
@@ -456,6 +471,8 @@ public class NativeAuthModel extends AbstractModel {
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
+        PreparedStatement stage4 = null;
+        ResultSet stage4Result = null;
         try {
             /*
             Disable auto-commit.
@@ -544,6 +561,19 @@ public class NativeAuthModel extends AbstractModel {
                 userCookie.userPermissions.put(userPermission.name, userPermission);
             }
             /*
+            Stage 4)
+             */
+            stage4 = this.DAO.prepareStatement(this.userLoginSQL_stage4);
+            stage4.setInt(1, account_id);
+            stage4Result = stage4.executeQuery();
+            while (stage4Result.next()) {
+                userCookie.first_name = stage4Result.getString("first_name");
+                userCookie.last_name = stage4Result.getString("last_name");
+                userCookie.about_me = stage4Result.getString("about_me");
+                userCookie.profile_picture = stage4Result.getString("profile_picture");
+            }
+            System.out.println(userCookie.profile_picture);
+            /*
             Done. Commit.
              */
             this.DAO.commit();
@@ -585,6 +615,12 @@ public class NativeAuthModel extends AbstractModel {
             }
             if (stage3Result != null) {
                 stage3Result.close();
+            }
+            if (stage4 != null) {
+                stage4.close();
+            }
+            if (stage4Result != null) {
+                stage4Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
@@ -800,6 +836,235 @@ public class NativeAuthModel extends AbstractModel {
             }
             if (stage1Result != null) {
                 stage1Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String loadUserAccountProfile_sql =
+            "SELECT " +
+                    "   ai.first_name, " +
+                    "   ai.last_name, " +
+                    "   a.creation_timestamp, " +
+                    "   DATE_PART('day', now()::date) - DATE_PART('day', a.creation_timestamp::date) AS creation_days_ago, " +
+                    "   ai.profile_picture, " +
+                    "   ai.about_me, " +
+                    "   a.id AS account_id, " +
+                    "   a.email_address, " +
+                    "   a.account_type, " +
+                    "   a.status " +
+                    "FROM " +
+                    "   user_account_info ai " +
+                    "LEFT JOIN " +
+                    "   accounts a " +
+                    "ON " +
+                    "   ai.account_id = a.id " +
+                    "WHERE " +
+                    "   a.id = ? ";
+
+    public Account loadUserAccountProfile(
+            String cookie
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Validate the cookie.
+            int account_id = this.validateUserCookie(cookie);
+            Account account = new Account();
+            preparedStatement = this.DAO.prepareStatement(this.loadUserAccountProfile_sql);
+            preparedStatement.setInt(1, this.userCookie.userID);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                account.first_name = resultSet.getString("first_name");
+                account.last_name = resultSet.getString("last_name");
+                account.creation_timestamp = resultSet.getString("creation_timestamp");
+                account.creation_days_ago = resultSet.getInt("creation_days_ago");
+                account.profile_picture = resultSet.getString("profile_picture");
+                account.about_me = resultSet.getString("about_me");
+                account.email_address = resultSet.getString("email_address");
+                account.account_type = resultSet.getString("account_type");
+                account.account_status = resultSet.getString("status");
+                // FUCKING PAIN IN THE ASS
+                if ((account.first_name == null) || (account.first_name.equals(""))) {
+                    account.first_name = "NA";
+                }
+                if ((account.last_name == null) || (account.last_name.equals(""))) {
+                    account.last_name = "NA";
+                }
+                if ((account.profile_picture == null) || (account.profile_picture.equals(""))) {
+                    account.profile_picture = "NA";
+                }
+                if ((account.about_me == null) || (account.about_me.equals(""))) {
+                    account.about_me = "NA";
+                }
+            }
+            account.account_id = this.userCookie.userID;
+            return account;
+        } catch (Exception ex) {
+            this.checkDNR(ex);
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to load user account profile");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    // If account_id doesn't collide, profile picture couldn't have
+    // been set because account_id is required, so it won't overwrite.
+    private String updateUserAccountInfo_sql =
+            "INSERT INTO " +
+                    "   user_account_info " + // Yeah, I know it says "user" account info.
+                    "( " +
+                    "   first_name, " +
+                    "   last_name, " +
+                    "   about_me, " +
+                    "   account_id " +
+                    ") VALUES (?,?,?,?) " +
+                    "ON CONFLICT " +
+                    "   (account_id) " +
+                    "DO UPDATE " +
+                    "SET " +
+                    "   first_name = ?, " +
+                    "   last_name = ?, " +
+                    "   about_me = ?";
+
+    public boolean updateUserAccountInfo (
+            String cookie,
+            String public_first_name,
+            String public_last_name,
+            String about_me
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateUserCookie(cookie);
+            // Presist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.updateUserAccountInfo_sql);
+            preparedStatement.setString(1, public_first_name);
+            preparedStatement.setString(2, public_last_name);
+            preparedStatement.setString(3, about_me);
+            preparedStatement.setInt(4, this.userCookie.userID);
+            preparedStatement.setString(5, public_first_name);
+            preparedStatement.setString(6, public_last_name);
+            preparedStatement.setString(7, about_me);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to update user profile info.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String uploadUserAccountProfilePicture_sql =
+            "INSERT INTO " +
+                    "user_account_info " +
+                    "( " +
+                    "    profile_picture, " +
+                    "    account_id, " +
+                    "    first_name, " +
+                    "    last_name " +
+                    ") VALUES ( " +
+                    "    ?,?, " +
+                    "    (select first_name from user_account_info where account_id = ?), " +
+                    "    (select last_name from user_account_info where account_id = ?) " +
+                    ") " +
+                    "ON CONFLICT " +
+                    "    (account_id) " +
+                    "DO UPDATE " +
+                    "SET " +
+                    "    profile_picture = ?, " +
+                    "    first_name = user_account_info.first_name, " +
+                    "    last_name = user_account_info.last_name, " +
+                    "    about_me = user_account_info.about_me";
+
+    /**
+     * 1) Fetch user info from user where account matchs.
+     * 2) If no user info, fuck off, otherwise insert data.
+     * @param cookie
+     * @param filename
+     * @return
+     * @throws Exception
+     */
+    public boolean uploadUserAccountProfilePicture(
+            String cookie,
+            String filename
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateUserCookie(cookie);
+            // Persist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.uploadUserAccountProfilePicture_sql);
+            preparedStatement.setString(1, filename);
+            preparedStatement.setInt(2, this.userCookie.userID);
+            preparedStatement.setInt(3, this.userCookie.userID);
+            preparedStatement.setInt(4, this.userCookie.userID);
+            preparedStatement.setString(5, filename);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to upload user account profile picture.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String deleteUserAccountProfilePicture_sql =
+            "UPDATE " +
+                    "   user_account_info " +
+                    "SET " +
+                    "   profile_picture = NULL " +
+                    "WHERE " +
+                    "   account_id = ?";
+
+    public boolean deleteUserAccountProfilePicture(
+            String cookie
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateUserCookie(cookie);
+            // Persist data shit.
+            preparedStatement = this.DAO.prepareStatement(this.deleteUserAccountProfilePicture_sql);
+            preparedStatement.setInt(1, this.userCookie.userID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.checkDNR(ex);
+            // Don't know why.
+            throw new Exception("Unable to upload user account profile picture.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
