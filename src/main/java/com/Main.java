@@ -121,7 +121,7 @@ public class Main {
      */
     UserFavoritesHandler userFavoritesHandler = new UserFavoritesHandler();
     Endpoint.publish(
-            base_url + "UserFavoritesHandler",
+            base_url + "UserFavorites",
             userFavoritesHandler);
     /**
      * Vendor Accounts

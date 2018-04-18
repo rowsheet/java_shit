@@ -18,8 +18,8 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="vendor_food_id") int vendor_food_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.createFoodFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.createFoodFavorite(
                 cookie,
                 vendor_food_id
         );
@@ -30,10 +30,20 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="vendor_food_id") int vendor_food_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.deleteFoodFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.deleteFoodFavorite(
                 cookie,
                 vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public String loadFoodFavorites(
+            @WebParam(name="cookie") String cookie
+    ) throws Exception {
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.loadFoodFavorites(
+                cookie
         );
     }
 
@@ -42,8 +52,8 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="vendor_drink_id") int vendor_drink_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.createDrinkFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.createDrinkFavorite(
                 cookie,
                 vendor_drink_id
         );
@@ -54,10 +64,20 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="vendor_drink_id") int vendor_drink_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.deleteDrinkFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.deleteDrinkFavorite(
                 cookie,
                 vendor_drink_id
+        );
+    }
+
+    @WebMethod
+    public String loadDrinkFavorites(
+            @WebParam(name="cookie") String cookie
+    ) throws Exception {
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.loadDrinkFavorites(
+                cookie
         );
     }
 
@@ -66,8 +86,8 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="beer_id") int beer_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.createBeerFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.createBeerFavorite(
                 cookie,
                 beer_id
         );
@@ -78,10 +98,20 @@ public class UserFavoritesHandler {
             @WebParam(name="cookie") String cookie,
             @WebParam(name="beer_id") int beer_id
     ) throws Exception {
-        MenuFavoritesController reviewController = new MenuFavoritesController();
-        return reviewController.deleteBeerFavorite(
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.deleteBeerFavorite(
                 cookie,
                 beer_id
+        );
+    }
+
+    @WebMethod
+    public String loadBeerFavorites(
+            @WebParam(name="cookie") String cookie
+    ) throws Exception {
+        MenuFavoritesController menuFavoritesController = new MenuFavoritesController();
+        return menuFavoritesController.loadBeerFavorites(
+                cookie
         );
     }
 
