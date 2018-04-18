@@ -29,6 +29,9 @@ public class VendorFood {
     public VendorFoodTag tag_three;
     public VendorFoodTag tag_four;
     public VendorFoodTag tag_five;
+    // Reviews start are being removed. Lava layer for now.
+    // @TODO remove review stars.
+    public int total_favorites;
 
     /**
      * These have to be calculated.
@@ -72,6 +75,8 @@ public class VendorFood {
         this.tag_three = new VendorFoodTag();
         this.tag_four = new VendorFoodTag();
         this.tag_five = new VendorFoodTag();
+
+        this.total_favorites = 0;
     }
 
 }

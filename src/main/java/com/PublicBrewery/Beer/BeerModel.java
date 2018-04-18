@@ -4,6 +4,7 @@ import com.Common.*;
 import com.Common.PublicVendor.BeerMenu;
 import com.Common.VendorMedia.VendorMedia;
 import com.PublicBrewery.VendorMedia.VendorMediaModel;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -293,6 +294,20 @@ public class BeerModel extends AbstractModel {
                     "WHERE " +
                     "   v.id = ?";
 
+    public String loadBeerMenuSQL_stage5 =
+            "SELECT DISTINCT " +
+                    "   b.id, " +
+                    "   COUNT(bf.*) AS count_star " +
+                    "FROM " +
+                    "   beers b " +
+                    "LEFT JOIN " +
+                    "   beer_favorites bf " +
+                    "ON " +
+                    "   b.id = bf.beer_id " +
+                    "WHERE " +
+                    "   b.vendor_id = ? " +
+                    "GROUP BY 1";
+
     public String loadBeerMenuSQL_stage7 =
             "SELECT " +
                     "   main_beer_gallery_id " +
@@ -314,7 +329,8 @@ public class BeerModel extends AbstractModel {
      * 2) Load all review for all beers.
      * 3) Load all image urls (has map by display order).
      * 4) Load all ingredients (and associated nutritional facts).
-     * 5) Calculate review averages for all the beers.
+     * 5) [DEPRECIATED] Calculate review averages for all the beers.
+     * 5) Fetch total favorites.
      * 6) Load all drop-downs.
      * 7) Load main gallery.
      *
@@ -333,6 +349,8 @@ public class BeerModel extends AbstractModel {
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
         ResultSet stage4Result = null;
+        PreparedStatement stage5 = null;
+        ResultSet stage5Result = null;
         PreparedStatement stage7 = null;
         ResultSet stage7Result = null;
         try {
@@ -344,6 +362,7 @@ public class BeerModel extends AbstractModel {
             stage1 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
+            stage5 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage5);
             /*
             Stage 1
              */
@@ -597,6 +616,7 @@ public class BeerModel extends AbstractModel {
             Stage 5
              */
             // Go through each beer and calculate the review star averages.
+            /* DEPRECIDATED
             for (Beer beer : beerHashMap.values()) {
                 if (beer.reviews.size() > 0) {
                     float total = 0;
@@ -606,6 +626,18 @@ public class BeerModel extends AbstractModel {
                     beer.review_average = total / (float) beer.reviews.size();
                     beer.review_count = beer.reviews.size();
                 }
+            }
+            */
+            /*
+            New Stage 5
+            Fetch total favorites.
+             */
+            stage5.setInt(1, brewery_id);
+            stage5Result = stage5.executeQuery();
+            while(stage5Result.next()) {
+                int beer_id = stage5Result.getInt("id");
+                int count_star = stage5Result.getInt("count_star");
+                beerHashMap.get(beer_id).total_favorites = count_star;
             }
             /*
             Stage 6
@@ -660,6 +692,12 @@ public class BeerModel extends AbstractModel {
             }
             if (stage4Result != null) {
                 stage4Result.close();
+            }
+            if (stage5 != null) {
+                stage5.close();
+            }
+            if (stage5Result != null) {
+                stage5Result.close();
             }
             if (stage7 != null) {
                 stage7.close();

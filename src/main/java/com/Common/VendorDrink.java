@@ -34,6 +34,9 @@ public class VendorDrink {
     public VendorDrinkTag tag_three;
     public VendorDrinkTag tag_four;
     public VendorDrinkTag tag_five;
+    // Reviews start are being removed. Lava layer for now.
+    // @TODO remove review stars.
+    public int total_favorites;
 
     /**
      * These have to be calculated.
@@ -85,5 +88,7 @@ public class VendorDrink {
         this.tag_three = new VendorDrinkTag();
         this.tag_four = new VendorDrinkTag();
         this.tag_five = new VendorDrinkTag();
+
+        this.total_favorites = 0;
     }
 }

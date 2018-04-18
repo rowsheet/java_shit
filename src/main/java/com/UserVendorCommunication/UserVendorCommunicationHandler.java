@@ -67,33 +67,4 @@ public class UserVendorCommunicationHandler {
                 content
         );
     }
-
-    @WebMethod
-    public int createBlogPostComment(
-            @WebParam(name="cookie") String cookie,
-            @WebParam(name="vendor_post_id") int vendor_post_id,
-            @WebParam(name="content") String content
-    ) throws Exception {
-        BlogController blogController = new BlogController();
-        return blogController.createBlogPostComment(
-                cookie,
-                vendor_post_id,
-                content
-        );
-    }
-
-    @WebMethod
-    public int createBlogPostCommentReply(
-            @WebParam(name="cookie") String cookie,
-            @WebParam(name="vendor_post_comment_id") int vendor_post_comment_id,
-            @WebParam(name="content") String content
-    ) throws Exception {
-        BlogController blogController = new BlogController();
-        return blogController.createBlogPostCommentReply(
-                cookie,
-                vendor_post_comment_id,
-                content
-        );
-    }
-
 }

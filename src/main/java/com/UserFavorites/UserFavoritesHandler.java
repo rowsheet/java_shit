@@ -1,9 +1,7 @@
 package com.UserFavorites;
 
-import com.Common.Beer;
-import com.UserFavorites.Beers.BeerController;
 import com.UserFavorites.Places.PlacesController;
-import com.UserFavorites.Places.PlacesModel;
+import com.UserFavorites.MenuFavorites.MenuFavoritesController;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -16,42 +14,80 @@ import javax.jws.WebService;
 public class UserFavoritesHandler {
 
     @WebMethod
-    public int createUserBeerFavorite (
+    public boolean createFoodFavorite(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="vendor_food_id") int vendor_food_id
+    ) throws Exception {
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.createFoodFavorite(
+                cookie,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean deleteFoodFavorite(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="vendor_food_id") int vendor_food_id
+    ) throws Exception {
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.deleteFoodFavorite(
+                cookie,
+                vendor_food_id
+        );
+    }
+
+    @WebMethod
+    public boolean createDrinkFavorite(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="vendor_drink_id") int vendor_drink_id
+    ) throws Exception {
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.createDrinkFavorite(
+                cookie,
+                vendor_drink_id
+        );
+    }
+
+    @WebMethod
+    public boolean deleteDrinkFavorite(
+            @WebParam(name="cookie") String cookie,
+            @WebParam(name="vendor_drink_id") int vendor_drink_id
+    ) throws Exception {
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.deleteDrinkFavorite(
+                cookie,
+                vendor_drink_id
+        );
+    }
+
+    @WebMethod
+    public boolean createBeerFavorite(
             @WebParam(name="cookie") String cookie,
             @WebParam(name="beer_id") int beer_id
     ) throws Exception {
-        BeerController beerController = new BeerController();
-        return beerController.createUserBeerFavorite(
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.createBeerFavorite(
                 cookie,
                 beer_id
         );
     }
 
     @WebMethod
-    public boolean deleteUserBeerFavorite (
+    public boolean deleteBeerFavorite(
             @WebParam(name="cookie") String cookie,
             @WebParam(name="beer_id") int beer_id
     ) throws Exception {
-        BeerController beerController = new BeerController();
-        return beerController.deleteUserBeerFavorite(
+        MenuFavoritesController reviewController = new MenuFavoritesController();
+        return reviewController.deleteBeerFavorite(
                 cookie,
                 beer_id
         );
     }
 
-    @WebMethod
-    public String readUserBeerFavorites(
-            @WebParam(name="cookie") String cookie,
-            @WebParam(name="limit") int limit,
-            @WebParam(name="offset") int offset
-    ) throws Exception {
-        BeerController beerController = new BeerController();
-        return beerController.readUserBeerFavorites(
-                cookie,
-                limit,
-                offset
-        );
-    }
+    /*-----------------------------------------
+     *  PLACES
+     -----------------------------------------*/
 
     @WebMethod
     public int createUserPlaceFavorite(

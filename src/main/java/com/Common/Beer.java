@@ -35,6 +35,9 @@ public class Beer {
     public BeerTag tag_three;
     public BeerTag tag_four;
     public BeerTag tag_five;
+    // Reviews start are being removed. Lava layer for now.
+    // @TODO remove review stars.
+    public int total_favorites;
 
     /**
      * These have to be calculated.
@@ -84,5 +87,7 @@ public class Beer {
         this.tag_three = new BeerTag();
         this.tag_four = new BeerTag();
         this.tag_five = new BeerTag();
+
+        this.total_favorites = 0;
     }
 }

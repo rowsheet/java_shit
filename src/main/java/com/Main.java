@@ -10,6 +10,7 @@ import com.UserAccounts.UserAccountsHandler;
 import com.Sessions.SessionsHandler;
 import com.ThirdPartyAccounts.ThirdPartyAccountsHandler;
 import com.UserEvents.UserEventsHandler;
+import com.UserFavorites.UserFavoritesHandler;
 import com.UserSocial.UserSocialHandler;
 import com.UserNotifications.UserNotificationsHandler;
 import com.UserThirdPartyCommunication.UserThirdPartyCommunicationHandler;
@@ -40,6 +41,7 @@ import javax.xml.ws.Endpoint;
  *   2)   User Events
  *   3)   User Notifications
  *   4)   User Messaging
+ *   4...)   User Favorites
  *
  *   Vendor Systems:
  *
@@ -114,6 +116,13 @@ public class Main {
     Endpoint.publish(
             base_url + "UserMessaging",
             userSocialHandler);
+    /**
+     * User Favorites
+     */
+    UserFavoritesHandler userFavoritesHandler = new UserFavoritesHandler();
+    Endpoint.publish(
+            base_url + "UserFavoritesHandler",
+            userFavoritesHandler);
     /**
      * Vendor Accounts
      */

@@ -310,6 +310,20 @@ public class DrinkModel extends AbstractModel {
                     "WHERE " +
                     "   v.id = ?";
 
+    public String loadDrinkMenuSQL_stage6 =
+            "SELECT DISTINCT " +
+                    "   vd.id, " +
+                    "   COUNT(vdf.*) AS count_star " +
+                    "FROM " +
+                    "   vendor_drinks vd " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_favorites vdf " +
+                    "ON " +
+                    "   vd.id = vdf.vendor_drink_id " +
+                    "WHERE " +
+                    "   vd.vendor_id = ? " +
+                    "GROUP BY 1";
+
     public String loadDrinkMenuSQL_stage8 =
             "SELECT " +
                     "   main_drink_gallery_id " +
@@ -332,7 +346,8 @@ public class DrinkModel extends AbstractModel {
      * 3) Load all image urls (has map by display order).
      * 4) Get all spirits-associations for drink.
      * 5) Load all ingredients.
-     * 6) Calculate review averages for all the drinks.
+     * 6) [DEPRECIATED] Calculate review averages for all the drinks.
+     * 6) Fetch total favorites.
      * 7) Load all drop-downs.
      * 8) Load main gallery.
      *
@@ -353,6 +368,8 @@ public class DrinkModel extends AbstractModel {
         ResultSet stage4Result = null;
         PreparedStatement stage5 = null;
         ResultSet stage5Result = null;
+        PreparedStatement stage6 = null;
+        ResultSet stage6Result = null;
         PreparedStatement stage8 = null;
         ResultSet stage8Result = null;
         try {
@@ -364,6 +381,7 @@ public class DrinkModel extends AbstractModel {
             stage1 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage1);
             stage2 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage3);
+            stage6 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage6);
             /*
             Stage 1
              */
@@ -629,8 +647,9 @@ public class DrinkModel extends AbstractModel {
             }
             /*
             Stage 6
-            Go through each drink and calculate the review star averages.
              */
+            // Go through each drink and calculate the review star averages.
+            /* DEPRECIATED
             for (VendorDrink vendorDrink : menuItems.values()) {
                 if (vendorDrink.reviews.size() > 0) {
                     float total = 0;
@@ -640,6 +659,18 @@ public class DrinkModel extends AbstractModel {
                     vendorDrink.review_average = total / (float) vendorDrink.reviews.size();
                     vendorDrink.review_count = vendorDrink.reviews.size();
                 }
+            }
+            */
+            /*
+            New Stage 6
+            // Fetch total favorites.
+            */
+            stage6.setInt(1, brewery_id);
+            stage6Result = stage6.executeQuery();
+            while(stage6Result.next()) {
+                int drink_id = stage6Result.getInt("id");
+                int count_star = stage6Result.getInt("count_star");
+                menuItems.get(drink_id).total_favorites = count_star;
             }
             /*
             Stage 7
@@ -700,6 +731,12 @@ public class DrinkModel extends AbstractModel {
             }
             if (stage5Result != null) {
                 stage5Result.close();
+            }
+            if (stage6 != null) {
+                stage6.close();
+            }
+            if (stage6Result != null) {
+                stage6Result.close();
             }
             if (stage8 != null) {
                 stage8.close();
