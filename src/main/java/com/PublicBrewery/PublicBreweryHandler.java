@@ -3,15 +3,16 @@ package com.PublicBrewery;
 import com.PublicBrewery.Brewery.BreweryController;
 import com.PublicBrewery.Beer.BeerController;
 import com.PublicBrewery.Drink.DrinkController;
-import com.PublicBrewery.Drink.DrinkModel;
 import com.PublicBrewery.Food.FoodController;
 import com.PublicBrewery.Events.EventController;
 import com.PublicBrewery.Reviews.ReviewController;
 import com.PublicBrewery.VendorMedia.VendorMediaController;
+import com.sun.org.apache.regexp.internal.RE;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.sound.sampled.ReverbType;
 
 /**
  * Created by alexanderkleinhans on 6/9/17.
@@ -101,6 +102,8 @@ public class PublicBreweryHandler {
         );
     }
 
+    /*
+    DEPRECIATED
     @WebMethod
     public String loadBeerMenuPaginated(
             @WebParam(name="brewery_id") int brewery_id,
@@ -117,6 +120,7 @@ public class PublicBreweryHandler {
                 descending
         );
     }
+     */
 
     @WebMethod
     public String loadDrinkMenu(
@@ -128,6 +132,8 @@ public class PublicBreweryHandler {
         );
     }
 
+    /*
+    DEPRECIATED
     @WebMethod
     public String loadDrinkMenuPaginated(
             @WebParam(name="brewery_id") int brewery_id,
@@ -143,6 +149,7 @@ public class PublicBreweryHandler {
                 descending
         );
     }
+     */
 
     /**
      * Loads all the foods and food categoreis for a particular brewery.
@@ -173,6 +180,8 @@ public class PublicBreweryHandler {
      * @return JSON(VendorFoods map keyed by ID) else exception
      * @throws Exception
      */
+    /*
+    DEPRECIATED
     @WebMethod
     public String loadFoodMenuPaginated(
             @WebParam(name="brewery_id") int brewery_id,
@@ -190,6 +199,7 @@ public class PublicBreweryHandler {
                 descending
         );
     }
+    */
 
     /**
      * Loads events for a brewery in chronological order.
@@ -255,4 +265,37 @@ public class PublicBreweryHandler {
         );
     }
 
+    /**
+     * LOAD REVIEWS
+     */
+
+    @WebMethod
+    public String loadFoodReviews(
+            @WebParam(name="food_id") int food_id
+    ) throws Exception {
+        ReviewController reviewController = new ReviewController();
+        return reviewController.loadFoodReviews(
+                food_id
+        );
+    }
+
+    @WebMethod
+    public String loadDrinkReviews(
+            @WebParam(name="drink_id") int drink_id
+    ) throws Exception {
+        ReviewController reviewController = new ReviewController();
+        return reviewController.loadDrinkReviews(
+                drink_id
+        );
+    }
+
+    @WebMethod
+    public String loadBeerReviews(
+            @WebParam(name="beer_id") int beer_id
+    ) throws Exception {
+        ReviewController reviewController = new ReviewController();
+        return reviewController.loadBeerReviews(
+                beer_id
+        );
+    }
 }

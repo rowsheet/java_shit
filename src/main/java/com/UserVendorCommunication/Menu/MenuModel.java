@@ -15,10 +15,9 @@ public class MenuModel extends AbstractModel {
                     "   account_id," +
                     "   user_permission_id," +
                     "   beer_id," +
-                    "   stars," +
                     "   content" +
                     ") VALUES (" +
-                    "?,?,?,?,?)" +
+                    "?,?,?,?)" +
                     "RETURNING id";
 
     private String createFoodReviewSQL =
@@ -28,10 +27,21 @@ public class MenuModel extends AbstractModel {
                     "   account_id," +
                     "   user_permission_id," +
                     "   vendor_food_id," +
-                    "   stars," +
                     "   content" +
                     ") VALUES (" +
-                    "?,?,?,?,?)" +
+                    "?,?,?,?)" +
+                    "RETURNING id";
+
+    private String createDrinkReviewSQL =
+            "INSERT INTO" +
+                    "   vendor_drink_reviews" +
+                    "(" +
+                    "   account_id," +
+                    "   user_permission_id," +
+                    "   vendor_drink_id," +
+                    "   content" +
+                    ") VALUES (" +
+                    "?,?,?,?)" +
                     "RETURNING id";
 
     public MenuModel() throws Exception {}
@@ -39,7 +49,6 @@ public class MenuModel extends AbstractModel {
     public int createBeerReview(
             String cookie,
             int beer_id,
-            int stars,
             String content
     ) throws Exception {
         PreparedStatement preparedStatement = null;
@@ -52,8 +61,7 @@ public class MenuModel extends AbstractModel {
             preparedStatement.setInt(1, this.userCookie.userID);
             preparedStatement.setInt(2, this.userCookie.requestPermissionID);
             preparedStatement.setInt(3, beer_id);
-            preparedStatement.setInt(4, stars);
-            preparedStatement.setString(5, content);
+            preparedStatement.setString(4, content);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int beer_reivew_id = 0;
@@ -70,21 +78,12 @@ public class MenuModel extends AbstractModel {
             // This needs to bubble up.
             throw new Exception(ex.getMessage());
         } catch (Exception ex) {
-            // Unknown error due to null pointer exception.
-            if (ex.getMessage() == null) {
-                throw new Exception("Oops! Something went wrong...");
-            }
             System.out.println(ex.getMessage());
-            // Try to parse the exception.
             if (ex.getMessage().contains("user_account_permissions")) {
-                // This is a serious event. It means the cookie permission was likely
-                // manually tampered with.
-                // You should probably blacklist this IP.
-                //@TODO consider blacklisting this IP.
-                throw new Exception("Sorry! You do not have permission to post beer reviews.");
+                throw new Exception("You do not have permission to post beer reviews.");
             }
             if (ex.getMessage().contains("already exists")) {
-                throw new Exception("Sorry! You've already created a review for this beer!");
+                throw new Exception("You've already created a review for this beer!");
             }
             // Unkonwn reason.
             throw new Exception("Unable to create beer review.");
@@ -101,10 +100,42 @@ public class MenuModel extends AbstractModel {
         }
     }
 
+    private String deleteBeerReview_sql =
+            "DELETE FROM " +
+                    "   beer_reviews " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   account_id = ?";
+
+    public boolean deleteBeerReview(
+            String cookie,
+            int review_id
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            this.validateUserCookie(cookie);
+            preparedStatement = this.DAO.prepareStatement(this.deleteBeerReview_sql);
+            preparedStatement.setInt(1, review_id);
+            preparedStatement.setInt(2, this.userCookie.userID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new Exception("Unable to delete beer review.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
     public int createFoodReview(
             String cookie,
             int vendor_food_id,
-            int stars,
             String content
     ) throws Exception {
         PreparedStatement preparedStatement = null;
@@ -117,8 +148,7 @@ public class MenuModel extends AbstractModel {
             preparedStatement.setInt(1, this.userCookie.userID);
             preparedStatement.setInt(2, this.userCookie.requestPermissionID);
             preparedStatement.setInt(3, vendor_food_id);
-            preparedStatement.setInt(4, stars);
-            preparedStatement.setString(5, content);
+            preparedStatement.setString(4, content);
             resultSet = preparedStatement.executeQuery();
             // Get the id of the new entry.
             int beer_reivew_id = 0;
@@ -127,7 +157,7 @@ public class MenuModel extends AbstractModel {
             }
             if (beer_reivew_id == 0) {
                 // Could create it. Don't know why...
-                throw new MenuException("Unable to create new beer.");
+                throw new MenuException("Unable to create new food review.");
             }
             return beer_reivew_id;
         } catch (MenuException ex) {
@@ -136,18 +166,12 @@ public class MenuModel extends AbstractModel {
             throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            // Try to parse the exception.
             if (ex.getMessage().contains("user_account_permissions")) {
-                // This is a serious event. It means the cookie permission was likely
-                // manually tampered with.
-                // You should probably blacklist this IP.
-                //@TODO consider blacklisting this IP.
-                throw new Exception("Sorry! You do not have permission to post food reviews.");
+                throw new Exception("You do not have permission to post food reviews.");
             }
             if (ex.getMessage().contains("already exists")) {
-                throw new Exception("Sorry! You've already created a review for this food!");
+                throw new Exception("You've already created a review for this food!");
             }
-            // Unkonwn reason.
             throw new Exception("Unable to create food review.");
         } finally {
             if (preparedStatement != null) {
@@ -155,6 +179,125 @@ public class MenuModel extends AbstractModel {
             }
             if (resultSet != null) {
                 resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String deleteFoodReview_sql =
+            "DELETE FROM " +
+                    "   vendor_food_reviews " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   account_id = ?";
+
+    public boolean deleteFoodReview(
+        String cookie,
+        int review_id
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            this.validateUserCookie(cookie);
+            preparedStatement = this.DAO.prepareStatement(this.deleteFoodReview_sql);
+            preparedStatement.setInt(1, review_id);
+            preparedStatement.setInt(2, this.userCookie.userID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new Exception("Unable to delete food review.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    public int createDrinkReview(
+            String cookie,
+            int vendor_drink_id,
+            String content
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // We need to validate the vendor request and make sure "food_reviews" is one of the vendor features
+            // and is in the cookie before we insert a new record.
+            this.validateCookiePermission(cookie, "vendor_drink_review");
+            preparedStatement = this.DAO.prepareStatement(this.createDrinkReviewSQL);
+            preparedStatement.setInt(1, this.userCookie.userID);
+            preparedStatement.setInt(2, this.userCookie.requestPermissionID);
+            preparedStatement.setInt(3, vendor_drink_id);
+            preparedStatement.setString(4, content);
+            resultSet = preparedStatement.executeQuery();
+            // Get the id of the new entry.
+            int beer_reivew_id = 0;
+            while (resultSet.next()) {
+                beer_reivew_id = resultSet.getInt("id");
+            }
+            if (beer_reivew_id == 0) {
+                // Could create it. Don't know why...
+                throw new MenuException("Unable to create new drink review.");
+            }
+            return beer_reivew_id;
+        } catch (MenuException ex) {
+            System.out.println(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            if (ex.getMessage().contains("user_account_permissions")) {
+                throw new Exception("You do not have permission to post food reviews.");
+            }
+            if (ex.getMessage().contains("already exists")) {
+                throw new Exception("You've already created a review for this drink!");
+            }
+            throw new Exception("Unable to create drink review.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String deleteDrinkReview_sql =
+            "DELETE FROM " +
+                    "   vendor_drink_reviews " +
+                    "WHERE " +
+                    "   id = ? " +
+                    "AND " +
+                    "   account_id = ?";
+
+    public boolean deleteDrinkReview(
+            String cookie,
+            int review_id
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            this.validateUserCookie(cookie);
+            preparedStatement = this.DAO.prepareStatement(this.deleteDrinkReview_sql);
+            preparedStatement.setInt(1, review_id);
+            preparedStatement.setInt(2, this.userCookie.userID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new Exception("Unable to delete drink review.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

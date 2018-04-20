@@ -115,6 +115,8 @@ public class FoodModel extends AbstractModel {
      *
      * For example, user_id = 31 would create the username "user31".
      */
+    /*
+    DEPRECIATED
     private String loadFoodMenuSQL_stage2 =
             "SELECT " +
                     "   vfr.id as review_id," +
@@ -156,6 +158,7 @@ public class FoodModel extends AbstractModel {
                     "ORDER BY " +
                     // Get the newest reviews first.
                     "   days_ago ASC";
+    */
 
     /**
      * The file paths for each image are full URLS to S3.
@@ -316,7 +319,7 @@ public class FoodModel extends AbstractModel {
      * Does this in six stages:
      *
      * 1) Load all foods (as map by id).
-     * 2) Load all review for all foods.
+     * 2) [DEPRECIATED (now lazy loaded)] Load all review for all foods.
      * 3) Load all image urls (has map by display order).
      * 4) Load all ingredients.
      * 5) [DEPRECIATED] Calculate review averages for all the vendor_foods.
@@ -333,8 +336,8 @@ public class FoodModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
-        PreparedStatement stage2 = null;
-        ResultSet stage2Result = null;
+        // PreparedStatement stage2 = null;
+        // ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
@@ -350,7 +353,7 @@ public class FoodModel extends AbstractModel {
             VendorDropdownContainer dropDowns = new VendorDropdownContainer();
             // Prepare the statements.
             stage1 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage1);
-            stage2 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage2);
+            // stage2 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage3);
             stage5 = this.DAO.prepareStatement(this.loadFoodMenuSQL_stage5);
             /*
@@ -457,6 +460,8 @@ public class FoodModel extends AbstractModel {
             Stage 2
             Load all reviews.
              */
+            /*
+            DEPRECIATED
             stage2.setInt(1, brewery_id);
             stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
@@ -476,6 +481,7 @@ public class FoodModel extends AbstractModel {
                 // Add the vendor_food review to the appropriate vendor_food.
                 vendorFoodHashMap.get(vendorFoodReview.vendor_food_id).reviews.add(vendorFoodReview);
             }
+            */
             /*
             Stage 3
             Load all images.
@@ -655,12 +661,14 @@ public class FoodModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
+            /*
             if (stage2 != null) {
                 stage2.close();
             }
             if (stage2Result != null) {
                 stage2Result.close();
             }
+            */
             if (stage3 != null) {
                 stage3.close();
             }
@@ -691,6 +699,9 @@ public class FoodModel extends AbstractModel {
         }
     }
 
+
+    /*
+    DEPRECIATED
     private String loadFoodMenuPaginatedSQL_stage1 =
             "SELECT " +
                     "   id, " +
@@ -736,6 +747,7 @@ public class FoodModel extends AbstractModel {
                     "   vendor_food_images " +
                     "WHERE " +
                     "   vendor_food_id IN (";
+     */
 
     /**
      * Returns limit-offset vendor_foods for a given brewery_id ordered by a column (of possible options).
@@ -753,6 +765,8 @@ public class FoodModel extends AbstractModel {
      * @return
      * @throws Exception
      */
+    /*
+    DEPRECIATED
     public HashMap<Integer, VendorFood> loadFoodMenuPaginated(
             int brewery_id,
             int limit,
@@ -767,10 +781,8 @@ public class FoodModel extends AbstractModel {
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         try {
-            /*
             Stage 1
             Get all the vendor_foods as specified.
-             */
             // Don't worry, this is validated like an enum in the controller
             // so there's no possible SQL injection.
             //
@@ -811,10 +823,8 @@ public class FoodModel extends AbstractModel {
             vendor_food_ids += ")";
             // Remove trailing comma.
             vendor_food_ids = vendor_food_ids.replace(",)", ")");
-            /*
             Stage 2
             Get all the vendor_food reviews where vendor_food_ids are in as where clause.
-             */
             this.loadFoodMenuPaginatedSQL_stage2 += vendor_food_ids;
             stage2 = this.DAO.prepareStatement(this.loadFoodMenuPaginatedSQL_stage2);
             stage2Result = stage2.executeQuery();
@@ -830,10 +840,8 @@ public class FoodModel extends AbstractModel {
                 // Add the vendor_food review to the appropriate vendor_food.
                 vendorFoodHashMap.get(vendorFoodReview.vendor_food_id).reviews.add(vendorFoodReview);
             }
-            /*
             Stage 3
             Get all the images where vendor_food_ids in where clause.
-             */
             this.loadFoodMenuPaginatedSQL_stage3 += vendor_food_ids;
             stage3 = this.DAO.prepareStatement(this.loadFoodMenuPaginatedSQL_stage3);
             stage3Result = stage3.executeQuery();
@@ -844,9 +852,7 @@ public class FoodModel extends AbstractModel {
                 vendorFoodImage.filename = stage3Result.getString("filename");
                 vendorFoodHashMap.get(vendorFoodImage.food_id).images.put(vendorFoodImage.display_order, vendorFoodImage);
             }
-            /*
             Stage 4
-             */
             // Go through each food and calcualte the review star averages.
             for (VendorFood vendorFood : vendorFoodHashMap.values()) {
                 if (vendorFood.reviews.size() > 0) {
@@ -888,4 +894,5 @@ public class FoodModel extends AbstractModel {
             }
         }
     }
+        */
 }

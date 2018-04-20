@@ -119,6 +119,8 @@ public class DrinkModel extends AbstractModel {
      *
      * For example, user_id = 31 would create the username "user31".
      */
+    /*
+    DEPRECIATED
     private String loadDrinkMenuSQL_stage2 =
             "SELECT " +
                     "   vdr.id AS vendor_drink_review_id," +
@@ -160,6 +162,7 @@ public class DrinkModel extends AbstractModel {
                     "ORDER BY " +
                     // Get the newest reviews first.
                     "   days_ago ASC";
+     */
 
 
     /**
@@ -342,7 +345,7 @@ public class DrinkModel extends AbstractModel {
      * Does this in three stages:
      *
      * 1) Load all drinks (as map by id).
-     * 2) Load all review for all drinks.
+     * 2) [DEPRECIATED (now lazy loaded)] Load all review for all drinks.
      * 3) Load all image urls (has map by display order).
      * 4) Get all spirits-associations for drink.
      * 5) Load all ingredients.
@@ -360,8 +363,8 @@ public class DrinkModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
-        PreparedStatement stage2 = null;
-        ResultSet stage2Result = null;
+        // PreparedStatement stage2 = null;
+        // ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
@@ -379,7 +382,7 @@ public class DrinkModel extends AbstractModel {
             VendorDropdownContainer dropDowns = new VendorDropdownContainer();
             // Prepare the statements.
             stage1 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage1);
-            stage2 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage2);
+            // stage2 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage3);
             stage6 = this.DAO.prepareStatement(this.loadDrinkMenuSQL_stage6);
             /*
@@ -491,6 +494,8 @@ public class DrinkModel extends AbstractModel {
             /*
             Stage 2
              */
+            /*
+            DEPRECIATED
             stage2.setInt(1, brewery_id);
             stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
@@ -510,6 +515,7 @@ public class DrinkModel extends AbstractModel {
                 // Add the drink review to the appropriate drink.
                 menuItems.get(vendorDrinkReview.vendor_drink_id).reviews.add(vendorDrinkReview);
             }
+             */
             /*
             Stage 3
              */
@@ -708,12 +714,12 @@ public class DrinkModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
-            if (stage2 != null) {
-                stage2.close();
-            }
-            if (stage2Result != null) {
-                stage2Result.close();
-            }
+//            if (stage2 != null) {
+//                stage2.close();
+//            }
+//            if (stage2Result != null) {
+//                stage2Result.close();
+//            }
             if (stage3 != null) {
                 stage3.close();
             }
@@ -819,6 +825,8 @@ public class DrinkModel extends AbstractModel {
      * @return
      * @throws Exception
      */
+    /*
+    DEPRECIATED
     public HashMap<Integer, VendorDrink> loadDrinkMenuPaginated(
             int brewery_id,
             int limit,
@@ -826,146 +834,136 @@ public class DrinkModel extends AbstractModel {
             boolean descending
     ) throws Exception {
         return new HashMap<Integer, VendorDrink>();
-/*
-I'm not doing this right now!
- */
-//        PreparedStatement stage1 = null;
-//        ResultSet stage1Result = null;
-//        PreparedStatement stage2 = null;
-//        ResultSet stage2Result = null;
-//        PreparedStatement stage3 = null;
-//        ResultSet stage3Result = null;
-//        try {
-//            /*
-//            Stage 1
-//            Get all the drinks as specified.
-//             */
-//            // Don't worry, this is validated like an enum in the controller
-//            // so there's no possible SQL injection.
-//            //
-//            // This is not typically done in a prepared statement.
-//            //
-//            // You should be able to tell this from the API, so this is a good
-//            // honeypot.
-//            // @TODO Make this a honeypot.
-//            this.loadDrinkMenuPaginatedSQL_stage1 = this.loadDrinkMenuPaginatedSQL_stage1.replace("<%order_by%>", order_by);
-//            if (descending) {
-//                this.loadDrinkMenuPaginatedSQL_stage1 = this.loadDrinkMenuPaginatedSQL_stage1.replace("ASC", "DESC");
-//            }
-//            stage1 = this.DAO.prepareStatement(loadDrinkMenuPaginatedSQL_stage1);
-//            stage1.setInt(1, brewery_id);
-//            stage1.setInt(2, limit);
-//            stage1.setInt(3, offset);
-//            HashMap<Integer, Drink> drinkHashMap = new HashMap<Integer, Drink>();
-//            // Create the where clause for the other searches.
-//            String drink_ids = "";
-//            stage1Result = stage1.executeQuery();
-//            while (stage1Result.next()) {
-//                Drink drink = new Drink();
-//                drink.drink_id = stage1Result.getInt("drink_id");
-//                drink.vendor_id = stage1Result.getInt("vendor_id");
-//                drink.name = stage1Result.getString("name");
-//                drink.color = stage1Result.getInt("color");
-//                drink.bitterness = stage1Result.getInt("bitterness");
-//                drink.abv = stage1Result.getInt("abv");
-//                drink.drink_style = stage1Result.getString("drink_style");
-//                drink.description = stage1Result.getString("description");
-//                drink.price = stage1Result.getFloat("price");
-//                drink.hop_score = stage1Result.getString("hop_score");
-//                // Drink tastes are an array of enums in postgres.
-//                Array drink_tastes = stage1Result.getArray("drink_tastes");
-//                String[] str_drink_tastes = (String[]) drink_tastes.getArray();
-//                drink.drink_tastes = str_drink_tastes;
-//                // Drink sizes are an array of enums in postgres.
-//                Array drink_sizes = stage1Result.getArray("drink_sizes");
-//                String[] str_drink_sizes = (String[]) drink_sizes.getArray();
-//                drink.drink_sizes = str_drink_sizes;
-//                drinkHashMap.put(drink.drink_id, drink);
-//                // Create the brewery_ids where clause.
-//                drink_ids += String.valueOf(drink.drink_id) + ",";
-//            }
-//            // If there are no drinks, return the empty hash map, else continue.
-//            if (drink_ids == "") {
-//                return drinkHashMap;
-//            }
-//            drink_ids += ")";
-//            // Remove trailing comma.
-//            drink_ids = drink_ids.replace(",)", ")");
-//            /*
-//            Stage 2
-//            Get all the drink reviews where drink_ids are in as where clause.
-//             */
-//            this.loadDrinkMenuPaginatedSQL_stage2 += drink_ids;
-//            stage2 = this.DAO.prepareStatement(this.loadDrinkMenuPaginatedSQL_stage2);
-//            stage2Result = stage2.executeQuery();
-//            while (stage2Result.next()) {
-//                DrinkReview drinkReview = new DrinkReview();
-//                drinkReview.review_id = stage2Result.getInt("review_id");
-//                drinkReview.account_id = stage2Result.getInt("account_id");
-//                drinkReview.drink_id = stage2Result.getInt("drink_id");
-//                drinkReview.stars = stage2Result.getInt("stars");
-//                drinkReview.content = stage2Result.getString("content");
-//                drinkReview.username = stage2Result.getString("username");
-//                drinkReview.days_ago = stage2Result.getInt("days_ago");
-//                // Add the drink review to the appropriate drink.
-//                drinkHashMap.get(drinkReview.drink_id).reviews.add(drinkReview);
-//            }
-//            /*
-//            Stage 3
-//            Get all the images where drink_ids in where clause.
-//             */
-//            this.loadDrinkMenuPaginatedSQL_stage3 += drink_ids;
-//            stage3 = this.DAO.prepareStatement(this.loadDrinkMenuPaginatedSQL_stage3);
-//            stage3Result = stage3.executeQuery();
-//            while (stage3Result.next()) {
-//                DrinkImage drinkImage = new DrinkImage();
-//                drinkImage.drink_id = stage3Result.getInt("drink_id");
-//                drinkImage.display_order = stage3Result.getInt("display_order");
-//                drinkImage.filename = stage3Result.getString("filename");
-//                drinkHashMap.get(drinkImage.drink_id).images.put(drinkImage.display_order, drinkImage);
-//            }
-//            /*
-//            Stage 4
-//             */
-//            // Go through each drink and calculate the review star averages.
-//            for (Drink drink : drinkHashMap.values()) {
-//                if (drink.reviews.size() > 0) {
-//                    float total = 0;
-//                    for (DrinkReview drinkReview : drink.reviews) {
-//                        total += (float) drinkReview.stars;
-//                    }
-//                    drink.review_average = total / (float) drink.reviews.size();
-//                    drink.review_count = drink.reviews.size();
-//                }
-//            }
-//            return drinkHashMap;
-//        } catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//            // Unknown error.
-//            throw new Exception("Unable to load drinks.");
-//        } finally {
-//            // Clean up your shit.
-//            if (stage1 != null) {
-//                stage1.close();
-//            }
-//            if (stage1Result != null) {
-//                stage1Result.close();
-//            }
-//            if (stage2 != null) {
-//                stage2.close();
-//            }
-//            if (stage2Result != null) {
-//                stage2Result.close();
-//            }
-//            if (stage3 != null) {
-//                stage3.close();
-//            }
-//            if (stage3Result != null) {
-//                stage3Result.close();
-//            }
-//            if (this.DAO != null) {
-//                this.DAO.close();
-//            }
-//        }
+        PreparedStatement stage1 = null;
+        ResultSet stage1Result = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
+        PreparedStatement stage3 = null;
+        ResultSet stage3Result = null;
+        try {
+            Stage 1
+            Get all the drinks as specified.
+            // Don't worry, this is validated like an enum in the controller
+            // so there's no possible SQL injection.
+            //
+            // This is not typically done in a prepared statement.
+            //
+            // You should be able to tell this from the API, so this is a good
+            // honeypot.
+            // @TODO Make this a honeypot.
+            this.loadDrinkMenuPaginatedSQL_stage1 = this.loadDrinkMenuPaginatedSQL_stage1.replace("<%order_by%>", order_by);
+            if (descending) {
+                this.loadDrinkMenuPaginatedSQL_stage1 = this.loadDrinkMenuPaginatedSQL_stage1.replace("ASC", "DESC");
+            }
+            stage1 = this.DAO.prepareStatement(loadDrinkMenuPaginatedSQL_stage1);
+            stage1.setInt(1, brewery_id);
+            stage1.setInt(2, limit);
+            stage1.setInt(3, offset);
+            HashMap<Integer, Drink> drinkHashMap = new HashMap<Integer, Drink>();
+            // Create the where clause for the other searches.
+            String drink_ids = "";
+            stage1Result = stage1.executeQuery();
+            while (stage1Result.next()) {
+                Drink drink = new Drink();
+                drink.drink_id = stage1Result.getInt("drink_id");
+                drink.vendor_id = stage1Result.getInt("vendor_id");
+                drink.name = stage1Result.getString("name");
+                drink.color = stage1Result.getInt("color");
+                drink.bitterness = stage1Result.getInt("bitterness");
+                drink.abv = stage1Result.getInt("abv");
+                drink.drink_style = stage1Result.getString("drink_style");
+                drink.description = stage1Result.getString("description");
+                drink.price = stage1Result.getFloat("price");
+                drink.hop_score = stage1Result.getString("hop_score");
+                // Drink tastes are an array of enums in postgres.
+                Array drink_tastes = stage1Result.getArray("drink_tastes");
+                String[] str_drink_tastes = (String[]) drink_tastes.getArray();
+                drink.drink_tastes = str_drink_tastes;
+                // Drink sizes are an array of enums in postgres.
+                Array drink_sizes = stage1Result.getArray("drink_sizes");
+                String[] str_drink_sizes = (String[]) drink_sizes.getArray();
+                drink.drink_sizes = str_drink_sizes;
+                drinkHashMap.put(drink.drink_id, drink);
+                // Create the brewery_ids where clause.
+                drink_ids += String.valueOf(drink.drink_id) + ",";
+            }
+            // If there are no drinks, return the empty hash map, else continue.
+            if (drink_ids == "") {
+                return drinkHashMap;
+            }
+            drink_ids += ")";
+            // Remove trailing comma.
+            drink_ids = drink_ids.replace(",)", ")");
+            Stage 2
+            Get all the drink reviews where drink_ids are in as where clause.
+            this.loadDrinkMenuPaginatedSQL_stage2 += drink_ids;
+            stage2 = this.DAO.prepareStatement(this.loadDrinkMenuPaginatedSQL_stage2);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                DrinkReview drinkReview = new DrinkReview();
+                drinkReview.review_id = stage2Result.getInt("review_id");
+                drinkReview.account_id = stage2Result.getInt("account_id");
+                drinkReview.drink_id = stage2Result.getInt("drink_id");
+                drinkReview.stars = stage2Result.getInt("stars");
+                drinkReview.content = stage2Result.getString("content");
+                drinkReview.username = stage2Result.getString("username");
+                drinkReview.days_ago = stage2Result.getInt("days_ago");
+                // Add the drink review to the appropriate drink.
+                drinkHashMap.get(drinkReview.drink_id).reviews.add(drinkReview);
+            }
+            Stage 3
+            Get all the images where drink_ids in where clause.
+            this.loadDrinkMenuPaginatedSQL_stage3 += drink_ids;
+            stage3 = this.DAO.prepareStatement(this.loadDrinkMenuPaginatedSQL_stage3);
+            stage3Result = stage3.executeQuery();
+            while (stage3Result.next()) {
+                DrinkImage drinkImage = new DrinkImage();
+                drinkImage.drink_id = stage3Result.getInt("drink_id");
+                drinkImage.display_order = stage3Result.getInt("display_order");
+                drinkImage.filename = stage3Result.getString("filename");
+                drinkHashMap.get(drinkImage.drink_id).images.put(drinkImage.display_order, drinkImage);
+            }
+            Stage 4
+            // Go through each drink and calculate the review star averages.
+            for (Drink drink : drinkHashMap.values()) {
+                if (drink.reviews.size() > 0) {
+                    float total = 0;
+                    for (DrinkReview drinkReview : drink.reviews) {
+                        total += (float) drinkReview.stars;
+                    }
+                    drink.review_average = total / (float) drink.reviews.size();
+                    drink.review_count = drink.reviews.size();
+                }
+            }
+            return drinkHashMap;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Unknown error.
+            throw new Exception("Unable to load drinks.");
+        } finally {
+            // Clean up your shit.
+            if (stage1 != null) {
+                stage1.close();
+            }
+            if (stage1Result != null) {
+                stage1Result.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (stage3 != null) {
+                stage3.close();
+            }
+            if (stage3Result != null) {
+                stage3Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
     }
+        */
 }

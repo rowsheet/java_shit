@@ -257,6 +257,8 @@ public class BeerModel extends AbstractModel {
             Stage 2
             Get all the beer reviews where beer_ids are in as where clause.
              */
+            /*
+            DEPREICATED
             this.searchBeersSQL_stage2 += beer_ids;
             stage2 = this.DAO.prepareStatement(this.searchBeersSQL_stage2);
             stage2Result = stage2.executeQuery();
@@ -272,6 +274,7 @@ public class BeerModel extends AbstractModel {
                 // Add the beer review to the appropriate beer.
                 beerSearchResultHashMap.get(beerReview.beer_id).reviews.add(beerReview);
             }
+             */
             /*
             Stage 3
             Get all the images where beer_ids in where clause.

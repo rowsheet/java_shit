@@ -29,6 +29,8 @@ public class FoodController extends AbstractController {
         return this.returnJSON(foodMenu);
     }
 
+    /*
+    DEPRECIATED
     public String loadFoodMenuPaginated(
             int brewery_id,
             int limit,
@@ -54,4 +56,5 @@ public class FoodController extends AbstractController {
         // Return JSON or data structure returned by model.
         return this.returnJSON(vendorFoodHashMap);
     }
+    */
 }

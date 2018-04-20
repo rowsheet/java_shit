@@ -28,6 +28,7 @@ public class BeerController extends AbstractController {
     }
 
     // @TODO STOP USING THIS!
+    /* DEPRECIATED
     public String loadBeerMenuPaginated(
         int brewery_id,
         int limit,
@@ -53,5 +54,6 @@ public class BeerController extends AbstractController {
         // Return JSON or data structure returned by model.
         return this.returnJSON(beerHashMap);
     }
+    */
 
 }

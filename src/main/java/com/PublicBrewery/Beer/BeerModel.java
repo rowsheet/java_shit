@@ -123,6 +123,8 @@ public class BeerModel extends AbstractModel {
      *
      * For example, user_id = 31 would create the username "user31".
      */
+    /*
+    DEPRECIATED
     private String loadBeerMenuSQL_stage2 =
             "SELECT " +
                     "   br.id as review_id," +
@@ -164,7 +166,7 @@ public class BeerModel extends AbstractModel {
                     "ORDER BY " +
                     // Get the newest reviews first.
                     "   days_ago ASC";
-
+    */
 
     /**
      * The file paths for each image are full URLS to S3.
@@ -326,7 +328,7 @@ public class BeerModel extends AbstractModel {
      * Does this in three stages:
      *
      * 1) Load all beers (as map by id).
-     * 2) Load all review for all beers.
+     * 2) [DEPRECIATED (now lazy loaded)] Load all review for all beers.
      * 3) Load all image urls (has map by display order).
      * 4) Load all ingredients (and associated nutritional facts).
      * 5) [DEPRECIATED] Calculate review averages for all the beers.
@@ -343,8 +345,8 @@ public class BeerModel extends AbstractModel {
     ) throws Exception {
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
-        PreparedStatement stage2 = null;
-        ResultSet stage2Result = null;
+        // PreparedStatement stage2 = null;
+        // ResultSet stage2Result = null;
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         PreparedStatement stage4 = null;
@@ -360,7 +362,7 @@ public class BeerModel extends AbstractModel {
             VendorDropdownContainer dropDowns = new VendorDropdownContainer();
             // Prepare the statements.
             stage1 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage1);
-            stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
+            // stage2 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage2);
             stage3 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage3);
             stage5 = this.DAO.prepareStatement(this.loadBeerMenuSQL_stage5);
             /*
@@ -477,6 +479,8 @@ public class BeerModel extends AbstractModel {
             /*
             Stage 2
              */
+            /*
+            DEPRECIATED
             stage2.setInt(1, brewery_id);
             stage2Result = stage2.executeQuery();
             while (stage2Result.next()) {
@@ -496,6 +500,7 @@ public class BeerModel extends AbstractModel {
                 // Add the beer review to the appropriate beer.
                 beerHashMap.get(beerReview.beer_id).reviews.add(beerReview);
             }
+             */
             /*
             Stage 3
              */
@@ -675,12 +680,12 @@ public class BeerModel extends AbstractModel {
             if (stage1Result != null) {
                 stage1Result.close();
             }
-            if (stage2 != null) {
-                stage2.close();
-            }
-            if (stage2Result != null) {
-                stage2Result.close();
-            }
+//            if (stage2 != null) {
+//                stage2.close();
+//            }
+//            if (stage2Result != null) {
+//                stage2Result.close();
+//            }
             if (stage3 != null) {
                 stage3.close();
             }
@@ -711,6 +716,8 @@ public class BeerModel extends AbstractModel {
         }
     }
 
+    /*
+    DEPRECIATED
     private String loadBeerMenuPaginatedSQL_stage1 =
             "SELECT " +
                     "   id AS beer_id," +
@@ -762,6 +769,7 @@ public class BeerModel extends AbstractModel {
                     "   beer_images " +
                     "WHERE " +
                     "   beer_id in (";
+     */
 
     /**
      * @TODO STOP USING THIS!
@@ -780,7 +788,8 @@ public class BeerModel extends AbstractModel {
      * @return
      * @throws Exception
      */
-    // @TODO STOP USING THIS!
+    /*
+    DEPRECIATED
     public HashMap<Integer, Beer> loadBeerMenuPaginated(
             int brewery_id,
             int limit,
@@ -795,10 +804,8 @@ public class BeerModel extends AbstractModel {
         PreparedStatement stage3 = null;
         ResultSet stage3Result = null;
         try {
-            /*
             Stage 1
             Get all the beers as specified.
-             */
             // Don't worry, this is validated like an enum in the controller
             // so there's no possible SQL injection.
             //
@@ -850,10 +857,8 @@ public class BeerModel extends AbstractModel {
             beer_ids += ")";
             // Remove trailing comma.
             beer_ids = beer_ids.replace(",)", ")");
-            /*
             Stage 2
             Get all the beer reviews where beer_ids are in as where clause.
-             */
             this.loadBeerMenuPaginatedSQL_stage2 += beer_ids;
             stage2 = this.DAO.prepareStatement(this.loadBeerMenuPaginatedSQL_stage2);
             stage2Result = stage2.executeQuery();
@@ -869,10 +874,8 @@ public class BeerModel extends AbstractModel {
                 // Add the beer review to the appropriate beer.
                 beerHashMap.get(beerReview.beer_id).reviews.add(beerReview);
             }
-            /*
             Stage 3
             Get all the images where beer_ids in where clause.
-             */
             this.loadBeerMenuPaginatedSQL_stage3 += beer_ids;
             stage3 = this.DAO.prepareStatement(this.loadBeerMenuPaginatedSQL_stage3);
             stage3Result = stage3.executeQuery();
@@ -883,9 +886,7 @@ public class BeerModel extends AbstractModel {
                 beerImage.filename = stage3Result.getString("filename");
                 beerHashMap.get(beerImage.beer_id).images.put(beerImage.display_order, beerImage);
             }
-            /*
             Stage 4
-             */
             // Go through each beer and calculate the review star averages.
             for (Beer beer : beerHashMap.values()) {
                 if (beer.reviews.size() > 0) {
@@ -927,5 +928,6 @@ public class BeerModel extends AbstractModel {
             }
         }
     }
+    */
 }
 
