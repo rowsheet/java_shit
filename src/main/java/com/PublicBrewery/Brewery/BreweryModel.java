@@ -68,6 +68,7 @@ public class BreweryModel extends AbstractModel {
                     "   vi.brewery_friendly," +
                     "   vi.short_type_description, " +
                     "   vi.short_text_description, " +
+                    "   v.short_code, " +
                     "   vi.main_image_id, " +
                     "   vi.main_gallery_id," +
                     "   vpi.filename AS main_image_filename, " +
@@ -249,6 +250,10 @@ public class BreweryModel extends AbstractModel {
                 brewery.google_maps_zoom = stage1Result.getInt("google_maps_zoom");
                 brewery.short_type_description = stage1Result.getString("short_type_description");
                 brewery.short_text_description = stage1Result.getString("short_text_description");
+                brewery.short_code = stage1Result.getString("short_code");
+                if (brewery.short_code == null) {
+                    brewery.short_code = "";
+                }
                 brewery.main_image_id = stage1Result.getInt("main_image_id");
                 brewery.main_gallery_id = stage1Result.getInt("main_gallery_id");
                 // Brewery "has" items are an array of enums in postgres.

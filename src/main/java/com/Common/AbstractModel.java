@@ -258,7 +258,11 @@ public class AbstractModel {
                 // The client just spoofied either their account_id or
                 // their vendor_id. Probably a made-up request.
                 // @TODO REGISTER THIS.
-                System.out.println("ASSHOLE");
+                System.out.println("ATTEMPTED SPOOF:");
+                System.out.println("vib: " + vendor_id_before); // Attempted vendor_id
+                System.out.println("via: " + vendor_id); // Actual vendor_id
+                System.out.println("aib: " + account_id_before); // Attempted account_id
+                System.out.println("aia: " + account_id); // Actual account_id
                 // Do not respond to client.
                 throw new Exception("DNR");
             }

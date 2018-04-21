@@ -17,6 +17,42 @@ import java.util.HashMap;
  */
 public class GeneralModel extends AbstractModel {
 
+    private String updateShortCode_sql =
+            "UPDATE " +
+                    "   vendors " +
+                    "SET " +
+                    "   short_code = ? " +
+                    "WHERE " +
+                    "   id = ?";
+
+    public boolean updateShortCode(
+            String cookie,
+            String short_code
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            this.validateVendorCookie(cookie);
+            preparedStatement = this.DAO.prepareStatement(this.updateShortCode_sql);
+            preparedStatement.setString(1, short_code);
+            preparedStatement.setInt(2, this.vendorCookie.vendorID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            if (ex.getMessage().contains("vendors_short_code_idx")) {
+                throw new Exception("Sorry! That short-code isn't available!");
+            }
+            throw new Exception("Unable to update short_code.");
+        } finally {
+            if (preparedStatement !=  null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
     private String updateBreweryInfoSQL_stage2 =
             "INSERT INTO " +
                     "   vendor_info (" +
@@ -40,9 +76,11 @@ public class GeneralModel extends AbstractModel {
                     "   public_email," +
                     "   brewery_has, " +
                     "   brewery_friendly, " +
-                    "   vendor_id " +
+                    "   vendor_id, " +
+                    "   short_type_description, " +
+                    "   short_text_description " +
                     ") VALUES (" +
-                    "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?::brewery_has[],?::brewery_friendly[],?) " +
+                    "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?::brewery_has[],?::brewery_friendly[],?,?,?) " +
                     "ON CONFLICT (vendor_id) DO UPDATE " +
                     "SET " +
                     "   display_name = ?, " +
@@ -64,7 +102,9 @@ public class GeneralModel extends AbstractModel {
                     "   public_phone = ?, " +
                     "   public_email = ?," +
                     "   brewery_has = ?::brewery_has[], " +
-                    "   brewery_friendly = ?::brewery_friendly[]";
+                    "   brewery_friendly = ?::brewery_friendly[]," +
+                    "   short_type_description = ?," +
+                    "   short_text_description = ?";
 
     private String updateBreweryInfoSQL_stage3 =
             "UPDATE " +
@@ -141,7 +181,9 @@ public class GeneralModel extends AbstractModel {
             String public_phone,
             String public_email,
             String[] brewery_has,
-            String[] brewery_friendly
+            String[] brewery_friendly,
+            String short_type_description,
+            String short_text_description
     ) throws Exception {
         PreparedStatement stage2 = null;
         PreparedStatement stage3 = null;
@@ -186,26 +228,30 @@ public class GeneralModel extends AbstractModel {
             stage2.setArray(19, this.DAO.createArrayOf("brewery_has", brewery_has));
             stage2.setArray(20, this.DAO.createArrayOf("brewery_friendly", brewery_friendly));
             stage2.setInt(21, vendorCookie.vendorID);
-            stage2.setString(22, display_name);
-            stage2.setString(23, about_text);
-            stage2.setTime(24, new Time(simpleDateFormat.parse(mon_open).getTime()));
-            stage2.setTime(25, new Time(simpleDateFormat.parse(mon_close).getTime()));
-            stage2.setTime(26, new Time(simpleDateFormat.parse(tue_open).getTime()));
-            stage2.setTime(27, new Time(simpleDateFormat.parse(tue_close).getTime()));
-            stage2.setTime(28, new Time(simpleDateFormat.parse(wed_open).getTime()));
-            stage2.setTime(29, new Time(simpleDateFormat.parse(wed_close).getTime()));
-            stage2.setTime(30, new Time(simpleDateFormat.parse(thu_open).getTime()));
-            stage2.setTime(31, new Time(simpleDateFormat.parse(thu_close).getTime()));
-            stage2.setTime(32, new Time(simpleDateFormat.parse(fri_open).getTime()));
-            stage2.setTime(33, new Time(simpleDateFormat.parse(fri_close).getTime()));
-            stage2.setTime(34, new Time(simpleDateFormat.parse(sat_open).getTime()));
-            stage2.setTime(35, new Time(simpleDateFormat.parse(sat_close).getTime()));
-            stage2.setTime(36, new Time(simpleDateFormat.parse(sun_open).getTime()));
-            stage2.setTime(37, new Time(simpleDateFormat.parse(sun_close).getTime()));
-            stage2.setString(38, public_phone);
-            stage2.setString(39, public_email);
-            stage2.setArray(40, this.DAO.createArrayOf("brewery_has", brewery_has));
-            stage2.setArray(41, this.DAO.createArrayOf("brewery_friendly", brewery_friendly));
+            stage2.setString(22, short_type_description);
+            stage2.setString(23, short_text_description);
+            stage2.setString(24, display_name);
+            stage2.setString(25, about_text);
+            stage2.setTime(26, new Time(simpleDateFormat.parse(mon_open).getTime()));
+            stage2.setTime(27, new Time(simpleDateFormat.parse(mon_close).getTime()));
+            stage2.setTime(28, new Time(simpleDateFormat.parse(tue_open).getTime()));
+            stage2.setTime(29, new Time(simpleDateFormat.parse(tue_close).getTime()));
+            stage2.setTime(30, new Time(simpleDateFormat.parse(wed_open).getTime()));
+            stage2.setTime(31, new Time(simpleDateFormat.parse(wed_close).getTime()));
+            stage2.setTime(32, new Time(simpleDateFormat.parse(thu_open).getTime()));
+            stage2.setTime(33, new Time(simpleDateFormat.parse(thu_close).getTime()));
+            stage2.setTime(34, new Time(simpleDateFormat.parse(fri_open).getTime()));
+            stage2.setTime(35, new Time(simpleDateFormat.parse(fri_close).getTime()));
+            stage2.setTime(36, new Time(simpleDateFormat.parse(sat_open).getTime()));
+            stage2.setTime(37, new Time(simpleDateFormat.parse(sat_close).getTime()));
+            stage2.setTime(38, new Time(simpleDateFormat.parse(sun_open).getTime()));
+            stage2.setTime(39, new Time(simpleDateFormat.parse(sun_close).getTime()));
+            stage2.setString(40, public_phone);
+            stage2.setString(41, public_email);
+            stage2.setArray(42, this.DAO.createArrayOf("brewery_has", brewery_has));
+            stage2.setArray(43, this.DAO.createArrayOf("brewery_friendly", brewery_friendly));
+            stage2.setString(44, short_type_description);
+            stage2.setString(45, short_text_description);
             stage2.execute();
             /*
             Stage 3

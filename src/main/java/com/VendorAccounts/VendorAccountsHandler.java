@@ -220,7 +220,9 @@ public class VendorAccountsHandler {
             @WebParam(name = "public_phone") String public_phone,
             @WebParam(name = "public_email") String public_email,
             @WebParam(name = "brewery_has") String[] brewery_has,
-            @WebParam(name = "brewery_friendly") String[] brewery_friendly
+            @WebParam(name = "brewery_friendly") String[] brewery_friendly,
+            @WebParam(name = "short_type_description") String short_type_description,
+            @WebParam(name = "short_text_description") String short_text_description
     ) throws Exception {
         GeneralController generalController = new GeneralController();
         return generalController.updateBreweryInfo(
@@ -248,10 +250,23 @@ public class VendorAccountsHandler {
                 public_phone,
                 public_email,
                 brewery_has,
-                brewery_friendly
+                brewery_friendly,
+                short_type_description,
+                short_text_description
         );
     }
 
+    @WebMethod
+    public boolean updateShortCode (
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "short_code") String short_code
+    ) throws Exception {
+        GeneralController generalController = new GeneralController();
+        return generalController.updateShortCode(
+                cookie,
+                short_code
+        );
+    }
     /**
      * Creates a file entry for a page_image resource conditional upon
      * sufficient cookie and permissions.

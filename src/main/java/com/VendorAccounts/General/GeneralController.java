@@ -8,6 +8,28 @@ import com.sun.tools.javah.Gen;
  * Created by alexanderkleinhans on 6/24/17.
  */
 public class GeneralController extends AbstractController {
+
+    public boolean updateShortCode(
+            String cookie,
+            String short_code
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateString(short_code, "short_code");
+        if (short_code.length() > 16) {
+            throw new Exception("Short code too long.");
+        }
+        // This is in the regex, but I wan't a specific error message.
+        if (short_code.charAt(0) == '-' || short_code.charAt(short_code.length() - 1) == '-') {
+            throw new Exception("Short code cannot start or end in dash.");
+        }
+        this.validateShortCode(short_code);
+        GeneralModel generalModel = new GeneralModel();
+        return generalModel.updateShortCode(
+                cookie,
+                short_code
+        );
+    }
+
     public boolean updateBreweryInfo(
         String cookie,
         String display_name,
@@ -33,7 +55,9 @@ public class GeneralController extends AbstractController {
         String public_phone,
         String public_email,
         String[] brewery_has,
-        String[] brewery_friendly
+        String[] brewery_friendly,
+        String short_type_description,
+        String short_text_description
     ) throws Exception {
         // Validate input parameters.
         this.validateString(cookie, "cookie");
@@ -59,6 +83,14 @@ public class GeneralController extends AbstractController {
         this.validateZipCode(zip);
         this.validatePhone(public_phone);
         this.validateEmailAddress(public_email);
+        this.validateString(short_type_description, "short_type_description");
+        this.validateString(short_text_description, "short_text_description");
+        if (short_text_description.length() > 64) {
+            throw new Exception("Short text description too long.");
+        }
+        if (short_type_description.length() > 32) {
+            throw new Exception("Short type description too long.");
+        }
         for (int i = 0; i < brewery_has.length; i++) {
             this.validateBreweryHas(brewery_has[i]);
         }
@@ -92,7 +124,9 @@ public class GeneralController extends AbstractController {
                 public_phone,
                 public_email,
                 brewery_has,
-                brewery_friendly
+                brewery_friendly,
+                short_type_description,
+                short_text_description
         );
     }
 

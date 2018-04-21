@@ -58,6 +58,18 @@ public class AbstractController {
     }
 
     // @TODO Fix this regex to only allow 6 char hex inputs
+    protected void validateShortCode(String input)
+            throws InvalidParameterException {
+        if (input == null || input == "") {
+            throw new InvalidParameterException("Invalid short code.");
+        }
+        Pattern pattern = Pattern.compile("^(?!-)(?!.*--)[A-Za-z0-9-]+(?<!-)");
+        if (!pattern.matcher(input).matches()) {
+            throw new InvalidParameterException("Short code can only contain letters, numbers and non-consecutive dashes.");
+        }
+    }
+
+    // @TODO Fix this regex to only allow 6 char hex inputs
     protected void validateHexColor(String input)
             throws InvalidParameterException {
         if (input == null || input == "") {

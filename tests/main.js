@@ -19,7 +19,7 @@ var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyC
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
 
 
-temp_cookie = '{"sessionKey":"hZp2Zz0952Q5fTxHRFjvUFBufbjPQE5CvfmKnk4AhjS/gbFRm7lSfTpFup1NViKSkT4=","vendorID":21,"requestFeatureID":0,"accountID":24,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
+temp_cookie = '{"sessionKey":"+3dJe362HHzFDnzfVUTXVdY3qbQVUsZUfqqyBH6xzkvIZhCEvoRGTUNciu7bXN5rfSc=","vendorID":21,"requestFeatureID":0,"accountID":349,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
 
 function call_api(url, method, args) {
 	soap.createClient(url, function(err, client) {
@@ -578,11 +578,6 @@ call_api(vendormenu_url, "uploadVendorDrinkImage",{
 */
 /*
 call_api(publicbrewery_url, "loadDrinkMenu",{
-	"brewery_id": 21
-});
-*/
-/*
-call_api(publicbrewery_url, "loadBreweryInfo",{
 	"brewery_id": 21
 });
 */
@@ -1406,9 +1401,55 @@ call_api(uservendorcommunication_url, "createBeerReview",{
 	"content": "This is a test review"
 });
 */
+/*
 call_api(uservendorcommunication_url, "deleteFoodReview",{
 	"module": "UserVendorCommunication",
 	"command": "deleteFoodReview",
 	"cookie": user_cookie,
 	"review_id": 50,
+});
+*/
+/*
+call_api(publicbrewery_url, "loadBreweryInfo",{
+	"brewery_id": 21
+});
+*/
+/*
+call_api(vendoraccounts_url, "updateBreweryInfo",{
+	module: "VendorAccounts",
+	command: "updateBreweryInfo",
+	cookie: temp_cookie,
+	about_text: "This is still a bar to demo the functionality of this application. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+	brewery_friendly: [],
+	brewery_has: [],
+	city: "denver",
+	display_name: "Example Brewing, LLC",
+	fri_close: "12:00 AM",
+	fri_open: "9:00 AM",
+	mon_close: "10:00 PM",
+	mon_open: "9:00 AM",
+	public_email: "info@example_brewing.com",
+	public_phone: "(303) 123-4567",
+	sat_close: "10:00 PM",
+	sat_open: "11:00 AM",
+	short_text_description: "This restaurant hasnt entered a description yet!",
+	short_type_description: "restaurant",
+	state: "CO",
+	street_address: "420 Brew St.",
+	sun_close: "10:00 PM",
+	sun_open: "11:00 AM",
+	thu_close: "10:00 PM",
+	thu_open: "9:00 AM",
+	tue_close: "10:00 PM",
+	tue_open: "9:00 AM",
+	wed_close: "10:00 PM",
+	wed_open: "9:00 AM",
+	zip: "80403"
+});
+*/
+call_api(vendoraccounts_url, "updateShortCode",{
+	module: "VendorAccounts",
+	command: "updateShortCode",
+	"cookie": temp_cookie,
+	"short_code": "ABC"
 });
