@@ -1,10 +1,6 @@
 package com.PublicBrewery.Reviews;
 
-import com.Common.AbstractModel;
-import com.Common.VendorFoodReview;
-import com.Common.VendorDrinkReview;
-import com.Common.BeerReview;
-import com.Common.VendorReview;
+import com.Common.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -122,11 +118,27 @@ public class ReviewModel extends AbstractModel {
                     "   vfr.id " +
                     "ASC";
 
+    private String loadVendorFoodReviewsSQL_stage2 =
+            "SELECT DISTINCT " +
+                    "   vfr.id, " +
+                    "   COUNT(vfrf.*) AS count_star " +
+                    "FROM " +
+                    "   vendor_food_reviews vfr " +
+                    "LEFT JOIN " +
+                    "   vendor_food_review_favorites vfrf " +
+                    "ON " +
+                    "   vfr.id = vfrf.review_id " +
+                    "WHERE " +
+                    "   vfr.vendor_food_id = ? " +
+                    "GROUP BY 1";
+
     public HashMap<Integer, VendorFoodReview> loadVendorFoodReviews(
             int food_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         try {
             preparedStatement = this.DAO.prepareStatement(this.loadVendorFoodReviews_sql);
             preparedStatement.setInt(1, food_id);
@@ -149,11 +161,19 @@ public class ReviewModel extends AbstractModel {
                 vendorFoodReview.days_ago = resultSet.getShort("days_ago");
                 vendorFoodReview.review_image_one = resultSet.getString("review_image_one");
                 vendorFoodReview.review_image_two = resultSet.getString("review_image_two");
-                vendorFoodReview.review_image_one = resultSet.getString("review_image_three");
+                vendorFoodReview.review_image_three = resultSet.getString("review_image_three");
                 vendorFoodReview.review_image_four = resultSet.getString("review_image_four");
                 vendorFoodReview.review_image_five = resultSet.getString("review_image_five");
                 // Key by hash map.
                 vendorFoodReviewHashMap.put(vendorFoodReview.review_id, vendorFoodReview);
+            }
+            stage2 = this.DAO.prepareStatement(this.loadVendorFoodReviewsSQL_stage2);
+            stage2.setInt(1, food_id);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                int review_id = stage2Result.getInt("id");
+                int count_star = stage2Result.getInt("count_star");
+                vendorFoodReviewHashMap.get(review_id).total_favorites = count_star;
             }
             return vendorFoodReviewHashMap;
         } catch (Exception ex) {
@@ -166,6 +186,12 @@ public class ReviewModel extends AbstractModel {
             }
             if (resultSet != null) {
                 resultSet.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
@@ -205,11 +231,27 @@ public class ReviewModel extends AbstractModel {
                     "   vdr.id " +
                     "ASC";
 
+    private String loadVendorDrinkReviewsSQL_stage2 =
+            "SELECT DISTINCT " +
+                    "   vdr.id, " +
+                    "   COUNT(vdrf.*) AS count_star " +
+                    "FROM " +
+                    "   vendor_drink_reviews vdr " +
+                    "LEFT JOIN " +
+                    "   vendor_drink_review_favorites vdrf " +
+                    "ON " +
+                    "   vdr.id = vdrf.review_id " +
+                    "WHERE " +
+                    "   vdr.vendor_drink_id = ? " +
+                    "GROUP BY 1";
+
     public HashMap<Integer, VendorDrinkReview> loadVendorDrinkReviews(
             int drink_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         try {
             preparedStatement = this.DAO.prepareStatement(this.loadVendorDrinkReviews_sql);
             preparedStatement.setInt(1, drink_id);
@@ -232,11 +274,19 @@ public class ReviewModel extends AbstractModel {
                 vendorDrinkReview.days_ago = resultSet.getShort("days_ago");
                 vendorDrinkReview.review_image_one = resultSet.getString("review_image_one");
                 vendorDrinkReview.review_image_two = resultSet.getString("review_image_two");
-                vendorDrinkReview.review_image_one = resultSet.getString("review_image_three");
+                vendorDrinkReview.review_image_three = resultSet.getString("review_image_three");
                 vendorDrinkReview.review_image_four = resultSet.getString("review_image_four");
                 vendorDrinkReview.review_image_five = resultSet.getString("review_image_five");
                 // Key by hash map.
                 vendorDrinkReviewHashMap.put(vendorDrinkReview.review_id, vendorDrinkReview);
+            }
+            stage2 = this.DAO.prepareStatement(this.loadVendorDrinkReviewsSQL_stage2);
+            stage2.setInt(1, drink_id);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                int review_id = stage2Result.getInt("id");
+                int count_star = stage2Result.getInt("count_star");
+                vendorDrinkReviewHashMap.get(review_id).total_favorites = count_star;
             }
             return vendorDrinkReviewHashMap;
         } catch (Exception ex) {
@@ -249,6 +299,12 @@ public class ReviewModel extends AbstractModel {
             }
             if (resultSet != null) {
                 resultSet.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();
@@ -288,11 +344,27 @@ public class ReviewModel extends AbstractModel {
                     "   br.id " +
                     "ASC";
 
+    private String loadVendorBeerReviewsSQL_stage2 =
+            "SELECT DISTINCT " +
+                    "   br.id, " +
+                    "   COUNT(brf.*) AS count_star " +
+                    "FROM " +
+                    "   beer_reviews br " +
+                    "LEFT JOIN " +
+                    "   beer_review_favorites brf " +
+                    "ON " +
+                    "   br.id = brf.review_id " +
+                    "WHERE " +
+                    "   br.beer_id = ? " +
+                    "GROUP BY 1";
+
     public HashMap<Integer, BeerReview> loadBeerReviews(
             int beer_id
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        PreparedStatement stage2 = null;
+        ResultSet stage2Result = null;
         try {
             preparedStatement = this.DAO.prepareStatement(this.loadBeerReviews_sql);
             preparedStatement.setInt(1, beer_id);
@@ -315,17 +387,104 @@ public class ReviewModel extends AbstractModel {
                 beerReview.days_ago = resultSet.getShort("days_ago");
                 beerReview.review_image_one = resultSet.getString("review_image_one");
                 beerReview.review_image_two = resultSet.getString("review_image_two");
-                beerReview.review_image_one = resultSet.getString("review_image_three");
+                beerReview.review_image_three = resultSet.getString("review_image_three");
                 beerReview.review_image_four = resultSet.getString("review_image_four");
                 beerReview.review_image_five = resultSet.getString("review_image_five");
                 // Key by hash map.
                 beerReviewHashMap.put(beerReview.review_id, beerReview);
+            }
+            stage2 = this.DAO.prepareStatement(this.loadVendorBeerReviewsSQL_stage2);
+            stage2.setInt(1, beer_id);
+            stage2Result = stage2.executeQuery();
+            while (stage2Result.next()) {
+                int review_id = stage2Result.getInt("id");
+                int count_star = stage2Result.getInt("count_star");
+                beerReviewHashMap.get(review_id).total_favorites = count_star;
             }
             return beerReviewHashMap;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             // Don't know why.
             throw new Exception("Unable to load vendor beer reviews.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (stage2 != null) {
+                stage2.close();
+            }
+            if (stage2Result != null) {
+                stage2Result.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String loadReviewRepliesSQL =
+        "SELECT " +
+                "   rt.id, " +
+                "   rt.account_id, " +
+                "   rt.content, " +
+                "   DATE_PART('day', now()::date) - DATE_PART('day', rt.creation_timestamp::date) as days_ago, " +
+                "   ai.first_name, " +
+                "   ai.last_name " +
+                "FROM " +
+                "   <%target_table%> rt " +
+                "LEFT JOIN " +
+                "   user_account_info ai " +
+                "ON " +
+                "   rt.account_id = ai.account_id " +
+                "WHERE " +
+                "   rt.review_id = ?";
+
+    HashMap<Integer, VendorReviewReply> loadReviewReplies(
+            int review_id,
+            String resource
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            String target_table = "";
+            if (resource.equals("food")) {
+                target_table = "vendor_food_review_replies";
+            } else if (resource.equals("drink")) {
+                target_table = "vendor_drink_review_replies";
+            } else if (resource.equals("beer")) {
+                target_table = "beer_review_replies";
+            } else {
+                throw new Exception("Unrecognized review reply resource.");
+            }
+            this.loadReviewRepliesSQL = this.loadReviewRepliesSQL.replace("<%target_table%>", target_table);
+            preparedStatement = this.DAO.prepareStatement(this.loadReviewRepliesSQL);
+            preparedStatement.setInt(1, review_id);
+            resultSet = preparedStatement.executeQuery();
+            HashMap<Integer, VendorReviewReply> reviewReplyHashMap = new HashMap<Integer, VendorReviewReply>();
+            while (resultSet.next()) {
+                VendorReviewReply vendorReviewReply = new VendorReviewReply();
+                vendorReviewReply.id = resultSet.getInt("id");
+                vendorReviewReply.root_review_id = review_id;
+                vendorReviewReply.account_id = resultSet.getInt("account_id");
+                vendorReviewReply.content = resultSet.getString("content");
+                vendorReviewReply.days_ago = resultSet.getInt("days_ago");
+                vendorReviewReply.first_name = resultSet.getString("first_name");
+                vendorReviewReply.last_name = resultSet.getString("last_name");
+                if (vendorReviewReply.first_name.equals("Enter First Name")) {
+                    vendorReviewReply.first_name = "Anonymous";
+                }
+                if (vendorReviewReply.last_name.equals("Enter Last Name")) {
+                    vendorReviewReply.last_name = "";
+                }
+                reviewReplyHashMap.put(vendorReviewReply.id, vendorReviewReply);
+            }
+            return reviewReplyHashMap;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new Exception("Unable to load review replies.");
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();

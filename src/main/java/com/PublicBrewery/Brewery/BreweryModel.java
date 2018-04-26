@@ -249,7 +249,13 @@ public class BreweryModel extends AbstractModel {
                 brewery.longitude = stage1Result.getFloat("longitude");
                 brewery.google_maps_zoom = stage1Result.getInt("google_maps_zoom");
                 brewery.short_type_description = stage1Result.getString("short_type_description");
+                if (brewery.short_type_description == null) {
+                    brewery.short_type_description = "NA";
+                }
                 brewery.short_text_description = stage1Result.getString("short_text_description");
+                if (brewery.short_text_description == null) {
+                    brewery.short_text_description = "NA";
+                }
                 brewery.short_code = stage1Result.getString("short_code");
                 if (brewery.short_code == null) {
                     brewery.short_code = "";

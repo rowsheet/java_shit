@@ -1,10 +1,6 @@
 package com.PublicBrewery.Reviews;
 
-import com.Common.AbstractController;
-import com.Common.VendorDrinkReview;
-import com.Common.VendorFoodReview;
-import com.Common.BeerReview;
-import com.Common.VendorReview;
+import com.Common.*;
 
 import java.util.HashMap;
 
@@ -70,4 +66,17 @@ public class ReviewController extends AbstractController {
         return this.returnJSON(beerReviewHashMap);
     }
 
+    public String loadReviewReplies(
+            int review_id,
+            String resource
+    ) throws Exception {
+        this.validateID(review_id, "review_id");
+        this.validateString(resource, "resource");
+        ReviewModel reviewModel = new ReviewModel();
+        HashMap<Integer, VendorReviewReply> reviewReplyHashMap = reviewModel.loadReviewReplies(
+                review_id,
+                resource
+        );
+        return this.returnJSON(reviewReplyHashMap);
+    }
 }

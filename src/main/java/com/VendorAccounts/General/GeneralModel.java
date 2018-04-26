@@ -3,14 +3,11 @@ package com.VendorAccounts.General;
 import com.Common.*;
 import com.VendorAccounts.VendorAuthentication.VendorAuthenticationModel;
 import com.google.gson.Gson;
-import jnr.ffi.annotations.In;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by alexanderkleinhans on 6/24/17.
@@ -771,8 +768,8 @@ public class GeneralModel extends AbstractModel {
             "    last_name " +
             ") VALUES ( " +
             "    ?,?, " +
-            "    (select first_name from user_account_info where account_id = ?), " +
-            "    (select last_name from user_account_info where account_id = ?) " +
+            "    'Enter First Name', " +
+            "    'Enter Last Name' " +
             ") " +
             "ON CONFLICT " +
             "    (account_id) " +
@@ -803,9 +800,7 @@ public class GeneralModel extends AbstractModel {
             preparedStatement = this.DAO.prepareStatement(this.uploadVendorAccountProfilePicture_sql);
             preparedStatement.setString(1, filename);
             preparedStatement.setInt(2, this.vendorCookie.accountID);
-            preparedStatement.setInt(3, this.vendorCookie.accountID);
-            preparedStatement.setInt(4, this.vendorCookie.accountID);
-            preparedStatement.setString(5, filename);
+            preparedStatement.setString(3, filename);
             preparedStatement.execute();
             return true;
         } catch (Exception ex) {

@@ -14,6 +14,7 @@ public class VendorDrinkReview {
     public String review_image_three;
     public String review_image_four;
     public String review_image_five;
+    public int total_favorites;
 
     public VendorDrinkReview() {
         this.review_id = 0;
@@ -29,5 +30,6 @@ public class VendorDrinkReview {
         this.review_image_three = "";
         this.review_image_four = "";
         this.review_image_five = "";
+        this.total_favorites = 0;
     }
 }

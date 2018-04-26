@@ -2,6 +2,8 @@ package com.UserVendorCommunication.Menu;
 
 import com.Common.AbstractController;
 
+import java.awt.*;
+
 /**
  * Created by alexanderkleinhans on 6/1/17.
  */
@@ -103,6 +105,220 @@ public class MenuController extends AbstractController {
         return menuModel.deleteDrinkReview(
                 cookie,
                 review_id
+        );
+    }
+
+    /*
+    REVIEW IMAGES
+     */
+
+    public int uploadFoodReviewImage(
+            String cookie,
+            int review_id,
+            String filename
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(filename, "filename");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.uploadFoodReviewImage(
+                cookie,
+                review_id,
+                filename
+        );
+    }
+
+    public boolean deleteFoodReviewImage(
+            String cookie,
+            int reivew_id,
+            int image_number
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(image_number, "image_number");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.deleteFoodReviewImage(
+                cookie,
+                reivew_id,
+                image_number
+        );
+    }
+
+    public int uploadDrinkReviewImage(
+            String cookie,
+            int review_id,
+            String filename
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(filename, "filename");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.uploadDrinkReviewImage(
+                cookie,
+                review_id,
+                filename
+        );
+    }
+
+    public boolean deleteDrinkReviewImage(
+            String cookie,
+            int reivew_id,
+            int image_number
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(image_number, "image_number");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.deleteDrinkReviewImage(
+                cookie,
+                reivew_id,
+                image_number
+        );
+    }
+
+    public int uploadBeerReviewImage(
+            String cookie,
+            int review_id,
+            String filename
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(filename, "filename");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.uploadBeerReviewImage(
+                cookie,
+                review_id,
+                filename
+        );
+    }
+
+    public boolean deleteBeerReviewImage(
+            String cookie,
+            int reivew_id,
+            int image_number
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(image_number, "image_number");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.deleteBeerReviewImage(
+                cookie,
+                reivew_id,
+                image_number
+        );
+    }
+
+    /*
+    REVIEW FAVORITES
+     */
+
+    public boolean createReviewFavorite (
+            String cookie,
+            int review_id,
+            String resource
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(resource, "resource");
+        if (
+                (resource.equals("food")) &&
+                (resource.equals("drink")) &&
+                (resource.equals("beer"))) {
+            throw new Exception("Invalid menu resource.");
+        }
+        MenuModel menuModel = new MenuModel();
+        return menuModel.createReviewFavorite(
+                cookie,
+                review_id,
+                resource
+        );
+    }
+
+    public boolean deleteReviewFavorite (
+            String cookie,
+            int review_id,
+            String resource
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(resource, "resource");
+        if (
+                (resource.equals("food")) &&
+                        (resource.equals("drink")) &&
+                        (resource.equals("beer"))) {
+            throw new Exception("Invalid menu resource.");
+        }
+        MenuModel menuModel = new MenuModel();
+        return menuModel.deleteReviewFavorite(
+                cookie,
+                review_id,
+                resource
+        );
+    }
+
+    /*
+    REVIEW REPLIES
+     */
+    public int createReviewReply (
+            String cookie,
+            int review_id,
+            String content,
+            String resource
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(review_id, "review_id");
+        this.validateString(content, "content");
+        this.validateString(resource, "resource");
+        if (
+                (resource.equals("food")) &&
+                        (resource.equals("drink")) &&
+                        (resource.equals("beer"))) {
+            throw new Exception("Invalid menu resource.");
+        }
+        MenuModel menuModel = new MenuModel();
+        return menuModel.createReviewReply(
+                cookie,
+                review_id,
+                content,
+                resource
+        );
+    }
+
+    public boolean deleteReviewReply (
+            String cookie,
+            int reply_id,
+            String resource
+    ) throws Exception {
+        this.validateString(cookie, "cookie");
+        this.validateID(reply_id, "reply_id");
+        this.validateString(resource, "resource");
+        if (
+                (resource.equals("food")) &&
+                        (resource.equals("drink")) &&
+                        (resource.equals("beer"))) {
+            throw new Exception("Invalid menu resource.");
+        }
+        MenuModel menuModel = new MenuModel();
+        return menuModel.deleteReviewReply(
+                cookie,
+                reply_id,
+                resource
+        );
+    }
+
+    public boolean flagVendorReview(
+            int review_id,
+            String resource,
+            String why,
+            String ip_address
+    ) throws Exception {
+        this.validateID(review_id, "review_id");
+        this.validateString(resource, "resource");
+        this.validateString(why, "reason");
+        this.validateString(ip_address, "ip_address");
+        MenuModel menuModel = new MenuModel();
+        return menuModel.flagVendorReview(
+                review_id,
+                resource,
+                why,
+                ip_address
         );
     }
 }

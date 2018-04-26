@@ -219,12 +219,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteBeerImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "id") int id
+            @WebParam(name = "image_id") int image_id
     ) throws Exception {
         BeerController beerController = new BeerController();
         return beerController.deleteBeerImage(
                 cookie,
-                id
+                image_id
         );
     }
 
@@ -454,12 +454,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteVendorFoodImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "id") int id
+            @WebParam(name = "image_id") int image_id
     ) throws Exception {
         FoodController foodController = new FoodController();
         return foodController.deleteVendorFoodImage(
                 cookie,
-                id
+                image_id
         );
     }
 
@@ -708,12 +708,12 @@ public class VendorMenuHandler {
     @WebMethod
     public boolean deleteVendorDrinkImage (
             @WebParam(name = "cookie") String cookie,
-            @WebParam(name = "drink_image_id") int drink_image_id
+            @WebParam(name = "image_id") int image_id
     ) throws Exception {
         DrinkController drinkController = new DrinkController();
         return drinkController.deleteVendorDrinkImage(
             cookie,
-            drink_image_id);
+            image_id);
     }
 
     /*------------------------------------------------------------

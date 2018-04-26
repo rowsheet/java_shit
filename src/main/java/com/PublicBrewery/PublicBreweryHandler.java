@@ -298,4 +298,20 @@ public class PublicBreweryHandler {
                 beer_id
         );
     }
+
+    /**
+     * LOAD REVIEW REPLIES
+     */
+
+    @WebMethod
+    public String loadReviewReplies(
+            @WebParam(name="review_id") int review_id,
+            @WebParam(name="resource") String resource
+    ) throws Exception {
+        ReviewController reviewController = new ReviewController();
+        return reviewController.loadReviewReplies(
+                review_id,
+                resource
+        );
+    }
 }
