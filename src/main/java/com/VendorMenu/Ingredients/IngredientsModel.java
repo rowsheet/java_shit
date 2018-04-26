@@ -1,6 +1,8 @@
 package com.VendorMenu.Ingredients;
 
 import com.Common.*;
+import com.VendorAccounts.Limit.LimitException;
+import com.VendorAccounts.Limit.LimitModel;
 
 import java.sql.Array;
 import java.sql.PreparedStatement;
@@ -116,6 +118,13 @@ public class IngredientsModel extends AbstractModel {
         try {
             // Validate cookie.
             this.validateCookieVendorFeature(cookie, "vendor_food_ingredients");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_food_ingredients",
+                    "food_ingredient_limit"
+            );
             // Insert data.
             preparedStatement = this.DAO.prepareStatement(this.createFoodIngredientSQL);
             preparedStatement.setString(1, name);
@@ -166,6 +175,10 @@ public class IngredientsModel extends AbstractModel {
                 throw new IngredientsException("Unable to create food ingredient.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (IngredientsException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
@@ -819,6 +832,13 @@ public class IngredientsModel extends AbstractModel {
         try {
             // Validate cookie.
             this.validateCookieVendorFeature(cookie, "vendor_drink_ingredients");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_drink_ingredients",
+                    "drink_ingredient_limit"
+            );
             // Insert data.
             preparedStatement = this.DAO.prepareStatement(this.createDrinkIngredientSQL);
             preparedStatement.setString(1, name);
@@ -869,6 +889,10 @@ public class IngredientsModel extends AbstractModel {
                 throw new IngredientsException("Unable to create drink ingredient.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (IngredientsException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
@@ -1522,6 +1546,13 @@ public class IngredientsModel extends AbstractModel {
         try {
             // Validate cookie.
             this.validateCookieVendorFeature(cookie, "beer_ingredients");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "beer_ingredients",
+                    "beer_ingredient_limit"
+            );
             // Insert data.
             preparedStatement = this.DAO.prepareStatement(this.createBeerIngredientSQL);
             preparedStatement.setString(1, name);
@@ -1572,6 +1603,10 @@ public class IngredientsModel extends AbstractModel {
                 throw new IngredientsException("Unable to create beer ingredient.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (IngredientsException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.

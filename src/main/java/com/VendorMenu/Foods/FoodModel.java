@@ -1,6 +1,8 @@
 package com.VendorMenu.Foods;
 
 import com.Common.AbstractModel;
+import com.VendorAccounts.Limit.LimitException;
+import com.VendorAccounts.Limit.LimitModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -322,6 +324,13 @@ public class FoodModel extends AbstractModel {
             // We need to validate the vendor request and make sure "food_menu" is one of the vendor features
             // and is in the cookie before we insert a new record.
             this.validateCookieVendorFeature(cookie, "food_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_foods",
+                    "food_limit"
+            );
             // After we insert the record, we need to get the ID of the record back.
             preparedStatement = this.DAO.prepareStatement(this.createFoodSQL);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
@@ -377,6 +386,10 @@ public class FoodModel extends AbstractModel {
                 System.out.println("NULL");
             }
             return food_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (FoodException ex) {
             System.out.print(ex.getMessage());
             // This needs to bubble up.
@@ -448,6 +461,14 @@ public class FoodModel extends AbstractModel {
             // Validate cookie. Just check for the "food_menu" permission. Food categories
             // doesn't need to be it's own permission.
             this.validateCookieVendorFeature(cookie, "food_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_food_categories",
+                    "food_category_limit"
+            );
+            System.out.println("...");
             // Description may be null.
             if (description == null) {
                 description = "";
@@ -472,6 +493,10 @@ public class FoodModel extends AbstractModel {
                 throw new FoodException("Unable to create food.");
             }
             return food_category_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (FoodException ex) {
             System.out.println(ex.getMessage());
             System.out.println("ROLLING BACK");
@@ -715,6 +740,15 @@ public class FoodModel extends AbstractModel {
             Validate feature permissions.
              */
             this.validateCookieVendorFeature(cookie, "vendor_food_images");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkImageLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_food_images",
+                    "food_image_limit",
+                    "vendor_food",
+                    vendor_food_id
+            );
             /*
             Stage 1
             Validate Resource ownership.
@@ -765,6 +799,10 @@ public class FoodModel extends AbstractModel {
             Done.
              */
             return image_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (FoodException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
@@ -1009,6 +1047,13 @@ public class FoodModel extends AbstractModel {
             Stage 1
              */
             this.validateCookieVendorFeature(cookie, "food_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_food_tags",
+                    "food_tag_limit"
+            );
             /*
             Stage 2
              */
@@ -1027,6 +1072,10 @@ public class FoodModel extends AbstractModel {
                 throw new Exception("Unable to create new vendor_food_tag.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             // Try to parse exception.
             if (ex.getMessage().contains("vendor_food_tags_vendor_id_name_idx")) {

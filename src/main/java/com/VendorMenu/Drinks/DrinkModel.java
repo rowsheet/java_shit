@@ -1,6 +1,8 @@
 package com.VendorMenu.Drinks;
 
 import com.Common.AbstractModel;
+import com.VendorAccounts.Limit.LimitException;
+import com.VendorAccounts.Limit.LimitModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -437,6 +439,13 @@ public class DrinkModel extends AbstractModel {
             // We need to validate the vendor request and make sure "drink_menu" is one of the vendor features
             // and is in the cookie before we insert a new record.
             this.validateCookieVendorFeature(cookie, "drink_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_drinks",
+                    "drink_limit"
+            );
             // After we insert the record, we need to get the ID of the record back.
             /*
             Stage 1
@@ -513,6 +522,10 @@ public class DrinkModel extends AbstractModel {
              */
             this.DAO.commit();
             return drink_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (DrinkException ex) {
             System.out.print(ex.getMessage());
             // This needs to bubble up.
@@ -595,6 +608,13 @@ public class DrinkModel extends AbstractModel {
             // Validate cookie. Just check for the "drink_menu" permission. Drink categories
             // doesn't need to be it's own permission.
             this.validateCookieVendorFeature(cookie, "drink_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_drink_categories",
+                    "drink_category_limit"
+            );
             // Just insert the category returning the ID.
             preparedStatement = this.DAO.prepareStatement(this.createDrinkCategorySQL);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
@@ -611,6 +631,10 @@ public class DrinkModel extends AbstractModel {
                 throw new DrinkException("Unable to create drink.");
             }
             return drink_category_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (DrinkException ex) {
             System.out.println(ex.getMessage());
             System.out.println("ROLLING BACK");
@@ -850,6 +874,15 @@ public class DrinkModel extends AbstractModel {
             Validate feature permissions.
              */
             this.validateCookieVendorFeature(cookie, "vendor_drink_images");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkImageLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_drink_images",
+                    "drink_image_limit",
+                    "vendor_drink",
+                    vendor_drink_id
+            );
             /*
             Stage 1
             Validate Resource ownership.
@@ -900,6 +933,10 @@ public class DrinkModel extends AbstractModel {
             Done.
              */
             return image_id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (DrinkException ex) {
             System.out.println(ex.getMessage());
             // This needs to bubble up.
@@ -1144,6 +1181,13 @@ public class DrinkModel extends AbstractModel {
             Stage 1
              */
             this.validateCookieVendorFeature(cookie, "drink_menu");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_drink_tags",
+                    "drink_tag_limit"
+            );
             /*
             Stage 2
              */
@@ -1162,6 +1206,10 @@ public class DrinkModel extends AbstractModel {
                 throw new Exception("Unable to create new vendor_drink_tag.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             // Try to parse exception.
             if (ex.getMessage().contains("vendor_drink_tags_vendor_id_name_idx")) {

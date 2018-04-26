@@ -3,6 +3,8 @@ package com.VendorMedia.PageImages;
 import com.Common.AbstractModel;
 import com.Common.Color;
 import com.Common.VendorMedia.*;
+import com.VendorAccounts.Limit.LimitException;
+import com.VendorAccounts.Limit.LimitModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,6 +33,13 @@ public class PageImageModel extends AbstractModel {
         try {
             // Validate cookie.
             this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_page_images",
+                    "media_gallery_limit"
+            );
             // Do the database stuff.
             preparedStatement = this.DAO.prepareStatement(this.createVendorPageImageGallery_sql);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
@@ -45,6 +54,10 @@ public class PageImageModel extends AbstractModel {
                 throw new Exception("Unable to create new page image gallery.");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             // Try to parse.
             if (ex.getMessage().contains("vendor_page_image_galleries_vendor_id_name_idx")) {
@@ -96,6 +109,15 @@ public class PageImageModel extends AbstractModel {
         try {
             // Validate cookie.
             this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkImageLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_page_images",
+                    "gallery_image_limit",
+                    "gallery",
+                    gallery_id
+            );
             // Do the database stuff.
             preparedStatement = this.DAO.prepareStatement(this.uploadVendorPageImage_sql);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
@@ -112,6 +134,10 @@ public class PageImageModel extends AbstractModel {
                 throw new Exception("Unable to upload vendor page image.");
             }
             return  id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             // Try to parse.

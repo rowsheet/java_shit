@@ -3,7 +3,8 @@ package com.VendorMenu.Extras;
 import com.Common.AbstractModel;
 import com.Common.VendorDropdownContainer;
 import com.Common.VendorNutritionalFact;
-import com.sun.org.apache.regexp.internal.RE;
+import com.VendorAccounts.Limit.LimitException;
+import com.VendorAccounts.Limit.LimitModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -107,6 +108,13 @@ public class ExtrasModel extends AbstractModel {
         try {
             // Validate permission
             this.validateCookieVendorFeature(cookie, "nutritional_facts");
+            // Check limits.
+            LimitModel limitModel = new LimitModel();
+            limitModel.checkLimit(
+                    this.vendorCookie.vendorID,
+                    "vendor_nutritional_facts",
+                    "nutritional_profile_limit"
+            );
             // Insert data.
             preparedStatement = this.DAO.prepareStatement(this.createNutritionalFactSQL);
             preparedStatement.setInt(1, this.vendorCookie.vendorID);
@@ -138,6 +146,10 @@ public class ExtrasModel extends AbstractModel {
                 throw new Exception("Unable to create nutritional facts entry");
             }
             return id;
+        } catch (LimitException ex) {
+            System.out.print(ex.getMessage());
+            // This needs to bubble up.
+            throw new Exception(ex.getMessage());
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             // Don't know why

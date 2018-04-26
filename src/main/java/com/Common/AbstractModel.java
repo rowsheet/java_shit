@@ -25,6 +25,7 @@ public class AbstractModel {
     protected int vendor_drink_image_limit = 10;
 
     private Connection SessionDAO;
+    protected Connection LimitDAO;
     protected Connection DAO;
     protected UserCookie userCookie;
     protected VendorCookie vendorCookie;
@@ -1018,5 +1019,11 @@ public class AbstractModel {
             // We inject the DAO to all private subroutines, do not close
             // this or else the calling function will not be able to use it.
         }
+    }
+
+    protected void initLimitDAO() throws Exception {
+        this.LimitDAO = DriverManager
+        .getConnection("jdbc:postgresql://localhost:5432/skiphopp?assumeMinServerVersion=9.0",
+        this.db_username, this.db_password);
     }
 }
