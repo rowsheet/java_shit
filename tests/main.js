@@ -1619,7 +1619,7 @@ call_api(publicsearch_url, "basicSearchVendors",{
 	// "keywords": ["SUSHI-DENVER"],
 	// "keywords": ["SUSHI-denver"],
 	// "keywords": ["beer"],
-	"keywords": ["fake"],
+	"keywords": ["Ultimate", "example", "abc"],
 	"offset": 2,
 	"reid": 3
 });

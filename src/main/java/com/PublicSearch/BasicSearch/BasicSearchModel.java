@@ -20,36 +20,16 @@ import java.util.HashMap;
 public class BasicSearchModel extends AbstractModel  {
     public BasicSearchModel() throws Exception { super(); }
 
-    private String basicSearchVendorsSQL_shortcode =
-            "SELECT id " +
-                    "FROM " +
-                    "   vendors " +
-                    "WHERE " +
-                    "   short_code = UPPER(?)"; // No need to limit, short_code is unique and this is an exact match.
-
-    private String basicSearchVendorsSQL_reid1 =
+    private String basicSearchVendorsSQL_getIDs =
             "SELECT vendor_id " +
                     "FROM " +
-                    "   vendor_info " +
+                    "   english_vendor_search evs " +
                     "WHERE " +
-                    "   display_name ILIKE ANY (?) " +
-                    "LIMIT ? OFFSET ?";
-
-    private String basicSearchVendorsSQL_reid2 =
-            "SELECT vendor_id " +
-                    "FROM " +
-                    "   vendor_info " +
-                    "WHERE " +
-                    "   short_text_description ILIKE ANY (?) " +
-                    "LIMIT ? OFFSET ?";
-
-    private String basicSearchVendorsSQL_reid3 =
-            "SELECT vendor_id " +
-                    "FROM " +
-                    "   vendor_info " +
-                    "WHERE " +
-                    "   about_text ILIKE ANY (?) " +
-                    "LIMIT ? OFFSET ?";
+                    "<%to_tsquery%> " +
+                    "ORDER BY ( " +
+                    "<%ts_rank%> " +
+                    ") DESC " +
+                    "LIMIT ? OFFSET ?;";
 
     private String basicSearchVendorsSQL_fromIDS =
             "SELECT " +
@@ -104,16 +84,7 @@ public class BasicSearchModel extends AbstractModel  {
                     "   v.id = ANY(?)";
 
     /**
-     * Search with ILIKE ANY in the following order:
-     *      1) Search for anything with short-code.
-     *      note: only do this if offset = 0 and keyword is the only argument;
-     * Next prioritize in the following order.
-     *      2) vendor_info.display_name.
-     *      3) vendor_info.short_type_description.
-     *      4) vendor_info.short_text_description.
-     * If there are no results given the limit and offset, search for more in about_text.
-     *      5) vendor_info.about_text.
-     * Return a hash-map so duplicates are removed (length should be good if offset was incremented properly).
+     * It's all in the views.
      * @param keywords
      * @return
      * @throws Exception
@@ -122,54 +93,48 @@ public class BasicSearchModel extends AbstractModel  {
             String[] keywords,
             int limit,
             int offset,
-            int reid
+            int reid // depreciated.
     ) throws Exception {
-        System.out.println(keywords[0]);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             HashMap<Integer, FavoritePlace> placeHashMap = new HashMap<Integer, FavoritePlace>();
             ArrayList<Integer> vendor_ids = new ArrayList<Integer>();
-            if (reid == 1) {
-                preparedStatement = this.DAO.prepareStatement(basicSearchVendorsSQL_shortcode);
-                preparedStatement.setString(1, keywords[0]);
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    vendor_ids.add(resultSet.getInt("id"));
-                }
-            }
+            // Build to_tsquery.
+            String to_tsquery = "";
+            String to_tsquery_ps=  "evs.D @@ TO_TSQUERY('english', ?) ";
             for (int i = 0; i < keywords.length; i++) {
-                keywords[i] = "%" + keywords[i] + "%";
-            }
-            if (reid == 1) {
-                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid1);
-                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
-                preparedStatement.setInt(2, limit - vendor_ids.size());
-                preparedStatement.setInt(3, offset);
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    vendor_ids.add(resultSet.getInt("vendor_id"));
+                preparedStatement = this.DAO.prepareStatement(to_tsquery_ps);
+                preparedStatement.setString(1, keywords[i]);
+                to_tsquery += preparedStatement.toString();
+                if (i < (keywords.length -1)) {
+                    to_tsquery += " OR ";
                 }
             }
-            if (reid == 2) {
-                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid2);
-                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
-                preparedStatement.setInt(2, limit);
-                preparedStatement.setInt(3, offset);
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    vendor_ids.add(resultSet.getInt("vendor_id"));
+            // Build ts_rank.
+            String ts_rank = "";
+            int denominator = 1;
+            String ts_rank_ps = "(TS_RANK(evs.D, TO_TSQUERY('english', ?))) / " + Float.toString(denominator);
+            for (int i = 0; i < keywords.length; i++) {
+                preparedStatement = this.DAO.prepareStatement(ts_rank_ps);
+                preparedStatement.setString(1, keywords[i]);
+                ts_rank += preparedStatement.toString();
+                if (i < (keywords.length -1)) {
+                    ts_rank += " + ";
                 }
+                denominator += 0.379;
             }
-            if (reid == 3) {
-                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid3);
-                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
-                preparedStatement.setInt(2, limit);
-                preparedStatement.setInt(3, offset);
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    vendor_ids.add(resultSet.getInt("vendor_id"));
-                }
+            this.basicSearchVendorsSQL_getIDs = this.basicSearchVendorsSQL_getIDs.replace("<%to_tsquery%>", to_tsquery);
+            this.basicSearchVendorsSQL_getIDs = this.basicSearchVendorsSQL_getIDs.replace("<%ts_rank%>", ts_rank);
+            preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_getIDs);
+            preparedStatement.setInt(1, limit);
+            preparedStatement.setInt(2, offset);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                vendor_ids.add(resultSet.getInt("vendor_id"));
+            }
+            if (vendor_ids.size() == 0) {
+                return placeHashMap;
             }
             preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_fromIDS);
             preparedStatement.setArray(1, this.DAO.createArrayOf("INTEGER", vendor_ids.toArray()));
