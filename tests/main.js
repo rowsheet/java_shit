@@ -17,6 +17,7 @@ var uservendorcommunication_url = "http://localhost:9000/UserVendorCommunication
 var userthirdpartycommunication_url = "http://localhost:9000/UserThirdPartyCommunication?wsdl";
 var vendorthirdpartycommunication_url = "http://localhost:9000/VendorThirdPartyCommunication?wsdl";
 var publicbrewery_url = "http://localhost:9000/PublicBrewery?wsdl";
+var publicsearch_url = "http://localhost:9000/PublicSearch?wsdl";
 
 
 temp_cookie = '{"sessionKey":"+3dJe362HHzFDnzfVUTXVdY3qbQVUsZUfqqyBH6xzkvIZhCEvoRGTUNciu7bXN5rfSc=","vendorID":21,"requestFeatureID":0,"accountID":349,"vendorFeatures":{"vendor_food_ingredients": {"name":"vendor_food_ingredients","feature_id":17,"feature_status":"enabled"},"nutritional_facts": {"name": "nutritional_facts", "feature_id": 20, "feature_status": "enablded"},"vendor_drink_ingredients":{"name":"vendor_drink_ingredients","feature_id":18,"feature_status":"enabled"},"beer_ingredients":{"name":"beer_ingredients","feature_id":19,"feature_status":"enabled"},"drink_menu":{"name":"drink_menu","feature_id":15,"feature_status":"enabled"},"vendor_drink_images":{"name":"vendor_drink_images","feature_id":16,"feature_status":"enabled"},"vendor_page_images":{"name":"vendor_page_images","feature_id":11,"feature_status":"enabled"},"promotions":{"name":"promotions","feature_id":3,"feature_status":"preview"},"vendor_page_images_20":{"name":"vendor_page_images_20","feature_id":10,"feature_status":"enabled"},"beer_menu":{"name":"beer_menu","feature_id":5,"feature_status":"enabled"},"vendor_food_images":{"name":"vendor_food_images","feature_id":13,"feature_status":"enabled"},"vendor_beer_images":{"name":"vendor_beer_images","feature_id":12,"feature_status":"enabled"},"blog":{"name":"blog","feature_id":1,"feature_status":"preview"},"food_menu":{"name":"food_menu","feature_id":4,"feature_status":"preview"},"memberships":{"name":"memberships","feature_id":2,"feature_status":"preview"},"events":{"name":"events","feature_id":6,"feature_status":"preview"},"vendor_review":{"name":"vendor_review","feature_id":9,"feature_status":"enabled"},"vendor_event_images":{"name":"vendor_event_images","feature_id":14,"feature_status":"enabled"}}}';
@@ -1281,7 +1282,7 @@ call_api(useraccounts_url, "oauthUserAuthorize", {
 });
 */
 // user_cookie = '{"userID":314,"requestPermissionID":0,"sessionKey":"c5pqIEcQFDBYQ9cZZVDqTQbicSls+kg7AOcQl83Ap9JSBLj5p7Nm2d8YGF+iYfhZ52k=","emailAddress":"user_google_103274899784322853769","userName":"user_google_103274899784322853769","first_name":"Enter First Name","last_name":"Enter Last Name","about_me":"NA","profile_picture":"NA","userPermissions":{"third_party_food_review":{"name":"third_party_food_review","permission_id":12},"beer_reviews":{"name":"beer_reviews","permission_id":15},"vendor_drink_review":{"name":"vendor_drink_review","permission_id":17},"event_rsvp":{"name":"event_rsvp","permission_id":9},"friends":{"name":"friends","permission_id":4},"vendor_memberships":{"name":"vendor_memberships","permission_id":10},"vendor_review":{"name":"vendor_review","permission_id":14},"vendor_food_review":{"name":"vendor_food_review","permission_id":16},"vendor_blog_comment":{"name":"vendor_blog_comment","permission_id":11},"meetup_rsvp":{"name":"meetup_rsvp","permission_id":8},"recieve_user_messages":{"name":"recieve_user_messages","permission_id":5},"event_notifications":{"name":"event_notifications","permission_id":2},"beer_notifications":{"name":"beer_notifications","permission_id":3},"organize_meetups":{"name":"organize_meetups","permission_id":7},"meetup_notifications":{"name":"meetup_notifications","permission_id":1},"send_user_messages":{"name":"send_user_messages","permission_id":6},"third_party_reviews":{"name":"third_party_reviews","permission_id":13}}}';
-user_cookie = '{"userID":403,"requestPermissionID":0,"sessionKey":"GL60M/UK2sNRXxqTxD65ppuLKaBIxfFHD3LMfQOXR0X19dO7y7Zt+QFZTfwGFV7aX4I\\u003d","emailAddress":"US_GO_106540429520895305888","userName":"US_GO_106540429520895305888","first_name":"Enter First Name","last_name":"Enter Last Name","about_me":"NA","profile_picture":"NA","userPermissions":{"third_party_food_review":{"name":"third_party_food_review","permission_id":12},"beer_reviews":{"name":"beer_reviews","permission_id":15},"vendor_drink_review":{"name":"vendor_drink_review","permission_id":17},"event_rsvp":{"name":"event_rsvp","permission_id":9},"friends":{"name":"friends","permission_id":4},"vendor_memberships":{"name":"vendor_memberships","permission_id":10},"vendor_review":{"name":"vendor_review","permission_id":14},"vendor_food_review":{"name":"vendor_food_review","permission_id":16},"vendor_blog_comment":{"name":"vendor_blog_comment","permission_id":11},"meetup_rsvp":{"name":"meetup_rsvp","permission_id":8},"recieve_user_messages":{"name":"recieve_user_messages","permission_id":5},"event_notifications":{"name":"event_notifications","permission_id":2},"beer_notifications":{"name":"beer_notifications","permission_id":3},"organize_meetups":{"name":"organize_meetups","permission_id":7},"meetup_notifications":{"name":"meetup_notifications","permission_id":1},"send_user_messages":{"name":"send_user_messages","permission_id":6},"third_party_reviews":{"name":"third_party_reviews","permission_id":13}}}';
+// user_cookie = '{"userID":403,"requestPermissionID":0,"sessionKey":"GL60M/UK2sNRXxqTxD65ppuLKaBIxfFHD3LMfQOXR0X19dO7y7Zt+QFZTfwGFV7aX4I\\u003d","emailAddress":"US_GO_106540429520895305888","userName":"US_GO_106540429520895305888","first_name":"Enter First Name","last_name":"Enter Last Name","about_me":"NA","profile_picture":"NA","userPermissions":{"third_party_food_review":{"name":"third_party_food_review","permission_id":12},"beer_reviews":{"name":"beer_reviews","permission_id":15},"vendor_drink_review":{"name":"vendor_drink_review","permission_id":17},"event_rsvp":{"name":"event_rsvp","permission_id":9},"friends":{"name":"friends","permission_id":4},"vendor_memberships":{"name":"vendor_memberships","permission_id":10},"vendor_review":{"name":"vendor_review","permission_id":14},"vendor_food_review":{"name":"vendor_food_review","permission_id":16},"vendor_blog_comment":{"name":"vendor_blog_comment","permission_id":11},"meetup_rsvp":{"name":"meetup_rsvp","permission_id":8},"recieve_user_messages":{"name":"recieve_user_messages","permission_id":5},"event_notifications":{"name":"event_notifications","permission_id":2},"beer_notifications":{"name":"beer_notifications","permission_id":3},"organize_meetups":{"name":"organize_meetups","permission_id":7},"meetup_notifications":{"name":"meetup_notifications","permission_id":1},"send_user_messages":{"name":"send_user_messages","permission_id":6},"third_party_reviews":{"name":"third_party_reviews","permission_id":13}}}';
 /*
 call_api(useraccounts_url, "loadUserAccountProfile", {
 	"module": "UserAccounts",
@@ -1576,9 +1577,49 @@ call_api(uservendorcommunication_url, "createReviewReply",{
 	"content": "TEST REPLY CONENT"
 });
 */
+user_cookie = '{"userID":403,"requestPermissionID":0,"sessionKey":"aYaoapeQR9FjcL+M+lbkHOJkAOjR3HaQDur4L6TZxUYAU+ibwUl5rhtCz+RJatlJ/QU\\u003d","emailAddress":"US_GO_106540429520895305888","userName":"US_GO_106540429520895305888","first_name":"Test","last_name":"User","about_me":"NA","profile_picture":"NA","userPermissions":{"third_party_food_review":{"name":"third_party_food_review","permission_id":12},"beer_reviews":{"name":"beer_reviews","permission_id":15},"vendor_drink_review":{"name":"vendor_drink_review","permission_id":17},"event_rsvp":{"name":"event_rsvp","permission_id":9},"friends":{"name":"friends","permission_id":4},"vendor_memberships":{"name":"vendor_memberships","permission_id":10},"vendor_review":{"name":"vendor_review","permission_id":14},"vendor_food_review":{"name":"vendor_food_review","permission_id":16},"vendor_blog_comment":{"name":"vendor_blog_comment","permission_id":11},"meetup_rsvp":{"name":"meetup_rsvp","permission_id":8},"recieve_user_messages":{"name":"recieve_user_messages","permission_id":5},"event_notifications":{"name":"event_notifications","permission_id":2},"beer_notifications":{"name":"beer_notifications","permission_id":3},"organize_meetups":{"name":"organize_meetups","permission_id":7},"meetup_notifications":{"name":"meetup_notifications","permission_id":1},"send_user_messages":{"name":"send_user_messages","permission_id":6},"third_party_reviews":{"name":"third_party_reviews","permission_id":13}}}';
+/*
 call_api(publicbrewery_url, "loadReviewReplies",{
 	"module": "PublicBrewery",
 	"command": "loadReviewReplies",
 	"review_id": 73,
 	"resource": "food",
+});
+*/
+/*
+call_api(userfavorites_url, "loadUserPlaceFavorites",{
+	"module": "UserFavoritesHandler",
+	"command": "loadUserPlaceFavorites",
+	"cookie": user_cookie,
+});
+*/
+/*
+call_api(publicsearch_url, "basicSearchVendors",{
+	"module": "PublicSearch",
+	"command": "basicSearchVendors",
+	"keywords": ["SUSHI-DENVER", "ipa", "hopped" , "kick"],
+	"offset": 0,
+	"reid": 1
+});
+*/
+/*
+call_api(publicsearch_url, "basicSearchVendors",{
+	"module": "PublicSearch",
+	"command": "basicSearchVendors",
+	"keywords": ["SUSHI-DENVER", "cajun"],
+	"offset": 0,
+	"reid": 2
+});
+*/
+call_api(publicsearch_url, "basicSearchVendors",{
+	"module": "PublicSearch",
+	"command": "basicSearchVendors",
+	// "keywords": ["SUSHI-DENVER", "fake", "bar"],
+	// "keywords": ["EXAMPLE-BREWING"],
+	// "keywords": ["SUSHI-DENVER"],
+	// "keywords": ["SUSHI-denver"],
+	// "keywords": ["beer"],
+	"keywords": ["fake"],
+	"offset": 2,
+	"reid": 3
 });

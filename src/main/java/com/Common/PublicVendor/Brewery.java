@@ -87,6 +87,7 @@ public class Brewery {
     public HashMap<Integer, VendorReview> reviews;
     public String short_code;
 
+    public int total_favorites;
     public Brewery() {
         this.short_text_description = null;
         this.short_type_description = null;
@@ -134,5 +135,6 @@ public class Brewery {
         this.events = new HashMap<Integer, Event>();
         this.reviews = new HashMap<Integer, VendorReview>();
         this.short_code = "";
+        this.total_favorites = 0;
     }
 }

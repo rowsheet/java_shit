@@ -1,7 +1,7 @@
 package com.UserFavorites.Places;
 
 import com.Common.AbstractController;
-import com.Common.PublicVendor.Brewery;
+import com.Common.UserFavorites.FavoritePlace;
 
 import java.util.HashMap;
 
@@ -10,40 +10,36 @@ import java.util.HashMap;
  */
 public class PlacesController extends AbstractController {
 
-    public int createUserPlaceFavorite(
+    public boolean createUserPlaceFavorite(
             String cookie,
-            int brewery_id
+            int vendor_id
     ) throws Exception {
         PlacesModel placesModel = new PlacesModel();
         return placesModel.createUserPlaceFavorite(
                 cookie,
-                brewery_id
+                vendor_id
         );
     }
 
     public boolean deleteUserPlaceFavorite(
             String cookie,
-            int brewery_id
+            int vendor_id
     ) throws Exception {
         PlacesModel placesModel = new PlacesModel();
         return placesModel.deleteUserPlaceFavorite(
                 cookie,
-                brewery_id
+                vendor_id
         );
     }
 
-    public String readUserPlaceFavorites(
-            String cookie,
-            int limit,
-            int offset
+    public String loadUserPlaceFavorites(
+            String cookie
     ) throws Exception {
         PlacesModel placesModel = new PlacesModel();
-        HashMap<Integer, Brewery> breweryHashMap = new HashMap<Integer, Brewery>();
-        breweryHashMap = placesModel.readUserPlaceFavorites(
-                cookie,
-                limit,
-                offset
+        HashMap<Integer, FavoritePlace> favoritePlaceHashMap = new HashMap<Integer, FavoritePlace>();
+        favoritePlaceHashMap = placesModel.loadUserPlaceFavorites(
+                cookie
         );
-        return this.returnJSON(breweryHashMap);
+        return this.returnJSON(favoritePlaceHashMap);
     }
 }

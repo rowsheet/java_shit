@@ -1,5 +1,6 @@
 package com.PublicSearch;
 
+import com.PublicSearch.BasicSearch.BasicSearchController;
 import com.PublicSearch.Beer.BeerController;
 import com.PublicSearch.Brewery.BreweryController;
 
@@ -12,6 +13,65 @@ import javax.jws.WebService;
  */
 @WebService
 public class PublicSearchHandler {
+    @WebMethod
+    public String basicSearchVendors(
+            @WebParam(name="keywords") String[] keywords,
+            // @WebParam(name="limit") int limit, always load 9 at a time for now.
+            @WebParam(name="offset") int offset,
+            @WebParam(name="reid") int reid
+    ) throws Exception {
+        BasicSearchController basicSearchController = new BasicSearchController();
+        return basicSearchController.basicSearchVendors(
+                keywords,
+                5,
+                offset,
+                reid
+        );
+    }
+
+    @WebMethod
+    public String basicSearchBeers(
+            @WebParam(name="keywords") String[] keywords,
+            // @WebParam(name="limit") int limit, always load 9 at a time for now.
+            @WebParam(name="offset") int offset
+    ) throws Exception {
+        BasicSearchController basicSearchController = new BasicSearchController();
+        return basicSearchController.basicSearchBeers(
+                keywords,
+                5,
+                offset
+        );
+    }
+
+    @WebMethod
+    public String basicSearchFoods(
+            @WebParam(name="keywords") String[] keywords,
+            // @WebParam(name="limit") int limit, always load 9 at a time for now.
+            @WebParam(name="offset") int offset
+    ) throws Exception {
+        BasicSearchController basicSearchController = new BasicSearchController();
+        return basicSearchController.basicSearchFoods(
+                keywords,
+                5,
+                offset
+        );
+    }
+
+    @WebMethod
+    public String basicSearchDrinks(
+            @WebParam(name="keywords") String[] keywords,
+            // @WebParam(name="limit") int limit, always load 9 at a time for now.
+            @WebParam(name="offset") int offset
+    ) throws Exception {
+        BasicSearchController basicSearchController = new BasicSearchController();
+        return  basicSearchController.basicSearchDrinks(
+                keywords,
+                5,
+                offset
+        );
+    }
+
+/*
     @WebMethod
     public String searchBeers(
             @WebParam(name="min_color") int min_color,
@@ -39,6 +99,8 @@ public class PublicSearchHandler {
                 offset
         );
     }
+*/
+/*
     @WebMethod
     public String searchBreweries(
         @WebParam(name="min_occupancy") int min_occupancy,
@@ -76,4 +138,5 @@ public class PublicSearchHandler {
                 offset
         );
     }
+*/
 }

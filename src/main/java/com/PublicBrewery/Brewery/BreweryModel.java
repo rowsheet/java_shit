@@ -86,6 +86,14 @@ public class BreweryModel extends AbstractModel {
                     "   vi.main_image_id = vpi.id " +
                     "WHERE v.id = ?";
 
+    private String loadBreweryInfo_totalFavorites =
+        "SELECT " +
+                "   count(*) AS count_star " +
+                "FROM " +
+                "   user_vendor_favorites " +
+                "WHERE " +
+                "   vendor_id = ?";
+
     public BreweryModel() throws Exception {}
 
     /**
@@ -207,6 +215,8 @@ public class BreweryModel extends AbstractModel {
         // Create statments.
         PreparedStatement stage1 = null;
         ResultSet stage1Result = null;
+        PreparedStatement ps_favorites = null;
+        ResultSet rs_favorites = null;
         try {
             // Prepare statments.
             stage1 = this.DAO.prepareStatement(this.loadBreweryInfo_stage1);
@@ -285,6 +295,15 @@ public class BreweryModel extends AbstractModel {
                 vendorPageImage.vendor_id = brewery.vendor_id;
                 brewery.main_image = vendorPageImage;
             }
+            // Also load favorites count.
+            ps_favorites = this.DAO.prepareStatement(this.loadBreweryInfo_totalFavorites);
+            ps_favorites.setInt(1, brewry_id);
+            rs_favorites = ps_favorites.executeQuery();
+            int fav_count = 0;
+            while (rs_favorites.next()) {
+                fav_count = rs_favorites.getInt("count_star");
+            }
+            brewery.total_favorites = fav_count;
             /*
             Stage 2
              */
@@ -337,6 +356,12 @@ public class BreweryModel extends AbstractModel {
             }
             if (stage1Result != null) {
                 stage1Result.close();
+            }
+            if (ps_favorites != null) {
+                ps_favorites.close();
+            }
+            if (rs_favorites != null) {
+                rs_favorites.close();
             }
             if (this.DAO != null) {
                 this.DAO.close();

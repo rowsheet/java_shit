@@ -120,40 +120,36 @@ public class UserFavoritesHandler {
      -----------------------------------------*/
 
     @WebMethod
-    public int createUserPlaceFavorite(
+    public boolean createUserPlaceFavorite(
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="brewery_id") int brewery_id
+            @WebParam(name="vendor_id") int vendor_id
     ) throws Exception {
         PlacesController placesController = new PlacesController();
         return placesController.createUserPlaceFavorite(
                 cookie,
-                brewery_id
+                vendor_id
         );
     }
 
     @WebMethod
     public boolean deleteUserPlaceFavorite(
             @WebParam(name="cookie") String cookie,
-            @WebParam(name="brewery_id") int brewery_id
+            @WebParam(name="vendor_id") int vendor_id
     ) throws Exception {
         PlacesController placesController = new PlacesController();
         return placesController.deleteUserPlaceFavorite(
                 cookie,
-                brewery_id
+                vendor_id
         );
     }
 
     @WebMethod
-    public String readUserPlaceFavorites(
-            @WebParam(name="cookie") String cookie,
-            @WebParam(name="limit") int limit,
-            @WebParam(name="offset") int offset
+    public String loadUserPlaceFavorites(
+            @WebParam(name="cookie") String cookie
     ) throws Exception {
         PlacesController placesController = new PlacesController();
-        return placesController.readUserPlaceFavorites(
-                cookie,
-                limit,
-                offset
+        return placesController.loadUserPlaceFavorites(
+                cookie
         );
     }
 }

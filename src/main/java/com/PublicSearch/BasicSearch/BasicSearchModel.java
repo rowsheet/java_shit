@@ -1,8 +1,11 @@
-package com.UserFavorites.Places;
+package com.PublicSearch.BasicSearch;
 
 import com.Common.AbstractModel;
-import com.Common.PublicVendor.Brewery;
+import com.Common.UserFavorites.FavoriteBeer;
 import com.Common.UserFavorites.FavoritePlace;
+import com.Common.UserFavorites.FavoriteVendorDrink;
+import com.Common.UserFavorites.FavoriteVendorFood;
+import jnr.ffi.annotations.In;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,93 +13,45 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by alexanderkleinhans on 7/5/17.
+ * Basic search will return "favorite" data-structres, not full ones (because they're simple).
+ * In the future, something better will take this place. For now (while we're in beta), this
+ * will just use keywords.
  */
-public class PlacesModel extends AbstractModel {
+public class BasicSearchModel extends AbstractModel  {
+    public BasicSearchModel() throws Exception { super(); }
 
-    public PlacesModel() throws Exception {}
-
-    private String createUserPlaceFavoriteSQL_stage1 =
-        "INSERT INTO " +
-                "   user_vendor_favorites (" +
-                "   account_id, " +
-                "   vendor_id" +
-                ") VALUES (?,?) " +
-                "RETURNING id";
-
-    public boolean createUserPlaceFavorite(
-            String cookie,
-            int vendor_id
-    ) throws Exception {
-        PreparedStatement stage1 = null;
-        try {
-            // Just check the session, no permissions here becaues all users can
-            // have favorites (it doesn't affect any other accounts) and all breweries
-            // can be favorited.
-            int account_id = this.validateUserCookie(cookie);
-            stage1 = this.DAO.prepareStatement(this.createUserPlaceFavoriteSQL_stage1);
-            stage1.setInt(1, this.userCookie.userID);
-            stage1.setInt(2, vendor_id);
-            stage1.execute();
-            return true;
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            // If it's already been added, they're probably un-favoriting it.
-            if (ex.getMessage().contains("user_vendor_favorites_account_id_vendor_id_idx")) {
-                this.deleteUserPlaceFavorite(
-                        cookie,
-                        vendor_id
-                );
-                return false;
-            }
-            throw new Exception("Unable to create new user-place favorite.");
-        } finally {
-            if (stage1 != null) {
-                stage1.close();
-            }
-            if (this.DAO != null) {
-                this.DAO.close();
-            }
-        }
-    }
-
-    private String deleteUserPlaceFavoriteSQL_stage1 =
-            "DELETE FROM " +
-                    "   user_vendor_favorites " +
+    private String basicSearchVendorsSQL_shortcode =
+            "SELECT id " +
+                    "FROM " +
+                    "   vendors " +
                     "WHERE " +
-                    "   account_id = ? " +
-                    "AND " +
-                    "   vendor_id = ?";
+                    "   short_code = UPPER(?)"; // No need to limit, short_code is unique and this is an exact match.
 
-    public boolean deleteUserPlaceFavorite(
-            String cookie,
-            int vendor_id
-    ) throws Exception {
-        PreparedStatement stage1 = null;
-        try {
-            // Just check the session, no permissions here becaues all users can
-            // have favorites (it doesn't affect any other accounts) and all breweries
-            // can be favorited.
-            int account_id = this.validateUserCookie(cookie);
-            stage1 = this.DAO.prepareStatement(this.deleteUserPlaceFavoriteSQL_stage1);
-            stage1.setInt(1, this.userCookie.userID);
-            stage1.setInt(2, vendor_id);
-            stage1.execute();
-            return true;
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            throw new Exception("Unable to delete user-place favorite.");
-        } finally {
-            if (stage1 != null) {
-                stage1.close();
-            }
-            if (this.DAO != null) {
-                this.DAO.close();
-            }
-        }
-    }
+    private String basicSearchVendorsSQL_reid1 =
+            "SELECT vendor_id " +
+                    "FROM " +
+                    "   vendor_info " +
+                    "WHERE " +
+                    "   display_name ILIKE ANY (?) " +
+                    "LIMIT ? OFFSET ?";
 
-    private String loadUserPlaceFavoritesSQL =
+    private String basicSearchVendorsSQL_reid2 =
+            "SELECT vendor_id " +
+                    "FROM " +
+                    "   vendor_info " +
+                    "WHERE " +
+                    "   short_text_description ILIKE ANY (?) " +
+                    "LIMIT ? OFFSET ?";
+
+    private String basicSearchVendorsSQL_reid3 =
+            "SELECT vendor_id " +
+                    "FROM " +
+                    "   vendor_info " +
+                    "WHERE " +
+                    "   about_text ILIKE ANY (?) " +
+                    "LIMIT ? OFFSET ?";
+
+    private String basicSearchVendorsSQL_fromIDS =
             "SELECT " +
                     "   v.id as vendor_id, " +
                     "   COALESCE(vi.display_name, 'NA') AS display_name, " +
@@ -146,18 +101,78 @@ public class PlacesModel extends AbstractModel {
                     "ON " +
                     "   v.id = uvf.vendor_id " +
                     "WHERE " +
-                    "   uvf.account_id = ?";
+                    "   v.id = ANY(?)";
 
-    public HashMap<Integer, FavoritePlace> loadUserPlaceFavorites(
-            String cookie
+    /**
+     * Search with ILIKE ANY in the following order:
+     *      1) Search for anything with short-code.
+     *      note: only do this if offset = 0 and keyword is the only argument;
+     * Next prioritize in the following order.
+     *      2) vendor_info.display_name.
+     *      3) vendor_info.short_type_description.
+     *      4) vendor_info.short_text_description.
+     * If there are no results given the limit and offset, search for more in about_text.
+     *      5) vendor_info.about_text.
+     * Return a hash-map so duplicates are removed (length should be good if offset was incremented properly).
+     * @param keywords
+     * @return
+     * @throws Exception
+     */
+    public HashMap<Integer, FavoritePlace> basicSearchVendors(
+            String[] keywords,
+            int limit,
+            int offset,
+            int reid
     ) throws Exception {
+        System.out.println(keywords[0]);
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            this.validateUserCookie(cookie);
-            HashMap<Integer, FavoritePlace> favoritePlaceHashMap = new HashMap<Integer, FavoritePlace>();
-            preparedStatement = this.DAO.prepareStatement(loadUserPlaceFavoritesSQL);
-            preparedStatement.setInt(1, this.userCookie.userID);
+            HashMap<Integer, FavoritePlace> placeHashMap = new HashMap<Integer, FavoritePlace>();
+            ArrayList<Integer> vendor_ids = new ArrayList<Integer>();
+            if (reid == 1) {
+                preparedStatement = this.DAO.prepareStatement(basicSearchVendorsSQL_shortcode);
+                preparedStatement.setString(1, keywords[0]);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    vendor_ids.add(resultSet.getInt("id"));
+                }
+            }
+            for (int i = 0; i < keywords.length; i++) {
+                keywords[i] = "%" + keywords[i] + "%";
+            }
+            if (reid == 1) {
+                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid1);
+                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
+                preparedStatement.setInt(2, limit - vendor_ids.size());
+                preparedStatement.setInt(3, offset);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    vendor_ids.add(resultSet.getInt("vendor_id"));
+                }
+            }
+            if (reid == 2) {
+                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid2);
+                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
+                preparedStatement.setInt(2, limit);
+                preparedStatement.setInt(3, offset);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    vendor_ids.add(resultSet.getInt("vendor_id"));
+                }
+            }
+            if (reid == 3) {
+                preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_reid3);
+                preparedStatement.setArray(1, this.DAO.createArrayOf("VARCHAR", keywords));
+                preparedStatement.setInt(2, limit);
+                preparedStatement.setInt(3, offset);
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    vendor_ids.add(resultSet.getInt("vendor_id"));
+                }
+            }
+            preparedStatement = this.DAO.prepareStatement(this.basicSearchVendorsSQL_fromIDS);
+            preparedStatement.setArray(1, this.DAO.createArrayOf("INTEGER", vendor_ids.toArray()));
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 FavoritePlace favoritePlace = new FavoritePlace();
@@ -193,12 +208,13 @@ public class PlacesModel extends AbstractModel {
                 favoritePlace.public_phone = resultSet.getString("public_phone");
                 favoritePlace.public_email = resultSet.getString("public_email");
                 favoritePlace.short_code = resultSet.getString("short_code");
-                favoritePlaceHashMap.put(favoritePlace.vendor_id, favoritePlace);
+                placeHashMap.put(favoritePlace.vendor_id, favoritePlace);
             }
-            return favoritePlaceHashMap;
+            return placeHashMap;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            throw new Exception("Unable to load favorite places.");
+            // Fuck.
+            throw new Exception("Ooops... Something went wrong with search! We're fixing it as fast as we can!");
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();
@@ -210,5 +226,32 @@ public class PlacesModel extends AbstractModel {
                 this.DAO.close();
             }
         }
+    }
+
+    public HashMap<Integer, FavoriteBeer> basicSearchBeers(
+            String[] keywords,
+            int limit,
+            int offset
+    ) throws Exception {
+        HashMap<Integer, FavoriteBeer> favoriteBeerHashMap = new HashMap<Integer, FavoriteBeer>();
+        return favoriteBeerHashMap;
+    }
+
+    public HashMap<Integer, FavoriteVendorFood> basicSearchFoods(
+            String[] keywords,
+            int limit,
+            int offset
+    ) throws Exception {
+        HashMap<Integer, FavoriteVendorFood> favoriteVendorFoodHashMap = new HashMap<Integer, FavoriteVendorFood>();
+        return favoriteVendorFoodHashMap;
+    }
+
+    public HashMap<Integer, FavoriteVendorDrink> basicSearchDrinks(
+            String[] keywords,
+            int limit,
+            int offset
+    ) throws Exception {
+        HashMap<Integer, FavoriteVendorDrink> favoriteVendorDrinkHashMap = new HashMap<Integer, FavoriteVendorDrink>();
+        return favoriteVendorDrinkHashMap;
     }
 }
