@@ -101,7 +101,10 @@ public class MenuFavoritesModel extends AbstractModel {
                     "WHERE " +
                     "   vff.account_id = ? " +
                     "AND " +
-                    "   vfi.id IS NOT NULL";
+                    "   vfi.id IS NOT NULL " +
+                    "ORDER BY " +
+                    "   vfi.vendor_food_id, " +
+                    "   vfi.display_order ASC";
 
     private String loadFoodFavorites_sql =
         "SELECT" +
@@ -318,7 +321,6 @@ public class MenuFavoritesModel extends AbstractModel {
             resultSetImages = preparedStatementImages.executeQuery();
             while (resultSetImages.next()) {
                 int vendor_food_id = resultSetImages.getInt("vendor_food_id");
-                System.out.println(vendor_food_id);
                 foodMenu.menuItems.get(vendor_food_id).thumbnail = resultSetImages.getString("filename");
             }
             return foodMenu;
@@ -842,7 +844,6 @@ public class MenuFavoritesModel extends AbstractModel {
                 Color color = new Color();
                 FavoriteBeer beer = new FavoriteBeer();
                 beer.vendor_name = resultSet.getString("vendor_name");
-                System.out.println(beer.vendor_name);
                 beer.beer_id = resultSet.getInt("beer_id");
                 beer.vendor_id = resultSet.getInt("beer_vendor_id");
                 beer.name = resultSet.getString("beer_name");

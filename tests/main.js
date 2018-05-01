@@ -1611,6 +1611,7 @@ call_api(publicsearch_url, "basicSearchVendors",{
 	"reid": 2
 });
 */
+/*
 call_api(publicsearch_url, "basicSearchVendors",{
 	"module": "PublicSearch",
 	"command": "basicSearchVendors",
@@ -1621,5 +1622,31 @@ call_api(publicsearch_url, "basicSearchVendors",{
 	// "keywords": ["beer"],
 	"keywords": ["Ultimate", "example", "abc"],
 	"offset": 2,
+	"reid": 3
+});
+*/
+/*
+call_api(publicsearch_url, "basicSearchFoods",{
+	"module": "PublicSearch",
+	"command": "basicSearchFoods",
+	"keywords": ["nice"],
+	"offset": 0,
+	"reid": 3
+});
+*/
+/*
+call_api(publicsearch_url, "basicSearchDrinks",{
+	"module": "PublicSearch",
+	"command": "basicSearchDrinks",
+	"keywords": ["refreshing"],
+	"offset": 0,
+	"reid": 3
+});
+*/
+call_api(publicsearch_url, "basicSearchBeers",{
+	"module": "PublicSearch",
+	"command": "basicSearchBeers",
+	"keywords": ["imperial"],
+	"offset": 0,
 	"reid": 3
 });
