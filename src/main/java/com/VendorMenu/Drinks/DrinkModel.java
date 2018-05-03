@@ -542,6 +542,9 @@ public class DrinkModel extends AbstractModel {
             if (ex.getMessage().contains("spirit_drink_associations_spirit_id_fkey")) {
                 throw new Exception("Invalid alcohol type id.");
             }
+            if (ex.getMessage().contains("vendor_drinks_vendor_id_name_idx")) {
+                throw new Exception("You've already created a drink with that name!");
+            }
             // Unknown reason.
             throw new Exception("Unable to create drink.");
         } finally {
