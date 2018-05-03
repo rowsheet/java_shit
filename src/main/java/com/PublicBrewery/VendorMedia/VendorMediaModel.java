@@ -7,6 +7,7 @@ import com.Common.VendorMedia.VendorPageImage;
 import com.Common.VendorMedia.VendorPageImageGallery;
 import com.sun.org.apache.regexp.internal.RE;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class VendorMediaModel extends AbstractModel{
                     vendorPageImageGallery.text_color = color.getInverseBW(vendorPageImageGallery.hex_color);
                     vendorPageImageGallery.name = resultSet.getString("name");
                 }
-                vendorPageImageGallery.vendorPageImages.put(vendorPageImage.id, vendorPageImage);
+                vendorPageImageGallery.vendorPageImages.put(vendorPageImage.display_order, vendorPageImage);
                 vendorPageImageGallery.image_count++;
             }
             return vendorPageImageGallery;

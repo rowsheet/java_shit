@@ -17,15 +17,13 @@ public class PublicSearchHandler {
     public String basicSearchVendors(
             @WebParam(name="keywords") String[] keywords,
             // @WebParam(name="limit") int limit, always load 9 at a time for now.
-            @WebParam(name="offset") int offset,
-            @WebParam(name="reid") int reid
+            @WebParam(name="offset") int offset
     ) throws Exception {
         BasicSearchController basicSearchController = new BasicSearchController();
         return basicSearchController.basicSearchVendors(
                 keywords,
                 5,
-                offset,
-                reid
+                offset
         );
     }
 

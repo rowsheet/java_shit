@@ -37,7 +37,7 @@ public class PageImageModel extends AbstractModel {
             LimitModel limitModel = new LimitModel();
             limitModel.checkLimit(
                     this.vendorCookie.vendorID,
-                    "vendor_page_images",
+                    "vendor_page_image_galleries",
                     "media_gallery_limit"
             );
             // Do the database stuff.
@@ -584,6 +584,42 @@ public class PageImageModel extends AbstractModel {
             System.out.println(ex.getMessage());
             // Don't know why.
             throw new Exception("Unable to delete vendor page image gallery.");
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (this.DAO != null) {
+                this.DAO.close();
+            }
+        }
+    }
+
+    private String setMainImageID_sql =
+            "UPDATE " +
+                    "   vendor_info " +
+                    "SET " +
+                    "   main_image_id = ? " +
+                    "WHERE " +
+                    "   vendor_id = ?";
+
+    public boolean setMainImageID (
+            String cookie,
+            int image_id
+    ) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            // Validate cookie.
+            this.validateCookieVendorFeature(cookie, "vendor_page_images");
+            // DB things.
+            preparedStatement = this.DAO.prepareStatement(this.setMainImageID_sql);
+            preparedStatement.setInt(1, image_id);
+            preparedStatement.setInt(2, this.vendorCookie.vendorID);
+            preparedStatement.execute();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            // Don't know why.
+            throw new Exception("Unable to set main main image.");
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();

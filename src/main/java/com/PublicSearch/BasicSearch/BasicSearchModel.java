@@ -1,10 +1,7 @@
 package com.PublicSearch.BasicSearch;
 
 import com.Common.AbstractModel;
-import com.Common.UserFavorites.FavoriteBeer;
-import com.Common.UserFavorites.FavoritePlace;
-import com.Common.UserFavorites.FavoriteVendorDrink;
-import com.Common.UserFavorites.FavoriteVendorFood;
+import com.Common.UserFavorites.*;
 import com.Common.BeerTag;
 import com.Common.VendorFoodTag;
 import com.Common.VendorDrinkTag;
@@ -85,8 +82,7 @@ public class BasicSearchModel extends AbstractModel  {
     public HashMap<Integer, FavoritePlace> basicSearchVendors(
             String[] keywords,
             int limit,
-            int offset,
-            int reid // depreciated.
+            int offset
     ) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -264,7 +260,7 @@ public class BasicSearchModel extends AbstractModel  {
                 "WHERE " +
                 "   beer_id = ANY(?)";
 
-    public HashMap<Integer, FavoriteBeer> basicSearchBeers(
+    public BeerMenu basicSearchBeers(
             String[] keywords,
             int limit,
             int offset
@@ -272,6 +268,7 @@ public class BasicSearchModel extends AbstractModel  {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
+            BeerMenu beerMenu = new BeerMenu();
             HashMap<Integer, FavoriteBeer> beerHashMap = new HashMap<Integer, FavoriteBeer>();
             ArrayList<Integer> beer_ids = new ArrayList<Integer>();
             // Build to_tsquery.
@@ -415,7 +412,8 @@ public class BasicSearchModel extends AbstractModel  {
                 beer.nutritional_facts = vendorNutritionalFact;
                 beerHashMap.put(beer.beer_id, beer);
             }
-            return beerHashMap;
+            beerMenu.menuItems = beerHashMap;
+            return beerMenu;
         } catch (Exception ex)  {
             System.out.println(ex.getMessage());
             throw new Exception("Ooops... Something went wrong with search! We're fixing it as fast as we can!");
@@ -517,7 +515,7 @@ public class BasicSearchModel extends AbstractModel  {
                 "   vendor_food_id, " +
                 "   display_order ASC";
 
-    public HashMap<Integer, FavoriteVendorFood> basicSearchFoods(
+    public FoodMenu basicSearchFoods(
             String[] keywords,
             int limit,
             int offset
@@ -525,6 +523,7 @@ public class BasicSearchModel extends AbstractModel  {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
+            FoodMenu foodMenu = new FoodMenu();
             HashMap<Integer, FavoriteVendorFood> foodHashMap = new HashMap<Integer, FavoriteVendorFood>();
             ArrayList<Integer> vendor_food_ids = new ArrayList<Integer>();
             // Build to_tsquery.
@@ -664,7 +663,8 @@ public class BasicSearchModel extends AbstractModel  {
             while (resultSet.next()) {
                 foodHashMap.get(resultSet.getInt("vendor_food_id")).thumbnail = resultSet.getString("filename");
             }
-            return foodHashMap;
+            foodMenu.menuItems = foodHashMap;
+            return foodMenu;
         } catch (Exception ex)  {
             System.out.println(ex.getMessage());
             throw new Exception("Ooops... Something went wrong with search! We're fixing it as fast as we can!");
@@ -760,7 +760,7 @@ public class BasicSearchModel extends AbstractModel  {
                 "WHERE " +
                 "   vendor_drink_id = ANY(?)";
 
-    public HashMap<Integer, FavoriteVendorDrink> basicSearchDrinks(
+    public DrinkMenu basicSearchDrinks(
             String[] keywords,
             int limit,
             int offset
@@ -768,6 +768,7 @@ public class BasicSearchModel extends AbstractModel  {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
+            DrinkMenu drinkMenu = new DrinkMenu();
             HashMap<Integer, FavoriteVendorDrink> drinkHashMap = new HashMap<Integer, FavoriteVendorDrink>();
             ArrayList<Integer> vendor_drink_ids = new ArrayList<Integer>();
             // Build to_tsquery.
@@ -906,7 +907,8 @@ public class BasicSearchModel extends AbstractModel  {
                 vendorDrink.nutritional_facts = vendorNutritionalFact;
                 drinkHashMap.put(vendorDrink.vendor_drink_id, vendorDrink);
             }
-            return drinkHashMap;
+            drinkMenu.menuItems = drinkHashMap;
+            return drinkMenu;
         } catch (Exception ex)  {
             System.out.println(ex.getMessage());
             throw new Exception("Ooops... Something went wrong with search! We're fixing it as fast as we can!");

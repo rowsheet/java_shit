@@ -144,6 +144,21 @@ public class PageImageController extends AbstractController{
         );
     }
 
+    public boolean setMainImageID (
+            String cookie,
+            int image_id
+    ) throws Exception {
+        // Validate cookie.
+        this.validateString(cookie, "cookie");
+        this.validateID(image_id, "image_id");
+        // Model things.
+        PageImageModel pageImageModel = new PageImageModel();
+        return  pageImageModel.setMainImageID(
+                cookie,
+                image_id
+        );
+    }
+
     public boolean setMainGalleryID (
             String cookie,
             int gallery_id

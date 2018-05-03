@@ -112,6 +112,18 @@ public class VendorMediaHandler {
     }
 
     @WebMethod
+    public boolean setMainImageID(
+            @WebParam(name = "cookie") String cookie,
+            @WebParam(name = "image_id") int image_id
+    ) throws Exception {
+        PageImageController pageImageController = new PageImageController();
+        return pageImageController.setMainImageID(
+                cookie,
+                image_id
+        );
+    }
+
+    @WebMethod
     public boolean setMainGalleryID (
             @WebParam(name = "cookie") String cookie,
             @WebParam(name = "gallery_id") int gallery_id
